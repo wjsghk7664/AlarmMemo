@@ -29,8 +29,10 @@ class MenuListAdapter : ListAdapter<ListItem, ListItemViewHolder>(object : DiffU
 
 class ListItemViewHolder(private val binding: ListSampleBinding) : RecyclerView.ViewHolder(binding.root) {
     fun bind(item: ListItem) {
-        binding.SampleTvMemoTitle.text = item.title
-        binding.SampleTvMemoDate.text = item.date
-        binding.SampleTvMemoThumbnail.setImageResource(item.image)
+        with(binding) {
+            SampleTvMemoTitle.text = item.title
+            SampleTvMemoDate.text = item.date
+            SampleTvMemoThumbnail.setImageResource(item.image)
+        }
     }
 }
