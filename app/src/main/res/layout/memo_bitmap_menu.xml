@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_corner_box"
+    android:elevation="8dp"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/bitmap_menu_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="삭제"
+        style="@style/subtitle_700"
+        android:background="@android:color/transparent"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/bitmap_menu_copy"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="복사"
+        style="@style/subtitle_700"
+        android:background="@android:color/transparent"/>
+</LinearLayout>
