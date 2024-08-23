@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.memoList.MeMoListActivity">
+
+    <TextView
+        android:id="@+id/MemoList_tv_title"
+        style="@style/headline_700"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:text="목록"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/MemoList_tv_list_shuffled"
+        style="@style/caption_500"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="정렬 기준 : "
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/MemoList_tv_title" />
+
+    <Spinner
+        android:id="@+id/MemoList_sp_list_shuffled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/MemoList_tv_list_shuffled"
+        app:layout_constraintStart_toEndOf="@id/MemoList_tv_list_shuffled"
+        app:layout_constraintTop_toTopOf="@id/MemoList_tv_list_shuffled" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/MemoList_rv_memoList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list_shuffled" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
