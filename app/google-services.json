@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1010720148236",
-    "project_id": "alarmmemo-3ca29",
-    "storage_bucket": "alarmmemo-3ca29.appspot.com"
+    "project_number": "710542293652",
+    "project_id": "alarmmemo-42751",
+    "storage_bucket": "alarmmemo-42751.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1010720148236:android:0c56187867f12780c5d729",
+        "mobilesdk_app_id": "1:710542293652:android:49754fd9a8f5a8f58e5281",
         "android_client_info": {
           "package_name": "com.example.alarmmemo"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDW17scUXeubIPuqFH3-hGKjDm8j6svSRI"
+          "current_key": "AIzaSyDxjBQQergXe7irLYg_1BUVmyMe-fgDiBw"
         }
       ],
       "services": {
