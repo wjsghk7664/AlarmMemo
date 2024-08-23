@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.alarmmemo.ListItem
 import com.example.alarmmemo.databinding.ListSampleBinding
 
-class MenuListAdapter : ListAdapter<ListItem, ListItemViewHolder>(object : DiffUtil.ItemCallback<ListItem>() {
+class MenuListAdapter(private val onItemClicked : (ListItem) -> Unit) : ListAdapter<ListItem, ListItemViewHolder>(object : DiffUtil.ItemCallback<ListItem>() {
     override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
         return oldItem.title == newItem.title
     }
@@ -24,16 +24,20 @@ class MenuListAdapter : ListAdapter<ListItem, ListItemViewHolder>(object : DiffU
     }
 
     override fun onBindViewHolder(holder: ListItemViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onItemClicked)
     }
 }
 
 class ListItemViewHolder(private val binding: ListSampleBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: ListItem) {
+    fun bind(item: ListItem, onItemClicked: (ListItem) -> Unit) {
         with(binding) {
             SampleTvMemoTitle.text = item.title
             SampleTvMemoDate.text = item.date
             SampleTvMemoThumbnail.setImageResource(item.image)
+
+            SampleTvMemoThumbnail.setOnClickListener {
+                onItemClicked(item)
+            }
         }
     }
 }

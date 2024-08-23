@@ -1,5 +1,6 @@
 package com.example.alarmmemo.presentation.memoList
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.alarmmemo.ListItem
 import com.example.alarmmemo.R
 import com.example.alarmmemo.databinding.ActivityMemoListBinding
+import com.example.alarmmemo.presentation.memo.MemoActivity
 
 class MeMoListActivity : AppCompatActivity() {
 
@@ -28,7 +30,11 @@ class MeMoListActivity : AppCompatActivity() {
             insets
         }
 
-        val adapter = MenuListAdapter()
+        val adapter = MenuListAdapter { item ->
+            val intent = Intent(this, MemoActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.MemoListRvMemoList.layoutManager = GridLayoutManager(this, 2)
         binding.MemoListRvMemoList.adapter = adapter
 
@@ -67,7 +73,7 @@ class MeMoListActivity : AppCompatActivity() {
 
         adapter.submitList(sampleData)
 
-        val spinner: Spinner = binding.MemoListSpListShuffled
+        val spinner: Spinner = binding.MemoListSpListSpinner
         spinner.adapter = ArrayAdapter.createFromResource(
             this, R.array.itemList, android.R.layout.simple_spinner_item
         )

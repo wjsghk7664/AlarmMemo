@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/MemoList_tv_list_shuffled"
+        android:id="@+id/MemoList_tv_list_spinner"
         style="@style/caption_500"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,12 +33,12 @@
         app:layout_constraintTop_toBottomOf="@id/MemoList_tv_title" />
 
     <Spinner
-        android:id="@+id/MemoList_sp_list_shuffled"
+        android:id="@+id/MemoList_sp_list_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/MemoList_tv_list_shuffled"
-        app:layout_constraintStart_toEndOf="@id/MemoList_tv_list_shuffled"
-        app:layout_constraintTop_toTopOf="@id/MemoList_tv_list_shuffled" />
+        app:layout_constraintBottom_toBottomOf="@id/MemoList_tv_list_spinner"
+        app:layout_constraintStart_toEndOf="@id/MemoList_tv_list_spinner"
+        app:layout_constraintTop_toTopOf="@id/MemoList_tv_list_spinner" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MemoList_rv_memoList"
@@ -48,6 +48,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list_shuffled" />
+        app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list_spinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
