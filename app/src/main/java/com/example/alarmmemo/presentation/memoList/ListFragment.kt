@@ -1,4 +1,4 @@
-package com.example.alarmmemo
+package com.example.alarmmemo.presentation.memoList
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.alarmmemo.R
 import com.example.alarmmemo.databinding.FragmentListBinding
 import com.example.alarmmemo.presentation.memo.MemoActivity
-import com.example.alarmmemo.presentation.memoList.MenuListAdapter
 
 class ListFragment : Fragment() {
 

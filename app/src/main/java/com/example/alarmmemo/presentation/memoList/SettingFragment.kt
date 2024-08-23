@@ -1,4 +1,4 @@
-package com.example.alarmmemo
+package com.example.alarmmemo.presentation.memoList
 
 import android.os.Bundle
 import android.view.LayoutInflater

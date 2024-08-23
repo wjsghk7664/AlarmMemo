@@ -7,9 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.example.alarmmemo.ListFragment
 import com.example.alarmmemo.R
-import com.example.alarmmemo.SettingFragment
 import com.example.alarmmemo.databinding.ActivityMemoListBinding
 
 class MeMoListActivity : AppCompatActivity() {

@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.alarmmemo.ListItem
 import com.example.alarmmemo.databinding.ListSampleBinding
 
 class MenuListAdapter(private val onItemClicked : (ListItem) -> Unit) : ListAdapter<ListItem, ListItemViewHolder>(object : DiffUtil.ItemCallback<ListItem>() {
