@@ -10,12 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.alarmmemo.databinding.ActivityMenuListBinding
+import com.example.alarmmemo.databinding.ActivityMemoListBinding
 
-class MenuListActivity : AppCompatActivity() {
+class MeMoListActivity : AppCompatActivity() {
 
-    private val binding by lazy { ActivityMenuListBinding.inflate(layoutInflater) }
+    private val binding by lazy { ActivityMemoListBinding.inflate(layoutInflater) }
     private lateinit var adapter: MenuListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,10 +27,12 @@ class MenuListActivity : AppCompatActivity() {
             insets
         }
 
-        val spinner : Spinner = binding.MemoListSpListShuffled
-        spinner.adapter = ArrayAdapter.createFromResource(this, R.array.itemList, android.R.layout.simple_spinner_item)
+        val spinner: Spinner = binding.MemoListSpListShuffled
+        spinner.adapter = ArrayAdapter.createFromResource(
+            this, R.array.itemList, android.R.layout.simple_spinner_item
+        )
 
-        spinner.onItemSelectedListener = object  : AdapterView.OnItemSelectedListener {
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
 
