@@ -1,20 +1,16 @@
 package com.example.alarmmemo.presentation.memoList
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.alarmmemo.ListItem
+import androidx.fragment.app.Fragment
+import com.example.alarmmemo.ListFragment
 import com.example.alarmmemo.R
+import com.example.alarmmemo.SettingFragment
 import com.example.alarmmemo.databinding.ActivityMemoListBinding
-import com.example.alarmmemo.presentation.memo.MemoActivity
 
 class MeMoListActivity : AppCompatActivity() {
 
@@ -30,71 +26,35 @@ class MeMoListActivity : AppCompatActivity() {
             insets
         }
 
-        val adapter = MenuListAdapter {
-            val intent = Intent(this, MemoActivity::class.java)
-            startActivity(intent)
+        showFragment(ListFragment())
+
+        binding.MemoListTvList.setOnClickListener {
+            binding.MemoListLlDropdownMenu.visibility = View.GONE
+            showFragment(ListFragment())
         }
 
-        binding.MemoListRvMemoList.layoutManager = GridLayoutManager(this, 2)
-        binding.MemoListRvMemoList.adapter = adapter
-
-        val sampleData = listOf(
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher),
-            ListItem("데이터 1", "date1", R.mipmap.ic_launcher),
-            ListItem("데이터 2", "date2", R.mipmap.ic_launcher),
-            ListItem("데이터 3", "date3", R.mipmap.ic_launcher)
-        )
-
-        adapter.submitList(sampleData)
-
-        val spinner: Spinner = binding.MemoListSpListSpinner
-        spinner.adapter = ArrayAdapter.createFromResource(
-            this, R.array.itemList, android.R.layout.simple_spinner_item
-        )
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val spanCount = when (position) {
-                    0 -> 2
-                    1 -> 3
-                    else -> 2
-                }
-                binding.MemoListRvMemoList.layoutManager = GridLayoutManager(this@MeMoListActivity, spanCount)
-            }
+        binding.MemoListTvSetting.setOnClickListener {
+            binding.MemoListLlDropdownMenu.visibility = View.GONE
+            showFragment(SettingFragment())
         }
+
+        binding.MemoListIvSettingButton.setOnClickListener {
+            toggleDropDown(it)
+        }
+    }
+
+    private fun toggleDropDown(view: View) {
+        if (binding.MemoListLlDropdownMenu.visibility == View.GONE) {
+            binding.MemoListLlDropdownMenu.visibility = View.VISIBLE
+        } else {
+            binding.MemoListLlDropdownMenu.visibility = View.GONE
+        }
+    }
+
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.MemoList_fg_fragment_view, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

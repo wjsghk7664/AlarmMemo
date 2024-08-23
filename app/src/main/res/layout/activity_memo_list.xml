@@ -7,47 +7,85 @@
     android:layout_height="match_parent"
     tools:context=".presentation.memoList.MeMoListActivity">
 
-    <TextView
-        android:id="@+id/MemoList_tv_title"
-        style="@style/headline_700"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:text="@string/menuList_tv_title"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/MemoList_tv_list_spinner"
-        style="@style/caption_500"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/menuList_tv_spinner_text"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/MemoList_tv_title" />
-
-    <Spinner
-        android:id="@+id/MemoList_sp_list_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/MemoList_tv_list_spinner"
-        app:layout_constraintStart_toEndOf="@id/MemoList_tv_list_spinner"
-        app:layout_constraintTop_toTopOf="@id/MemoList_tv_list_spinner" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/MemoList_rv_memoList"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/MemoList_cl_list_title"
         android:layout_width="0dp"
+        android:layout_height="56dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/MemoList_tv_title"
+            style="@style/headline_700"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/menuList_tv_title"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/MemoList_iv_setting_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="20dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/setting_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/MemoList_frame_layout"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list_spinner" />
+        app:layout_constraintTop_toBottomOf="@id/MemoList_cl_list_title">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/MemoList_fg_fragment_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent" />
+
+        <LinearLayout
+            android:id="@+id/MemoList_ll_dropdown_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="40dp"
+            android:background="@android:color/white"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/MemoList_tv_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/menuList_toggle_list"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/MemoList_tv_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/menuList_toggle_setting"
+                android:textColor="@android:color/black" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
