@@ -1,4 +1,4 @@
-package com.example.alarmmemo
+package com.example.alarmmemo.presentation.memoList
 
 import android.os.Bundle
 import android.view.View
@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.alarmmemo.ListItem
+import com.example.alarmmemo.R
 import com.example.alarmmemo.databinding.ActivityMemoListBinding
 
 class MeMoListActivity : AppCompatActivity() {
