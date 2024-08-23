@@ -30,7 +30,7 @@ class MeMoListActivity : AppCompatActivity() {
             insets
         }
 
-        val adapter = MenuListAdapter { item ->
+        val adapter = MenuListAdapter {
             val intent = Intent(this, MemoActivity::class.java)
             startActivity(intent)
         }
