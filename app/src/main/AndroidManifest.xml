@@ -16,6 +16,9 @@
             android:name=".presentation.memo.MemoActivity"
             android:exported="false" />
         <activity
+            android:name=".presentation.memoList.MeMoListActivity"
+            android:exported="false" />
+        <activity
             android:name=".presentation.MainActivity"
             android:exported="true">
             <intent-filter>
