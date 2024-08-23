@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.alarmmemo"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -39,7 +39,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
     buildFeatures{
         viewBinding = true
     }
