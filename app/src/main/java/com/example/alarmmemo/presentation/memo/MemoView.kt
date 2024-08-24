@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
@@ -27,8 +28,18 @@ import com.example.alarmmemo.databinding.MemoBitmapMenuBinding
 
 class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(context,attrs) {
     //세팅 프로퍼티
-    private var eraseOn =false
-    private val history = ArrayDeque<HistoryItem>()
+    var bold = false
+    var textSize = 12
+    var textColor = Color.rgb(0,0,0)
+
+    var isPencil = true //true면 펜, false면 eraser
+    var penSize = 4
+    var penColor = Color.rgb(0,0,0)
+
+
+    //히스토리
+    private val drawHistory = ArrayDeque<HistoryItem>()
+    private var curDrawHistory = -1
 
     private var curX = 0f
     private var curY = 0f
@@ -73,11 +84,23 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         addView(bitmapMenu.root)
     }
 
+    //세팅 메소드
+
+    fun addHistory(historyItem: HistoryItem){
+        if(curDrawHistory!=drawHistory.size-1){
+            for(i in curDrawHistory+1..drawHistory.size-1){
+                drawHistory.removeLast()
+            }
+        }
+        drawHistory.addLast(historyItem)
+        curDrawHistory++
+    }
+
     fun addBitmap(uri: Uri){
         getBitmapFromUri(context,uri).getOrNull()?.let {
             bitmaps+=it
             bitmapRectFs+=RectF(0f,0f, dpToPx(context,100f),it.height.toFloat()*dpToPx(context,100f)/it.width.toFloat())
-            history.addLast(HistoryItem(ActionType.AddBitmap,bitmaps.size-1,Pair(bitmaps.last(),bitmapRectFs.last())))
+            addHistory(HistoryItem(ActionType.AddBitmap,bitmaps.size-1,Pair(bitmaps.last(),bitmapRectFs.last())))
         }
         invalidate()
     }
@@ -86,7 +109,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         activatedIdx?.let {
             bitmaps+=Bitmap.createBitmap(bitmaps[it])
             bitmapRectFs+=RectF(bitmapRectFs[it])
-            history.addLast(HistoryItem(ActionType.AddBitmap,bitmaps.size-1,Pair(bitmaps.last(),bitmapRectFs.last())))
+            addHistory(HistoryItem(ActionType.AddBitmap,bitmaps.size-1,Pair(bitmaps.last(),bitmapRectFs.last())))
         }
         invalidate()
     }
@@ -99,12 +122,12 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             style = Paint.Style.STROKE
             strokeWidth = dpToPx(context,2f)
         }
-        history.addLast(HistoryItem(ActionType.AddDraw, drawList.size-1,Pair(drawList.last(),drawPaintList.last())))
+        addHistory(HistoryItem(ActionType.AddDraw, drawList.size-1,Pair(drawList.last(),drawPaintList.last())))
     }
 
     fun removeBitmap(){
         activatedIdx?.let {
-            history.addLast(HistoryItem(ActionType.EraseBitmap,it,Pair(bitmaps[it],bitmapRectFs[it])))
+            drawHistory.addLast(HistoryItem(ActionType.EraseBitmap,it,Pair(bitmaps[it],bitmapRectFs[it])))
             bitmaps.removeAt(it)
             bitmapRectFs.removeAt(it)
             activatedIdx=null
@@ -222,7 +245,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     override fun dispatchDraw(canvas: Canvas) {
         val list = ArrayList<Pair<MemoType,Any?>>()
-        history.forEach {
+        drawHistory.filterIndexed { index, historyItem -> index<=curDrawHistory }.forEach {
             when(it.action){
                 ActionType.EraseTextBox -> list.remove(Pair(MemoType.TextBox,it.data))
                 ActionType.EraseDraw -> list.remove(Pair(MemoType.Draw,it.data))

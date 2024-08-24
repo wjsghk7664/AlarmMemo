@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("androidx.lifecycle:lifecycle-service:2.8.4")
+    implementation("com.github.skydoves:colorpickerview:2.3.0")
 
     implementation(libs.bundles.retrofit)
 
