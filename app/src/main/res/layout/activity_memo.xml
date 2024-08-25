@@ -88,8 +88,7 @@
         app:layout_constraintBottom_toTopOf="@+id/meme_v_divider3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2" />
-
+        app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2"/>
 
     <View
         android:id="@+id/meme_v_divider3"
@@ -103,9 +102,10 @@
     <LinearLayout
         android:id="@+id/memo_ll_tool_container"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="56dp"
         android:orientation="horizontal"
         android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -115,6 +115,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:scaleType="centerInside"
+            android:layout_marginRight="12dp"
             android:src="@drawable/select_write_type_selector"/>
         <FrameLayout
             android:id="@+id/memo_fl_tool_container"
@@ -132,17 +133,21 @@
                     android:id="@+id/memo_iv_pencil"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
+                    android:background="@drawable/selected_menu_border"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_pencil"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/memo_sp_pensize"
                     app:layout_constraintHorizontal_chainStyle="spread"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.example.alarmmemo.presentation.memoList.CustomSpinner
                     android:id="@+id/memo_sp_pensize"
                     style="@style/Widget.Custom.Spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/memo_iv_eraser"
                     app:layout_constraintStart_toEndOf="@+id/memo_iv_pencil"
@@ -154,8 +159,10 @@
                     android:layout_height="48dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_eraser"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/memo_iv_textbox"
-                    app:layout_constraintStart_toEndOf="@+id/memo_sp_pensize" />
+                    app:layout_constraintStart_toEndOf="@+id/memo_sp_pensize"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/memo_iv_textbox"
@@ -163,8 +170,10 @@
                     android:layout_height="48dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_textbox"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/memo_iv_draw_goback"
-                    app:layout_constraintStart_toEndOf="@+id/memo_iv_eraser" />
+                    app:layout_constraintStart_toEndOf="@+id/memo_iv_eraser"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/memo_iv_draw_goback"
@@ -172,8 +181,10 @@
                     android:layout_height="48dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_goback"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/memo_iv_draw_goafter"
-                    app:layout_constraintStart_toEndOf="@+id/memo_iv_textbox" />
+                    app:layout_constraintStart_toEndOf="@+id/memo_iv_textbox"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/memo_iv_draw_goafter"
@@ -181,8 +192,10 @@
                     android:layout_height="48dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_goafter"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/memo_iv_draw_goback" />
+                    app:layout_constraintStart_toEndOf="@+id/memo_iv_draw_goback"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -263,6 +276,20 @@
 
 
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/memo_et_addTextBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:gravity="center_horizontal"
+        android:minWidth="12dp"
+        android:padding="4dp"
+        android:textSize="16dp"
+        android:layout_marginTop="128dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

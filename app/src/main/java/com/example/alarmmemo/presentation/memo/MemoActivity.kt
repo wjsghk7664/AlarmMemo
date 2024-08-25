@@ -28,7 +28,6 @@ import com.example.alarmmemo.databinding.ActivityMemoBinding
 import com.example.alarmmemo.databinding.DialogColorPickerBinding
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
-import com.skydoves.colorpickerview.preference.ColorPickerPreferenceManager
 
 
 class MemoActivity : AppCompatActivity() {
@@ -39,7 +38,7 @@ class MemoActivity : AppCompatActivity() {
 
 
     private val fontList = List(61){it+4}
-    private val pencilList = List(39){it+1}
+    private val pencilList = List(10){it+1}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +82,7 @@ class MemoActivity : AppCompatActivity() {
             if(!hasFocus){
                 memoEtTitle.ellipsize = TextUtils.TruncateAt.END
                 memoEtTitle.keyListener=null
+                memoMv.outerFocusTitle = false
             }else{
                 memoEtTitle.ellipsize = null
                 if(memoEtTitle.keyListener==null){
@@ -90,6 +90,23 @@ class MemoActivity : AppCompatActivity() {
                 }
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(memoEtTitle, InputMethodManager.SHOW_IMPLICIT)
+                memoMv.outerFocusTitle= true
+            }
+        }
+
+        memoEtAddTextBox.onFocusChangeListener = View.OnFocusChangeListener{ v, hasFocus ->
+            if(!hasFocus){
+                memoMv.outerFocusTextBox = false
+                memoEtAddTextBox.keyListener = null
+                memoMv.setTextBox(memoEtAddTextBox.text.toString())
+                Log.d("메모 텍스트 내용",memoEtAddTextBox.text.toString())
+                memoEtAddTextBox.setText("")
+                memoEtAddTextBox.visibility = View.GONE
+            }else{
+                if(memoEtAddTextBox.keyListener==null){
+                    memoEtAddTextBox.keyListener=inputType
+                }
+                memoMv.outerFocusTextBox = true
             }
         }
 
@@ -121,7 +138,7 @@ class MemoActivity : AppCompatActivity() {
                 setDropDownViewResource(R.layout.spinner_dropdown_item)
             }
             adapter = penAdapter
-            setSelection(3)
+            setSelection(0)
             onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -157,6 +174,43 @@ class MemoActivity : AppCompatActivity() {
                 showColorpickerDialog(true)
             }
 
+            memoIvPencil.apply {
+                isSelected = true
+                setOnClickListener{
+                    if(!isSelected){
+                        isSelected=true
+                        background = getDrawable(R.drawable.selected_menu_border)
+                        memoIvEraser.isSelected =false
+                        memoIvEraser.background = null
+                        memo.isPencil = true
+                    }else{
+                        showColorpickerDialog(false)
+                    }
+                }
+            }
+
+            memoIvEraser.apply {
+                isSelected =false
+                setOnClickListener{
+                    if(!isSelected){
+                        isSelected = true
+                        background = getDrawable(R.drawable.selected_menu_border)
+                        memoIvPencil.isSelected = false
+                        memoIvPencil.background = null
+                        memo.isPencil = false
+                    }
+                }
+            }
+
+            memoIvTextbox.setOnClickListener {
+                memoEtAddTextBox.visibility = View.VISIBLE
+                memoEtAddTextBox.requestFocus()
+                memo.outerFocusTextBox = true
+                memo.addTextBox()
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(memoEtAddTextBox, InputMethodManager.SHOW_IMPLICIT)
+            }
+
 
 
 
@@ -166,9 +220,11 @@ class MemoActivity : AppCompatActivity() {
             setOnClickListener{
                 isSelected = !isSelected
                 if(isSelected){
+                    memoMv.drawActivate=true
                     memoClContainerDraw.visibility = View.VISIBLE
                     memoClContainerWrite.visibility = View.GONE
                 }else{
+                    memoMv.drawActivate=false
                     memoClContainerDraw.visibility = View.GONE
                     memoClContainerWrite.visibility = View.VISIBLE
                 }
@@ -202,6 +258,7 @@ class MemoActivity : AppCompatActivity() {
                     binding.memoIvTextcolor.imageTintList = ColorStateList.valueOf(selectedColor)
                     binding.memoMv.textColor = selectedColor
                 }else{
+                    binding.memoIvPencil.imageTintList = ColorStateList.valueOf(selectedColor)
                     binding.memoMv.penColor = selectedColor
                 }
                 dialog.dismiss()
