@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.memoList.MeMoListActivity">
+    tools:context=".presentation.memoList.MemoListActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MemoList_cl_list_title"
@@ -57,34 +57,105 @@
             android:layout_marginTop="10dp"
             android:background="@android:color/transparent" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MemoList_ll_dropdown_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="end"
             android:layout_marginEnd="40dp"
             android:background="@android:color/white"
-            android:elevation="4dp"
-            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:visibility="gone">
 
             <TextView
                 android:id="@+id/MemoList_tv_list"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="10dp"
+                android:paddingBottom="5dp"
                 android:text="@string/menuList_toggle_list"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                app:dividerColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list" />
 
             <TextView
                 android:id="@+id/MemoList_tv_setting"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="10dp"
+                android:paddingTop="5dp"
                 android:text="@string/menuList_toggle_setting"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/MemoList_ll_new_dropdown_menu"-->
+<!--            android:layout_width="120dp"-->
+<!--            android:layout_height="100dp"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginEnd="40dp"-->
+<!--            android:background="@android:color/white"-->
+<!--            android:paddingTop="10dp"-->
+<!--            android:paddingBottom="10dp"-->
+<!--            android:visibility="gone"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/MemoList_ll_dropdown_menu">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/MemoList_tv_list_2"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:padding="10dp"-->
+<!--                android:paddingBottom="5dp"-->
+<!--                android:text="2줄 격자"-->
+<!--                android:textColor="@android:color/black"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            <com.google.android.material.divider.MaterialDivider-->
+<!--                android:id="@+id/divider_2"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="1dp"-->
+<!--                app:dividerColor="@color/black"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list_2" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/MemoList_tv_setting_3"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center"-->
+<!--                android:padding="10dp"-->
+<!--                android:paddingTop="5dp"-->
+<!--                android:text="3줄 격자"-->
+<!--                android:textColor="@android:color/black"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/divider_2" />-->
+
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
     </FrameLayout>
 

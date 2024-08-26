@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.alarmmemo.R
 import com.example.alarmmemo.databinding.ActivityMemoListBinding
 
-class MeMoListActivity : AppCompatActivity() {
+class MemoListActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMemoListBinding.inflate(layoutInflater) }
 
@@ -48,6 +48,14 @@ class MeMoListActivity : AppCompatActivity() {
             binding.MemoListLlDropdownMenu.visibility = View.GONE
         }
     }
+
+//    private fun toggleNewDropDownMenu() {
+//        if (binding.MemoListLlNewDropdownMenu.visibility == View.GONE) {
+//            binding.MemoListLlNewDropdownMenu.visibility = View.VISIBLE
+//        } else {
+//            binding.MemoListLlNewDropdownMenu.visibility = View.GONE
+//        }
+//    }
 
     private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
