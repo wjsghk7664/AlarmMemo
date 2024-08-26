@@ -4,6 +4,8 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Rect
+import android.graphics.RectF
 import android.os.Bundle
 import android.text.TextUtils
 import android.text.method.KeyListener
@@ -24,12 +26,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.alarmmemo.R
 import com.example.alarmmemo.databinding.ActivityMemoBinding
 import com.example.alarmmemo.databinding.DialogColorPickerBinding
+import com.example.alarmmemo.util.showColorpickerDialog
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class MemoActivity : AppCompatActivity() {
@@ -54,7 +62,27 @@ class MemoActivity : AppCompatActivity() {
         initView()
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+
+        if(ev.action == MotionEvent.ACTION_DOWN){
+            val x = ev.x
+            val y = ev.y
+
+            val location = IntArray(2)
+            binding.memoMv.getLocationOnScreen(location)
+            val rect = Rect(location[0],location[1],location[0]+binding.memoMv.width,location[1]+binding.memoMv.height)
+            if(!rect.contains(x.toInt(),y.toInt())){
+                binding.memoMv.removeActivate()
+            }
+        }
+
+
+        return super.dispatchTouchEvent(ev)
+    }
+
+
     fun initView() = with(binding){
+
         root.setOnTouchListener{ view, motionEvent ->
             if(motionEvent.action == MotionEvent.ACTION_DOWN){
                 val curView = currentFocus
@@ -63,6 +91,9 @@ class MemoActivity : AppCompatActivity() {
                     val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(curView?.windowToken,0)
                 }
+
+
+
             }
             false
         }
@@ -159,6 +190,46 @@ class MemoActivity : AppCompatActivity() {
         }
 
         memoMv.let{ memo->
+
+            memoIvGoback.apply{
+                imageTintList = getColorStateList(R.color.light_gray)
+                isClickable = false
+            }
+            memoIvGoafter.apply {
+                imageTintList = getColorStateList(R.color.light_gray)
+                isClickable = false
+            }
+
+            lifecycleScope.launch {
+                memo.activateHistoryBtnFlow.collectLatest {
+                    val (max, cur) = it
+                    withContext(Dispatchers.Main){
+                        memoIvGoback.imageTintList= if(cur>=0) {
+                            memoIvGoback.isClickable = true
+                            getColorStateList(R.color.black)
+                        } else {
+                            memoIvGoback.isClickable = false
+                            getColorStateList(R.color.light_gray)
+                        }
+                        memoIvGoafter.imageTintList = if(cur<max) {
+                            memoIvGoafter.isClickable = true
+                            getColorStateList(R.color.black)
+                        } else {
+                            memoIvGoafter.isClickable = false
+                            getColorStateList(R.color.light_gray)
+                        }
+                    }
+                }
+            }
+
+            memoIvGoback.setOnClickListener {
+                memo.historyGoBack()
+            }
+
+            memoIvGoafter.setOnClickListener {
+                memo.historyGoAfter()
+            }
+
             memoIvBold.apply {
                 setOnClickListener {
                     isSelected = !isSelected
@@ -173,7 +244,7 @@ class MemoActivity : AppCompatActivity() {
             }
 
             memoFlTextcolorContainer.setOnClickListener {
-                showColorpickerDialog(true)
+                showColorpickerDialog(true,this@MemoActivity,binding)
             }
 
             memoIvPencil.apply {
@@ -186,7 +257,7 @@ class MemoActivity : AppCompatActivity() {
                         memoIvEraser.background = null
                         memo.isPencil = true
                     }else{
-                        showColorpickerDialog(false)
+                        showColorpickerDialog(false,this@MemoActivity,binding)
                     }
                 }
             }
@@ -234,38 +305,5 @@ class MemoActivity : AppCompatActivity() {
         }
     }
 
-    private fun showColorpickerDialog(isText:Boolean){
-        val cvbinding = DialogColorPickerBinding.inflate(layoutInflater)
-        val colorPickerView = cvbinding.colorpickerCv
-        val alphaSlider = cvbinding.colorpickerAlphaSlideBar
-        val brightnessSlideBar = cvbinding.colorpickerBrightnessSlide
-        colorPickerView.attachAlphaSlider(alphaSlider)
-        colorPickerView.attachBrightnessSlider(brightnessSlideBar)
 
-        var selectedColor = if(isText) binding.memoMv.textColor else binding.memoMv.penColor
-        cvbinding.colorpickerIvSelectedColor.setBackgroundColor(selectedColor)
-
-        colorPickerView.setColorListener(ColorEnvelopeListener{ envelope: ColorEnvelope, fromUser: Boolean ->
-            val selectColor = envelope.color
-
-
-            selectedColor = selectColor
-            cvbinding.colorpickerIvSelectedColor.setBackgroundColor(selectColor)
-        })
-
-        AlertDialog.Builder(this)
-            .setView(cvbinding.root)
-            .setPositiveButton("선택"){ dialog,_ ->
-                if(isText){
-                    binding.memoIvTextcolor.imageTintList = ColorStateList.valueOf(selectedColor)
-                    binding.memoMv.textColor = selectedColor
-                }else{
-                    binding.memoIvPencil.imageTintList = ColorStateList.valueOf(selectedColor)
-                    binding.memoMv.penColor = selectedColor
-                }
-                dialog.dismiss()
-            }.setNegativeButton("취소"){ dialog,_ ->
-                dialog.dismiss()
-            }.show()
-    }
 }

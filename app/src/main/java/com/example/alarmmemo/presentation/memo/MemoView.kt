@@ -29,10 +29,18 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Constraint
 import androidx.core.view.drawToBitmap
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.example.alarmmemo.R
 import com.example.alarmmemo.data.model.MemoModel
 import com.example.alarmmemo.databinding.MemoBitmapMenuBinding
 import com.example.alarmmemo.databinding.MemoTextboxMenuBinding
+import com.example.alarmmemo.util.showColorpickerDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
 class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(context,attrs) {
     //세팅 프로퍼티
@@ -50,10 +58,16 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     var outerFocusTitle =false
     var outerFocusTextBox =false
 
+    private val _activateHistoryBtnFlow = MutableSharedFlow<Pair<Int,Int>>() //max, cur
+    val activateHistoryBtnFlow = _activateHistoryBtnFlow.asSharedFlow()
+
 
     //히스토리
     private val drawHistory = ArrayDeque<HistoryItem>()
     private var curDrawHistory = -1
+
+    private val textboxHistory = HashMap<Int,ArrayList<Triple<String,RectF,Paint>>>()
+    private val bitmapHistory = HashMap<Int,ArrayList<RectF>>()
 
     private var curX = 0f
     private var curY = 0f
@@ -73,9 +87,9 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     private var activateTextBox:Int? = null
 
     private var curCase:Int = 0
-    private val minHeight = dpToPx(context,50f)
-    private val minWidth = dpToPx(context,50f)
-    private var borderSize = 50f
+    private val minHeight = dpToPx(context,10f)
+    private val minWidth = dpToPx(context,10f)
+    private var borderSize = dpToPx(context,8f)
     private val bitmaps = ArrayList<Bitmap>()
     private val bitmapRectFs = ArrayList<RectF>()
     private val bitmapPaint = Paint()
@@ -119,13 +133,20 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                         if(typeface.style == Typeface.BOLD){
                             typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
                             textboxMenuBold.setTextColor(context.getColor(R.color.black))
+                            invalidate()
                         }else{
                             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                             textboxMenuBold.setTextColor(context.getColor(R.color.orange))
+                            invalidate()
                         }
 
                     }
+                    addHistory(HistoryItem(ActionType.ModifyTextBox,activateTextBox!!,textboxHistory[activateTextBox]?.size))
+                    textboxHistory[activateTextBox]!!.add(Triple(String(textList[activateTextBox!!].toCharArray()),RectF(textRectFList[activateTextBox!!]),Paint(textPaintList[activateTextBox!!])))
                 }
+            }
+            textboxMenuColor.setOnClickListener {
+                showColorpickerDialog(true,context,this@MemoView)
             }
             root.visibility = View.GONE
         }
@@ -136,7 +157,15 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         addView(textboxMenu.root)
     }
 
-    fun addHistory(historyItem: HistoryItem){
+    fun removeActivate(){
+        activatedIdx = null
+        activateTextBox = null
+        bitmapMenu.root.visibility = View.GONE
+        textboxMenu.root.visibility = View.GONE
+        invalidate()
+    }
+
+    private fun addHistory(historyItem: HistoryItem){
         if(curDrawHistory!=drawHistory.size-1){
             for(i in curDrawHistory+1..drawHistory.size-1){
                 drawHistory.removeLast()
@@ -144,7 +173,36 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         }
         drawHistory.addLast(historyItem)
         curDrawHistory=drawHistory.size-1
-        Log.d("메모 cur2",curDrawHistory.toString())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            _activateHistoryBtnFlow.emit(Pair(drawHistory.size-1, curDrawHistory))
+        }
+
+    }
+
+    fun historyGoBack(){
+        if(curDrawHistory>=0){
+            curDrawHistory--
+            activateTextBox = null
+            activatedIdx = null
+            invalidate()
+            CoroutineScope(Dispatchers.IO).launch {
+                _activateHistoryBtnFlow.emit(Pair(drawHistory.size-1, curDrawHistory))
+            }
+        }
+
+    }
+
+    fun historyGoAfter(){
+        if(curDrawHistory<drawHistory.size-1){
+            curDrawHistory++
+            activateTextBox = null
+            activatedIdx = null
+            invalidate()
+            CoroutineScope(Dispatchers.IO).launch {
+                _activateHistoryBtnFlow.emit(Pair(drawHistory.size-1, curDrawHistory))
+            }
+        }
     }
 
     fun addTextBox(){
@@ -154,6 +212,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             textSize = dpToPx(context,24f)
             color = Color.BLACK
             style =Paint.Style.FILL
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
 
         }
         textRectFList+=RectF()
@@ -165,6 +224,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             if(text.isEmpty()){
                 if(textList[it]==""){
                     textList.removeAt(it)
+                    textPaintList.removeAt(it)
                 }else{
                     addHistory(HistoryItem(ActionType.EraseTextBox,it,textList[it]))
                 }
@@ -173,13 +233,26 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     textList[it]=text
                     initSetTextBox(it)
                     addHistory(HistoryItem(ActionType.AddTextBox,it,Triple(textList[it],textRectFList[it],textPaintList[it])))
+                    textboxHistory.put(it,ArrayList())
+                    textboxHistory[it]!!.add(Triple(String(textList[it].toCharArray()),RectF(textRectFList[it]),Paint(textPaintList[it])))
                 }else{
-                    addHistory(HistoryItem(ActionType.ModifyTextBox,it,Pair(textList[it],text))) //수정전 - 수정후
+                    //TODO("수정 로직 넣기")
                     textList[it]=text
                 }
             }
         }
         Log.d("메모 텍스트",textList.toString())
+    }
+
+    fun setActivatedTextColor(selectColor:Int){
+        activateTextBox?.let {
+            textPaintList[it].apply {
+                color = selectColor
+            }
+            addHistory(HistoryItem(ActionType.ModifyTextBox,it,textboxHistory[it]?.size))
+            textboxHistory[it]!!.add(Triple(String(textList[it].toCharArray()),RectF(textRectFList[it]),Paint(textPaintList[it])))
+        }
+        invalidate()
     }
 
     private fun initSetTextBox(idx:Int){
@@ -218,6 +291,8 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             bitmaps+=it
             bitmapRectFs+=RectF((width- dpToPx(context,100f))/2f,30f, (width- dpToPx(context,100f))/2f+dpToPx(context,100f),30f+it.height.toFloat()*dpToPx(context,100f)/it.width.toFloat())
             addHistory(HistoryItem(ActionType.AddBitmap,bitmaps.size-1,Pair(bitmaps.last(),bitmapRectFs.last())))
+            bitmapHistory.put(bitmaps.size-1, ArrayList())
+            bitmapHistory[bitmaps.size-1]!!.add(RectF(bitmapRectFs.last()))
         }
         invalidate()
     }
@@ -227,6 +302,8 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             bitmaps+=Bitmap.createBitmap(bitmaps[it])
             bitmapRectFs+=RectF(bitmapRectFs[it])
             addHistory(HistoryItem(ActionType.AddBitmap,bitmaps.size-1,Pair(bitmaps.last(),bitmapRectFs.last())))
+            bitmapHistory.put(bitmaps.size-1, ArrayList())
+            bitmapHistory[bitmaps.size-1]!!.add(RectF(bitmapRectFs.last()))
         }
         invalidate()
     }
@@ -267,25 +344,26 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     //1~9로 9구획으로 나눔(왼위,위,오른위,왼,내부,오른,왼아래,아래,오른아래)
     fun checkCase(x:Float,y:Float, bitmapRectFs:ArrayList<RectF>):Pair<Int,Int>?{
         bitmapRectFs.forEachIndexed { idx,rect ->
-            val hori = if(x in rect.left ..rect.left+borderSize){
+            val hori = if(x in rect.left - borderSize ..rect.left+borderSize){
                 1
             }else if(x in rect.left+borderSize..rect.right-borderSize){
                 2
-            }else if(x in rect.right-borderSize..rect.right){
+            }else if(x in rect.right-borderSize..rect.right+borderSize){
                 3
             }else{
                 4
             }
-            val vert = if(y in rect.top..rect.top+borderSize){
+            val vert = if(y in rect.top - borderSize..rect.top+borderSize){
                 1
             }else if(y in rect.top+borderSize..rect.bottom-borderSize){
                 2
-            }else if(y in rect.bottom - borderSize..rect.bottom){
+            }else if(y in rect.bottom - borderSize..rect.bottom + borderSize){
                 3
             }else{
                 4
             }
 
+            Log.d("메모 케이스","${hori} / ${vert}")
             val result = if(vert==1){
                 when(hori){
                     1 -> 1
@@ -319,7 +397,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     private fun resize(offX:Float,offY:Float,x:Float?=null,y:Float?=null, curIdx:Int?, curCase:Int,bitmapRectFs: ArrayList<RectF>){
         curIdx?.let {
-            Log.d("메모",curCase.toString())
+            Log.d("메모케이스",curCase.toString())
             if(curCase==1||curCase==2||curCase==3){
                 val new = bitmapRectFs[it].top + offY
                 val newHeight = bitmapRectFs[it].height() - offY
@@ -348,6 +426,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     bitmapRectFs[it].right = new
                 }
             }
+
         }
         invalidate()
         if(x!=null&&y!=null){
@@ -378,26 +457,31 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     private fun setActivate(x:Float?,y:Float?){
         if(x==null||y==null) return
-        if(activateTextBox!=null&&!textRectFList[activateTextBox!!].contains(x,y)){
-            activatedIdx=null
-        }
-        if(activatedIdx!=null&&!bitmapRectFs[activatedIdx!!].contains(x,y)){
-            activatedIdx=null
-        }
+        val list= generateFilteredList()
+        list.forEach {
+            if(it.type==MemoType.TextBox){
+                val (text,rectf,paint) = it.data as Triple<String,RectF,Paint>
+                if(rectf.contains(x,y)){
+                    activateTextBox = it.zidx
+                    activatedIdx = null
 
-        textRectFList.forEachIndexed { idx, rect ->
-            if(rect.contains(x,y)){
-                activateTextBox = idx
-                activatedIdx=null
-                return
-            }
-        }
+                    textPaintList[it.zidx].apply {
+                        if(typeface.style == Typeface.BOLD){
+                            textboxMenu.textboxMenuBold.setTextColor(context.getColor(R.color.orange))
+                        }else{
+                            textboxMenu.textboxMenuBold.setTextColor(context.getColor(R.color.black))
+                        }
+                    }
+                    return
+                }
+            }else if(it.type==MemoType.Bitmap){
+                val (bitmap,rectf) = it.data as Pair<Bitmap,RectF>
+                if(rectf.contains(x,y)){
+                    activatedIdx = it.zidx
+                    activateTextBox = null
+                    return
+                }
 
-        bitmapRectFs.forEachIndexed { idx, rect ->
-            if(rect.contains(x, y)){
-                activatedIdx=idx
-                activateTextBox = null
-                return
             }
         }
         activatedIdx = null
@@ -436,42 +520,63 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     }
 
-    override fun dispatchDraw(canvas: Canvas) {
+    fun generateFilteredList():ArrayList<CheckItem>{
         val list = ArrayList<CheckItem>()
-        Log.d("메모 히스토리",drawHistory.toString())
-        Log.d("메모 cur",curDrawHistory.toString())
         drawHistory.filterIndexed { index, historyItem -> index<=curDrawHistory }.forEach {
             Log.d("메모 타입",it.data.hashCode().toString()+"/"+it.data.toString())
             when(it.action){
-                ActionType.EraseTextBox -> list.remove(CheckItem(MemoType.TextBox,it.data))
-                ActionType.EraseDraw -> list.remove(CheckItem(MemoType.Draw,it.data))
-                ActionType.EraseBitmap -> list.remove(CheckItem(MemoType.Bitmap,it.data))
-                ActionType.EraseText -> list.remove(CheckItem(MemoType.Text,it.data))
-                ActionType.AddTextBox -> list+=CheckItem(MemoType.TextBox,it.data)
-                ActionType.AddDraw -> list+=CheckItem(MemoType.Draw,it.data)
-                ActionType.AddBitmap -> list+=CheckItem(MemoType.Bitmap,it.data)
-                ActionType.AddText -> list+=CheckItem(MemoType.Text,it.data)
-                ActionType.ModifyTextBox -> null//TODO
+                ActionType.EraseTextBox -> list.remove(CheckItem(MemoType.TextBox,it.data,it.zidx))
+                ActionType.EraseDraw -> list.remove(CheckItem(MemoType.Draw,it.data,it.zidx))
+                ActionType.EraseBitmap -> list.remove(CheckItem(MemoType.Bitmap,it.data,it.zidx))
+                ActionType.EraseText -> list.remove(CheckItem(MemoType.Text,it.data,it.zidx))
+                ActionType.AddTextBox -> list+=CheckItem(MemoType.TextBox,textboxHistory[it.zidx]!![0],it.zidx)
+                ActionType.AddDraw -> list+=CheckItem(MemoType.Draw,it.data,it.zidx)
+                ActionType.AddBitmap -> list+=CheckItem(MemoType.Bitmap,Pair(bitmaps[it.zidx],bitmapHistory[it.zidx]!![0]),it.zidx)
+                ActionType.AddText -> list+=CheckItem(MemoType.Text,it.data,it.zidx)
+                ActionType.ModifyTextBox -> {
+                    val hisIdx = it.data as Int
+                    val listItem = list.filter{item -> item.zidx==it.zidx&&item.type==MemoType.TextBox }[0]
+                    val listIdx = list.indexOf(listItem)
+                    list[listIdx] = CheckItem(MemoType.TextBox, textboxHistory[it.zidx]!![hisIdx],it.zidx)
+                }
+                ActionType.ModifyBitamp -> {
+                    val hisIdx = it.data as Int
+                    val listItem = list.filter{item ->item.zidx == it.zidx&&item.type == MemoType.Bitmap}[0]
+                    val listIdx = list.indexOf(listItem)
+                    list[listIdx] = CheckItem(MemoType.Bitmap, Pair(bitmaps[it.zidx],bitmapHistory[it.zidx]!![hisIdx]),it.zidx)
+                }
             }
         }
+        return list
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        val list =generateFilteredList()
         Log.d("메모 리스트 개수",list.size.toString())
         list.forEach {
-            val (type,data) = Pair(it.type,it.data)
-            when(type){
-                MemoType.TextBox -> {
-                    val (text,rectf,paint) = data as Triple<String,RectF,Paint>
-                    drawTextBitmap(canvas,text, rectf, paint)
-                }
-                MemoType.Draw -> {
-                    val (path,paint) = data as Pair<Path,Paint>
-                    canvas.drawPath(path,paint)
-                }
-                MemoType.Bitmap -> {
-                    val (bitmap,rectf) = data as Pair<Bitmap,RectF>
-                    canvas.drawBitmap(bitmap,null,rectf,bitmapPaint)
-                }
-                MemoType.Text -> null
-                MemoType.Default -> null
+            if(it.type==MemoType.Bitmap&&it.zidx == activatedIdx?:-2){
+                canvas.drawBitmap(bitmaps[it.zidx],null,bitmapRectFs[it.zidx],bitmapPaint)
+            }else if(it.type==MemoType.TextBox&&it.zidx==activateTextBox?:-2){
+                drawTextBitmap(canvas,textList[it.zidx],textRectFList[it.zidx],textPaintList[it.zidx])
+            }else{
+                val (type,data) = Pair(it.type,it.data)
+                when(type){
+                    MemoType.TextBox -> {
+                        val (text,rectf,paint) = data as Triple<String,RectF,Paint>
+                        drawTextBitmap(canvas,text, rectf, paint)
+                    }
+                    MemoType.Draw -> {
+                        val (path,paint) = data as Pair<Path,Paint>
+                        canvas.drawPath(path,paint)
+                    }
+                    MemoType.Bitmap -> {
+                        val (bitmap,rectf) = data as Pair<Bitmap,RectF>
+                        canvas.drawBitmap(bitmap,null,rectf,bitmapPaint)
+                    }
+                    MemoType.Text -> null
+                    MemoType.Default -> null
+            }
+
             }
         }
         Log.d("메모",list.toString())
@@ -482,8 +587,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         }
 
         activateTextBox?.let {
-            val (text,rectf,paint) = Triple(textList[it],textRectFList[it],textPaintList[it])
-            drawTextBitmap(canvas,text, rectf, paint)
+            drawTextBitmap(canvas,textList[it],textRectFList[it],textPaintList[it])
             canvas.drawRect(textRectFList[it],borderPaint)
         }
 
@@ -510,6 +614,11 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
                         curX = it.x
                         curY = it.y
+
+                        //포커스가 풀리는 시점엔 그림이 그려지지 않도록 하기 위한 변수
+                        val prevActiveText = activateTextBox
+                        val prevActiveBitamp = activatedIdx
+
                         setActivate(curX,curY)
 
                         if(activateTextBox!=null){
@@ -534,7 +643,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
                         invalidate()
 
-                        if(activatedIdx==null&&activateTextBox==null){
+                        if(activatedIdx==null&&activateTextBox==null&&prevActiveText==null&&prevActiveBitamp==null){
                             if(isPencil){
                                 addDraw(curX,curY)
                             }else{
@@ -569,9 +678,9 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                         return true
                     }
                     MotionEvent.ACTION_UP ->{
-                        if(activatedIdx!=null){
+                        activatedIdx?.let { it1 ->
                             bitmapMenu.root.visibility = View.VISIBLE
-                            val x = (bitmapRectFs[activatedIdx!!].left+bitmapRectFs[activatedIdx!!].right)/2f - bitmapMenuWidth/2f
+                            val x = (bitmapRectFs[it1].left+bitmapRectFs[it1].right)/2f - bitmapMenuWidth/2f
                             bitmapMenu.root.x= if(x+bitmapMenuWidth>width){
                                 width - bitmapMenuWidth
                             }else if(x<0){
@@ -579,12 +688,16 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                             }else{
                                 x
                             }
-                            val y= bitmapRectFs[activatedIdx!!].top - dpToPx(context,50f)
+                            val y= bitmapRectFs[it1].top - dpToPx(context,50f)
                             bitmapMenu.root.y=if(y<0) 0f else y
+
+                            addHistory(HistoryItem(ActionType.ModifyBitamp,it1,bitmapHistory[it1]?.size))
+                            bitmapHistory[it1]!!.add(RectF(bitmapRectFs[it1]))
                         }
-                        if(activateTextBox!=null){
+
+                        activateTextBox?.let { it2 ->
                             textboxMenu.root.visibility = View.VISIBLE
-                            val x =(textRectFList[activateTextBox!!].left+textRectFList[activateTextBox!!].right)/2f - textMenuWidth/2f
+                            val x =(textRectFList[it2].left+textRectFList[it2].right)/2f - textMenuWidth/2f
                             textboxMenu.root.x= if(x+textMenuWidth>width){
                                 width -textMenuWidth
                             }else if(x<0){
@@ -592,8 +705,11 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                             }else{
                                 x
                             }
-                            val y = textRectFList[activateTextBox!!].top - dpToPx(context,50f)
+                            val y = textRectFList[it2].top - dpToPx(context,50f)
                             textboxMenu.root.y = if(y<0) 0f else y
+
+                            addHistory(HistoryItem(ActionType.ModifyTextBox,it2,textboxHistory[it2]?.size))
+                            textboxHistory[it2]!!.add(Triple(String(textList[it2].toCharArray()),RectF(textRectFList[it2]),Paint(textPaintList[it2])))
                         }
                         eraserActive=false
                         curIdx = null
@@ -635,16 +751,17 @@ enum class MemoType{
     Default
 }
 
-enum class ActionType{
-    EraseTextBox,
-    EraseDraw,
-    EraseBitmap,
-    EraseText,
-    AddTextBox,
-    AddDraw,
-    AddBitmap,
-    AddText,
-    ModifyTextBox
+enum class ActionType(val type:Int){
+    EraseTextBox(0),
+    EraseDraw(0),
+    EraseBitmap(0),
+    EraseText(0),
+    AddTextBox(1),
+    AddDraw(1),
+    AddBitmap(1),
+    AddText(1),
+    ModifyBitamp(2),
+    ModifyTextBox(2)
 
 }
 
@@ -656,7 +773,8 @@ data class HistoryItem(
 
 data class CheckItem(
     val type:MemoType,
-    val data:Any?
+    val data:Any?,
+    val zidx: Int
 ){
 
 }
