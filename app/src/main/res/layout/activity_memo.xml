@@ -248,28 +248,6 @@
                         android:src="@drawable/ic_textcolor2" />
                 </FrameLayout>
 
-                <ImageView
-                    android:id="@+id/memo_iv_write_goback"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_goback"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/memo_iv_write_goafter"
-                    app:layout_constraintStart_toEndOf="@+id/memo_fl_textcolor_container"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/memo_iv_write_goafter"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/ic_goafter"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/memo_iv_write_goback"
-                    app:layout_constraintTop_toTopOf="parent" />
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>

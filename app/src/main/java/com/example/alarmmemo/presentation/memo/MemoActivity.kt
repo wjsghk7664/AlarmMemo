@@ -1,5 +1,6 @@
 package com.example.alarmmemo.presentation.memo
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -26,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.alarmmemo.R
 import com.example.alarmmemo.databinding.ActivityMemoBinding
 import com.example.alarmmemo.databinding.DialogColorPickerBinding
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
@@ -49,6 +51,8 @@ class MemoActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        startActivity(Intent(this, OssLicensesMenuActivity::class.java))
+
         initView()
     }
 
