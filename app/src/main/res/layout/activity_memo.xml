@@ -81,14 +81,21 @@
         app:layout_constraintTop_toBottomOf="@id/memo_ll_alarm_container" />
 
 
-    <com.example.alarmmemo.presentation.memo.MemoView
-        android:id="@+id/memo_mv"
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/meme_v_divider3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2"/>
+        app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2">
+        <com.example.alarmmemo.presentation.memo.MemoView
+            android:id="@+id/memo_mv"
+            android:layout_width="match_parent"
+            android:minHeight="1000dp"
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
+
 
     <View
         android:id="@+id/meme_v_divider3"

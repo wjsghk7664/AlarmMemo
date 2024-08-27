@@ -1,54 +1,45 @@
 package com.example.alarmmemo.presentation.memo
 
-import android.content.Intent
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.Rect
-import android.graphics.RectF
 import android.os.Bundle
 import android.text.TextUtils
-import android.text.method.KeyListener
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ListPopupWindow
-import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.alarmmemo.R
 import com.example.alarmmemo.databinding.ActivityMemoBinding
-import com.example.alarmmemo.databinding.DialogColorPickerBinding
-import com.example.alarmmemo.util.showColorpickerDialog
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import com.skydoves.colorpickerview.ColorEnvelope
-import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MemoActivity : AppCompatActivity() {
 
-    private val binding by lazy {
+    val binding by lazy {
         ActivityMemoBinding.inflate(layoutInflater)
     }
+
+    @Inject lateinit var colorpickerDialog: showColorpickerDialog
 
 
     private val fontList = List(61){it+4}
     private val pencilList = List(10){it+1}
+
+    private var isPickerLaunched =false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +62,7 @@ class MemoActivity : AppCompatActivity() {
             val location = IntArray(2)
             binding.memoMv.getLocationOnScreen(location)
             val rect = Rect(location[0],location[1],location[0]+binding.memoMv.width,location[1]+binding.memoMv.height)
-            if(!rect.contains(x.toInt(),y.toInt())){
+            if(!rect.contains(x.toInt(),y.toInt())&&!binding.memoMv.modifyTextActivate){
                 binding.memoMv.removeActivate()
             }
         }
@@ -82,11 +73,11 @@ class MemoActivity : AppCompatActivity() {
 
 
     fun initView() = with(binding){
-
         root.setOnTouchListener{ view, motionEvent ->
             if(motionEvent.action == MotionEvent.ACTION_DOWN){
                 val curView = currentFocus
-                if(currentFocus is EditText){
+                Log.d("메모 포커스 체크",curView.toString())
+                if(currentFocus is EditText&&curView!=memoMv.textMain){
                     curView?.clearFocus()
                     val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(curView?.windowToken,0)
@@ -98,14 +89,21 @@ class MemoActivity : AppCompatActivity() {
             false
         }
 
+
+
         val photoPicker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()){uri ->
             uri?.let {
                 memoMv.addBitmap(uri)
             }
+            isPickerLaunched = false
         }
 
         memoIvAddBitmap.setOnClickListener {
-            photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            if(!isPickerLaunched){
+                isPickerLaunched=true
+                photoPicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            }
+
         }
 
 
@@ -116,6 +114,8 @@ class MemoActivity : AppCompatActivity() {
                 memoEtTitle.ellipsize = TextUtils.TruncateAt.END
                 memoEtTitle.keyListener=null
                 memoMv.outerFocusTitle = false
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken,0)
             }else{
                 memoEtTitle.ellipsize = null
                 if(memoEtTitle.keyListener==null){
@@ -129,13 +129,16 @@ class MemoActivity : AppCompatActivity() {
 
         memoEtAddTextBox.onFocusChangeListener = View.OnFocusChangeListener{ v, hasFocus ->
             if(!hasFocus){
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken,0)
                 memoMv.outerFocusTextBox = false
                 memoEtAddTextBox.keyListener = null
-                memoMv.setTextBox(memoEtAddTextBox.text.toString())
                 Log.d("메모 텍스트 내용",memoEtAddTextBox.text.toString())
+                memoMv.setTextBox(memoEtAddTextBox.text.toString())
                 memoEtAddTextBox.setText("")
                 memoEtAddTextBox.visibility = View.GONE
             }else{
+                Log.d("메모 텍스트 체크","실패")
                 if(memoEtAddTextBox.keyListener==null){
                     memoEtAddTextBox.keyListener=inputType
                 }
@@ -148,7 +151,7 @@ class MemoActivity : AppCompatActivity() {
                 setDropDownViewResource(R.layout.spinner_dropdown_item)
             }
             adapter = fontAdapter
-            setSelection(8)
+            setSelection(4)
             onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -156,7 +159,7 @@ class MemoActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    memoMv.textSize = fontList[position]
+                    memoMv.setTextSize(dpToPx(this@MemoActivity,fontList[position].toFloat()))
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -235,16 +238,16 @@ class MemoActivity : AppCompatActivity() {
                     isSelected = !isSelected
                     if(isSelected){
                         imageTintList = getColorStateList(R.color.orange)
-                        memo.bold = true
+                        memo.setBold(true)
                     }else{
                         imageTintList = getColorStateList(R.color.black)
-                        memo.bold = false
+                        memo.setBold(false)
                     }
                 }
             }
 
             memoFlTextcolorContainer.setOnClickListener {
-                showColorpickerDialog(true,this@MemoActivity,binding)
+                colorpickerDialog(true,this@MemoActivity,binding)
             }
 
             memoIvPencil.apply {
@@ -257,7 +260,7 @@ class MemoActivity : AppCompatActivity() {
                         memoIvEraser.background = null
                         memo.isPencil = true
                     }else{
-                        showColorpickerDialog(false,this@MemoActivity,binding)
+                        colorpickerDialog(false,this@MemoActivity,binding)
                     }
                 }
             }
@@ -293,11 +296,11 @@ class MemoActivity : AppCompatActivity() {
             setOnClickListener{
                 isSelected = !isSelected
                 if(isSelected){
-                    memoMv.drawActivate=true
+                    memoMv.setTextDrawMode(true)
                     memoClContainerDraw.visibility = View.VISIBLE
                     memoClContainerWrite.visibility = View.GONE
                 }else{
-                    memoMv.drawActivate=false
+                    memoMv.setTextDrawMode(false)
                     memoClContainerDraw.visibility = View.GONE
                     memoClContainerWrite.visibility = View.VISIBLE
                 }
