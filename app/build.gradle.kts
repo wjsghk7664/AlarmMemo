@@ -8,6 +8,7 @@ plugins {
     id("com.google.gms.google-services")
     id("kotlin-parcelize")
 
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 android {
