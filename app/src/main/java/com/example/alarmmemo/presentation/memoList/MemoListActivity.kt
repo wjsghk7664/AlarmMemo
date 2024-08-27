@@ -26,36 +26,69 @@ class MemoListActivity : AppCompatActivity() {
 
         showFragment(ListFragment())
 
-        binding.MemoListTvList.setOnClickListener {
-            binding.MemoListLlDropdownMenu.visibility = View.GONE
-            showFragment(ListFragment())
+        with(binding) {
+            MemoListTvList.setOnClickListener {
+                with(binding) {
+                    "목록".also { MemoListTvTitle.text = it }
+                    MemoListLlNewDropdownMenu.visibility = View.VISIBLE
+                    MemoListLlDropdownMenu.visibility = View.VISIBLE
+                    backButton.visibility = View.GONE
+                }
+            }
+
+            MemoListTvSetting.setOnClickListener {
+                with(binding) {
+                    "설정".also { MemoListTvTitle.text = it }
+                    MemoListLlDropdownMenu.visibility = View.GONE
+                    backButton.visibility = View.VISIBLE
+                }
+                showFragment(SettingFragment())
+            }
+
+            MemoListTvList2.setOnClickListener {
+                with(binding) {
+                    MemoListLlNewDropdownMenu.visibility = View.GONE
+                    MemoListLlDropdownMenu.visibility = View.GONE
+                }
+                listFragment(2)
+            }
+
+            MemoListTvList3.setOnClickListener {
+                with(binding) {
+                    MemoListLlNewDropdownMenu.visibility = View.GONE
+                    MemoListLlDropdownMenu.visibility = View.GONE
+                }
+                listFragment(3)
+            }
+
+            backButton.setOnClickListener {
+                "목록".also { MemoListTvTitle.text = it }
+                backButton.visibility = View.GONE
+                showFragment(ListFragment())
+            }
         }
 
-        binding.MemoListTvSetting.setOnClickListener {
-            binding.MemoListLlDropdownMenu.visibility = View.GONE
-            showFragment(SettingFragment())
-        }
-
+        var check = false
         binding.MemoListIvSettingButton.setOnClickListener {
-            toggleDropDown(it)
+            if (!check) {
+                binding.MemoListLlDropdownMenu.visibility = View.VISIBLE
+                check = true
+            } else {
+                binding.MemoListLlDropdownMenu.visibility = View.GONE
+                check = false
+            }
         }
     }
 
-    private fun toggleDropDown(view: View) {
-        if (binding.MemoListLlDropdownMenu.visibility == View.GONE) {
-            binding.MemoListLlDropdownMenu.visibility = View.VISIBLE
-        } else {
-            binding.MemoListLlDropdownMenu.visibility = View.GONE
+    private fun listFragment(argument : Int) {
+        val fragment = ListFragment().apply {
+            arguments = Bundle().apply {
+                putInt("spanCount", argument)
+            }
         }
-    }
 
-//    private fun toggleNewDropDownMenu() {
-//        if (binding.MemoListLlNewDropdownMenu.visibility == View.GONE) {
-//            binding.MemoListLlNewDropdownMenu.visibility = View.VISIBLE
-//        } else {
-//            binding.MemoListLlNewDropdownMenu.visibility = View.GONE
-//        }
-//    }
+        showFragment(fragment)
+    }
 
     private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

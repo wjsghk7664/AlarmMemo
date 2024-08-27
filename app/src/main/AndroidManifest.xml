@@ -16,7 +16,7 @@
             android:name=".presentation.memo.MemoActivity"
             android:exported="true" />
         <activity
-            android:name=".presentation.memoList.MeMoListActivity"
+            android:name=".presentation.memoList.MemoListActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.MainActivity"

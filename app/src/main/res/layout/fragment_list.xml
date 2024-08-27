@@ -7,20 +7,12 @@
     tools:context=".presentation.memoList.ListFragment">
 
     <Spinner
-        android:id="@+id/MemoList_sp_list_spinner"
+        android:id="@+id/MemoList_sp_sorted_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Spinner
-        android:id="@+id/MemoList_sp_shuffled_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/MemoList_sp_list_spinner"
-        app:layout_constraintStart_toEndOf="@id/MemoList_sp_list_spinner"
-        app:layout_constraintTop_toTopOf="@id/MemoList_sp_list_spinner" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MemoList_rv_memoList"
@@ -29,7 +21,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/MemoList_sp_list_spinner" />
+        app:layout_constraintTop_toBottomOf="@id/MemoList_sp_sorted_spinner" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button"
