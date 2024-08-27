@@ -32,14 +32,16 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = MenuListAdapter { listItem ->
+        adapter = MenuListAdapter {
             val intent = Intent(requireContext(), MemoActivity::class.java)
             startActivity(intent)
         }
 
         val spanCount = arguments?.getInt("spanCount") ?: 2
-        binding.MemoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
-        binding.MemoListRvMemoList.adapter = adapter
+        with(binding) {
+            MemoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+            MemoListRvMemoList.adapter = adapter
+        }
 
         val sampleData = listOf(
             ListItem("메모 1", "2024-08-27", R.mipmap.ic_launcher),
