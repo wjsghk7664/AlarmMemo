@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.alarmmemo.R
+import android.graphics.Color
 import com.example.alarmmemo.databinding.FragmentListBinding
 import com.example.alarmmemo.presentation.memo.MemoActivity
 
@@ -56,27 +57,41 @@ class ListFragment : Fragment() {
         }
 
         binding.sortLatest.setOnClickListener {
-            sampleData = sampleData.sortedBy { it.number }
-            adapter.submitList(sampleData)
-            "최신 순".also { binding.tvSpinner.text = it }
+//            adapter.submitList(sampleData)
+            "시간순".also { binding.tvSpinner.text = it }
             showDropDownMenu()
         }
 
         binding.sortOldest.setOnClickListener {
-            sampleData = sampleData.sortedByDescending { it.number }
-            adapter.submitList(sampleData)
-            "오래된 순".also { binding.tvSpinner.text = it }
+//            adapter.submitList(sampleData)
+            "제목순".also { binding.tvSpinner.text = it }
             showDropDownMenu()
+        }
+
+        binding.dropDownButton.setOnClickListener {
+            if (check) {
+                sampleData = sampleData.sortedBy { it.number }
+                adapter.submitList(sampleData)
+                binding.dropDownButton.setImageResource(R.drawable.ic_pad)
+                check = false
+            } else {
+                sampleData = sampleData.sortedByDescending { it.number }
+                adapter.submitList(sampleData)
+                binding.dropDownButton.setImageResource(R.drawable.spinner_bg)
+                check = true
+            }
         }
     }
 
     private fun showDropDownMenu() {
-        if (!check) {
-            binding.popupMenuLayout.visibility = View.VISIBLE
-            check = true
-        } else {
+        if (check) {
             binding.popupMenuLayout.visibility = View.GONE
+            binding.tvSpinner.setBackgroundColor(Color.TRANSPARENT)
             check = false
+        } else {
+            binding.popupMenuLayout.visibility = View.VISIBLE
+            binding.tvSpinner.setBackgroundColor(Color.WHITE)
+            check = true
         }
     }
 

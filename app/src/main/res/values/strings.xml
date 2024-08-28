@@ -11,7 +11,7 @@
     <string name="memoList_tv_sample_date">메모 날짜 시간</string>
 
     <!--fragment.list.xml-->
-    <string name="memoList_drop_down_sample_text">최신순</string>
-    <string name="memoList_drop_down_sample_text_2">오래된순</string>
+    <string name="memoList_drop_down_sample_text">시간순</string>
+    <string name="memoList_drop_down_sample_text_2">제목순</string>
 
 </resources>
