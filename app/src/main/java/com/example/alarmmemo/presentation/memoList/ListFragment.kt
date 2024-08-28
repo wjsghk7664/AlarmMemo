@@ -69,16 +69,16 @@ class ListFragment : Fragment() {
         }
 
         binding.dropDownButton.setOnClickListener {
-            if (check) {
-                sampleData = sampleData.sortedBy { it.number }
-                adapter.submitList(sampleData)
-                binding.dropDownButton.setImageResource(R.drawable.ic_pad)
-                check = false
-            } else {
+            if (!check) {
                 sampleData = sampleData.sortedByDescending { it.number }
                 adapter.submitList(sampleData)
                 binding.dropDownButton.setImageResource(R.drawable.spinner_bg)
                 check = true
+            } else {
+                sampleData = sampleData.sortedBy { it.number }
+                adapter.submitList(sampleData)
+                binding.dropDownButton.setImageResource(R.drawable.ic_pad)
+                check = false
             }
         }
     }
