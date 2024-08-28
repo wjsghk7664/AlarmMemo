@@ -6,11 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".presentation.memoList.ListFragment">
 
-    <Spinner
-        android:id="@+id/MemoList_sp_sorted_spinner"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/tvSpinner"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:background="@color/white"
+        android:padding="4dp"
+        android:text="@string/memoList_drop_down_sample_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,7 +24,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/MemoList_sp_sorted_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSpinner" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button"
@@ -31,5 +34,38 @@
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/popupMenuLayout"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSpinner">
+
+        <TextView
+            android:id="@+id/sortLatest"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:text="@string/memoList_drop_down_sample_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/sortOldest"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:text="@string/memoList_drop_down_sample_text_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sortLatest" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

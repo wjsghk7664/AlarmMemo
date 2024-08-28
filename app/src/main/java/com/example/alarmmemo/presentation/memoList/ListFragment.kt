@@ -5,9 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.alarmmemo.R
@@ -18,7 +15,10 @@ class ListFragment : Fragment() {
 
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
-    private lateinit var adapter: MenuListAdapter
+    private lateinit var adapter: MemoListAdapter
+    private var sampleData = listOf<ListItem>()
+    private var number = 0
+    private var check = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,10 +32,12 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = MenuListAdapter {
-            val intent = Intent(requireContext(), MemoActivity::class.java)
-            startActivity(intent)
-        }
+        adapter = MemoListAdapter(
+            onItemClicked = { _ ->
+                val intent = Intent(requireContext(), MemoActivity::class.java)
+                startActivity(intent)
+            }
+        )
 
         val spanCount = arguments?.getInt("spanCount") ?: 2
         with(binding) {
@@ -43,38 +45,50 @@ class ListFragment : Fragment() {
             MemoListRvMemoList.adapter = adapter
         }
 
-        val sampleData = listOf(
-            ListItem("메모 1", "2024-08-27", R.mipmap.ic_launcher),
-            ListItem("메모 2", "2024-08-26", R.mipmap.ic_launcher),
-            ListItem("메모 3", "2024-08-27", R.mipmap.ic_launcher),
-            ListItem("메모 3", "2024-08-27", R.mipmap.ic_launcher)
-        )
-
         adapter.submitList(sampleData)
 
-        val sortedSpinner: Spinner = binding.MemoListSpSortedSpinner
-        sortedSpinner.adapter = ArrayAdapter.createFromResource(
-            requireContext(), R.array.sorted_itemList, android.R.layout.simple_spinner_item
-        )
-
-        sortedSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                when (position) {
-                    0 -> sampleData.sortedBy { it.title }
-                    1 -> sampleData.sortedByDescending { it.title }
-                }
-
-                adapter.submitList(sampleData.toList())
-            }
+        binding.button.setOnClickListener {
+            addSampleItem()
         }
+
+        binding.tvSpinner.setOnClickListener {
+            showDropDownMenu()
+        }
+
+        binding.sortLatest.setOnClickListener {
+            sampleData = sampleData.sortedBy { it.number }
+            adapter.submitList(sampleData)
+            "최신 순".also { binding.tvSpinner.text = it }
+            showDropDownMenu()
+        }
+
+        binding.sortOldest.setOnClickListener {
+            sampleData = sampleData.sortedByDescending { it.number }
+            adapter.submitList(sampleData)
+            "오래된 순".also { binding.tvSpinner.text = it }
+            showDropDownMenu()
+        }
+    }
+
+    private fun showDropDownMenu() {
+        if (!check) {
+            binding.popupMenuLayout.visibility = View.VISIBLE
+            check = true
+        } else {
+            binding.popupMenuLayout.visibility = View.GONE
+            check = false
+        }
+    }
+
+    private fun addSampleItem() {
+        val item = ListItem(
+            number = number++,
+            title = "새 메모",
+            date = "2024-08-28",
+            image = R.mipmap.ic_launcher
+        )
+        sampleData += item
+        adapter.submitList(sampleData.toMutableList())
     }
 
     override fun onDestroyView() {
