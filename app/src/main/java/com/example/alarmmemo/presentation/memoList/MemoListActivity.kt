@@ -1,6 +1,7 @@
 package com.example.alarmmemo.presentation.memoList
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -80,10 +81,11 @@ class MemoListActivity : AppCompatActivity() {
         }
     }
 
-    private fun listFragment(argument : Int) {
+    private fun listFragment(spanCount : Int) {
         val fragment = ListFragment().apply {
             arguments = Bundle().apply {
-                putInt("spanCount", argument)
+                putInt("spanCount", spanCount)
+                Log.d("ListActivity", spanCount.toString())
             }
         }
 

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.alarmmemo.R
 import android.graphics.Color
+import android.util.Log
 import com.example.alarmmemo.databinding.FragmentListBinding
 import com.example.alarmmemo.presentation.memo.MemoActivity
 
@@ -41,6 +42,7 @@ class ListFragment : Fragment() {
         )
 
         val spanCount = arguments?.getInt("spanCount") ?: 2
+        Log.d("ListFragment", spanCount.toString())
         with(binding) {
             MemoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
             MemoListRvMemoList.adapter = adapter
