@@ -6,81 +6,74 @@
     android:layout_height="match_parent"
     tools:context=".presentation.memoList.ListFragment">
 
+    <TextView
+        android:id="@+id/tvSpinner"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:background="@android:color/transparent"
+        android:padding="8dp"
+        android:text="@string/memoList_drop_down_sample_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/dropDown_button"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/spinner_bg"
+        app:layout_constraintStart_toEndOf="@id/tvSpinner"
+        app:layout_constraintTop_toTopOf="@id/tvSpinner" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/MemoList_rv_memoList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSpinner" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:id="@+id/popupMenuLayout"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSpinner">
 
         <TextView
-            android:id="@+id/tvSpinner"
-            android:layout_width="60dp"
+            android:id="@+id/sortLatest"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:background="@android:color/transparent"
-            android:padding="8dp"
+            android:background="@color/white"
+            android:padding="16dp"
             android:text="@string/memoList_drop_down_sample_text"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/dropDown_button"
-            android:layout_width="60dp"
+        <TextView
+            android:id="@+id/sortOldest"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/spinner_bg"
-            app:layout_constraintStart_toEndOf="@id/tvSpinner"
-            app:layout_constraintTop_toTopOf="@id/tvSpinner"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MemoList_rv_memoList"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:text="@string/memoList_drop_down_sample_text_2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvSpinner" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/popupMenuLayout"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvSpinner">
-
-            <TextView
-                android:id="@+id/sortLatest"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:padding="16dp"
-                android:text="@string/memoList_drop_down_sample_text"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/sortOldest"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:padding="16dp"
-                android:text="@string/memoList_drop_down_sample_text_2"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/sortLatest" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toBottomOf="@id/sortLatest" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
