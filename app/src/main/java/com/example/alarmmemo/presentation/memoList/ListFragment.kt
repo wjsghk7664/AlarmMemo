@@ -50,37 +50,39 @@ class ListFragment : Fragment() {
 
         adapter.submitList(sampleData)
 
-        binding.button.setOnClickListener {
-            addSampleItem()
-        }
+        with(binding) {
+            button.setOnClickListener {
+                addSampleItem()
+            }
 
-        binding.tvSpinner.setOnClickListener {
-            showDropDownMenu()
-        }
+            tvSpinner.setOnClickListener {
+                showDropDownMenu()
+            }
 
-        binding.sortLatest.setOnClickListener {
+            sortLatest.setOnClickListener {
 //            adapter.submitList(sampleData)
-            "시간순".also { binding.tvSpinner.text = it }
-            showDropDownMenu()
-        }
+                "시간순".also { binding.tvSpinner.text = it }
+                showDropDownMenu()
+            }
 
-        binding.sortOldest.setOnClickListener {
+            sortOldest.setOnClickListener {
 //            adapter.submitList(sampleData)
-            "제목순".also { binding.tvSpinner.text = it }
-            showDropDownMenu()
-        }
+                "제목순".also { binding.tvSpinner.text = it }
+                showDropDownMenu()
+            }
 
-        binding.dropDownButton.setOnClickListener {
-            if (!check) {
-                sampleData = sampleData.sortedByDescending { it.number }
-                adapter.submitList(sampleData)
-                binding.dropDownButton.setImageResource(R.drawable.spinner_bg)
-                check = true
-            } else {
-                sampleData = sampleData.sortedBy { it.number }
-                adapter.submitList(sampleData)
-                binding.dropDownButton.setImageResource(R.drawable.ic_pad)
-                check = false
+            dropDownButton.setOnClickListener {
+                if (!check) {
+                    sampleData = sampleData.sortedByDescending { it.number }
+                    adapter.submitList(sampleData)
+                    binding.dropDownButton.setImageResource(R.drawable.spinner_bg)
+                    check = true
+                } else {
+                    sampleData = sampleData.sortedBy { it.number }
+                    adapter.submitList(sampleData)
+                    binding.dropDownButton.setImageResource(R.drawable.ic_pad)
+                    check = false
+                }
             }
         }
     }
