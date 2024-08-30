@@ -1,4 +1,4 @@
-package com.example.alarmmemo.presentation.memo
+package com.team5.alarmmemo.presentation.memo
 
 import android.graphics.Rect
 import android.os.Bundle
@@ -17,8 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.alarmmemo.R
-import com.example.alarmmemo.databinding.ActivityMemoBinding
+import com.team5.alarmmemo.R
+import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest

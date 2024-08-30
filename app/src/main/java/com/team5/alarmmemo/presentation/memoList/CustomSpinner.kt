@@ -1,8 +1,7 @@
-package com.example.alarmmemo.presentation.memoList
+package com.team5.alarmmemo.presentation.memoList
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.ArrayAdapter
 import android.widget.ListPopupWindow
 import android.widget.Spinner
 import android.widget.SpinnerAdapter

@@ -1,20 +1,15 @@
-package com.example.alarmmemo.presentation.memo
+package com.team5.alarmmemo.presentation.memo
 
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.RectF
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.graphics.drawable.shapes.RoundRectShape
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import androidx.viewbinding.ViewBinding
-import com.example.alarmmemo.databinding.ActivityMemoBinding
-import com.example.alarmmemo.databinding.DialogColorPickerBinding
+import com.team5.alarmmemo.databinding.ActivityMemoBinding
+import com.team5.alarmmemo.databinding.DialogColorPickerBinding
 import com.skydoves.colorpickerview.ColorEnvelope
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 import javax.inject.Inject
