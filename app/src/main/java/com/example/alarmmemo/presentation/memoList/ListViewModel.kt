@@ -1,9 +1,9 @@
-package com.team5.alarmmemo.presentation.memoList
+package com.example.alarmmemo.presentation.memoList
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.team5.alarmmemo.R
+import com.example.alarmmemo.R
 
 class ListViewModel : ViewModel() {
     private val _sampleData = MutableLiveData<List<ListItem>>()

@@ -1,4 +1,4 @@
-package com.team5.alarmmemo.presentation.memo
+package com.example.alarmmemo.presentation.memo
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.DashPathEffect
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
@@ -25,9 +26,9 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import com.team5.alarmmemo.R
-import com.team5.alarmmemo.databinding.MemoBitmapMenuBinding
-import com.team5.alarmmemo.databinding.MemoTextboxMenuBinding
+import com.example.alarmmemo.R
+import com.example.alarmmemo.databinding.MemoBitmapMenuBinding
+import com.example.alarmmemo.databinding.MemoTextboxMenuBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

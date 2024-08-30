@@ -88,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2">
-        <com.team5.alarmmemo.presentation.memo.MemoView
+        <com.example.alarmmemo.presentation.memo.MemoView
             android:id="@+id/memo_mv"
             android:layout_width="match_parent"
             android:minHeight="1000dp"
@@ -168,7 +168,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.team5.alarmmemo.presentation.memoList.CustomSpinner
+                <com.example.alarmmemo.presentation.memoList.CustomSpinner
                     android:id="@+id/memo_sp_pensize"
                     style="@style/Widget.Custom.Spinner"
                     android:layout_width="wrap_content"
@@ -221,7 +221,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.team5.alarmmemo.presentation.memoList.CustomSpinner
+                <com.example.alarmmemo.presentation.memoList.CustomSpinner
                     android:id="@+id/memo_sp_textsize"
                     style="@style/Widget.Custom.Spinner"
                     android:layout_width="wrap_content"

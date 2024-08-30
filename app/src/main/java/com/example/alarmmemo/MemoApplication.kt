@@ -1,4 +1,4 @@
-package com.team5.alarmmemo
+package com.example.alarmmemo
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

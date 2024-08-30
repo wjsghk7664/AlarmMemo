@@ -1,4 +1,4 @@
-package com.team5.alarmmemo.presentation.memoList
+package com.example.alarmmemo.presentation.memoList
 
 data class ListItem(
     val number: Int,

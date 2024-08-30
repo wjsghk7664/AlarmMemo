@@ -1,11 +1,11 @@
-package com.team5.alarmmemo.presentation
+package com.example.alarmmemo.presentation
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.team5.alarmmemo.R
+import com.example.alarmmemo.R
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

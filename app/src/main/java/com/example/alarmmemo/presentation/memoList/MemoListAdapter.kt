@@ -1,11 +1,11 @@
-package com.team5.alarmmemo.presentation.memoList
+package com.example.alarmmemo.presentation.memoList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.team5.alarmmemo.databinding.ListSampleBinding
+import com.example.alarmmemo.databinding.ListSampleBinding
 
 class MemoListAdapter(
     private val onItemClicked: (ListItem) -> Unit,

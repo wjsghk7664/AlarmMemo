@@ -1,4 +1,4 @@
-package com.team5.alarmmemo.presentation.memoList
+package com.example.alarmmemo.presentation.memoList
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.team5.alarmmemo.R
+import com.example.alarmmemo.R
 import android.graphics.Color
 import android.util.Log
 import androidx.fragment.app.activityViewModels
-import com.team5.alarmmemo.databinding.FragmentListBinding
-import com.team5.alarmmemo.presentation.memo.MemoActivity
+import com.example.alarmmemo.databinding.FragmentListBinding
+import com.example.alarmmemo.presentation.memo.MemoActivity
 
 class ListFragment : Fragment() {
 
@@ -65,7 +65,6 @@ class ListFragment : Fragment() {
 
             sortLatest.setOnClickListener {
 //            adapter.submitList(sampleData)
-                Log.d("click", "1")
                 "시간순".also { binding.tvSpinner.text = it }
                 tvSpinner.callOnClick()
             }
