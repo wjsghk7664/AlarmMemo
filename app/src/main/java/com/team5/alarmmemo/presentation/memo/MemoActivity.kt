@@ -22,6 +22,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginBottom
 import androidx.lifecycle.lifecycleScope
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
@@ -40,6 +41,9 @@ class MemoActivity : AppCompatActivity() {
     }
 
     @Inject lateinit var colorpickerDialog: showColorpickerDialog
+
+
+    private var cursorY = 0f
 
 
     private val fontList = List(61){it+4}
@@ -115,26 +119,6 @@ class MemoActivity : AppCompatActivity() {
                 var dx = event.x- lastTouchX
                 var dy = event.y - lastTouchY
 
-                val location =IntArray(2)
-                binding.memoMv.getLocationOnScreen(location)
-                val height1 = binding.memoSvContainer.height
-                val height2 = binding.memoMv.height
-                val width = binding.memoMv.width
-                if(location[0]<-width*scaleRatio){
-                    dx = -width*scaleRatio - location[0]
-                }
-                if(location[0]>width*scaleRatio/2f){
-                    dx = width*scaleRatio/2f -location[0]
-                }
-
-                if(location[1]<-height1*scaleRatio/2f){
-                    dy = -height1*scaleRatio/2f - location[1]
-                }
-                if(location[1]>height2*scaleRatio/2f){
-                    dy = height2*scaleRatio/2f - location[1]
-                }
-                Log.d("메모 x위치", "${binding.memoMv.x}/${binding.memoMv.y}")
-                Log.d("메모 x 위치용 넓이","${location[0]}")
 
                 binding.memoMv.translationX+=dx
                 binding.memoMv.translationY+=dy
@@ -146,6 +130,7 @@ class MemoActivity : AppCompatActivity() {
 
         }
         else if(event.pointerCount>1){
+            binding.memoMv.requestLayout()
             binding.memoSvContainer.isScrollable = true
             if(!initFlag){
                 initFlag = true
@@ -154,25 +139,6 @@ class MemoActivity : AppCompatActivity() {
             }else if(event.action == MotionEvent.ACTION_MOVE){
                 var dx = (event.getX(0)+event.getX(1))/2- lastTouchX
                 var dy = (event.getY(0)+event.getY(1))/2 - lastTouchY
-
-                val location =IntArray(2)
-                binding.memoMv.getLocationOnScreen(location)
-                val height1 = binding.memoSvContainer.height
-                val height2 = binding.memoMv.height
-                val width = binding.memoMv.width
-                if(location[0]<-width*scaleRatio){
-                    dx = -width*scaleRatio - location[0]
-                }
-                if(location[0]>width*scaleRatio/2f){
-                    dx = width*scaleRatio/2f -location[0]
-                }
-
-                if(location[1]<-height1*scaleRatio/2f){
-                    dy = -height1*scaleRatio/2f - location[1]
-                }
-                if(location[1]>height2*scaleRatio/2f){
-                    dy = height2*scaleRatio/2f - location[1]
-                }
 
                 binding.memoMv.translationX+=dx
                 binding.memoMv.translationY+=dy
@@ -198,7 +164,6 @@ class MemoActivity : AppCompatActivity() {
                 binding.memoMv.removeActivate()
             }
         }
-
 
         return super.dispatchTouchEvent(ev)
     }
@@ -355,6 +320,11 @@ class MemoActivity : AppCompatActivity() {
 
 
         memoMv.let{ memo->
+
+            memoFbtnOriginlocation.setOnClickListener {
+                memoMv.translationX = 0f
+                memoMv.translationY = 0f
+            }
 
             memoIvGoback.apply{
                 imageTintList = getColorStateList(R.color.light_gray)
