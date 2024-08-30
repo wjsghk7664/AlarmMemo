@@ -7,9 +7,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.team5.alarmmemo.databinding.ListSampleBinding
 
-class MenuListAdapter(private val onItemClicked : (ListItem) -> Unit) : ListAdapter<ListItem, ListItemViewHolder>(object : DiffUtil.ItemCallback<ListItem>() {
+class MemoListAdapter(
+    private val onItemClicked: (ListItem) -> Unit,
+) : ListAdapter<ListItem, ListItemViewHolder>(object : DiffUtil.ItemCallback<ListItem>() {
     override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
-        return oldItem.title == newItem.title
+        return oldItem.number == newItem.number
     }
 
     override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
@@ -19,22 +21,26 @@ class MenuListAdapter(private val onItemClicked : (ListItem) -> Unit) : ListAdap
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ListSampleBinding.inflate(layoutInflater, parent, false)
-        return ListItemViewHolder(binding)
+        return ListItemViewHolder(binding, onItemClicked)
     }
 
     override fun onBindViewHolder(holder: ListItemViewHolder, position: Int) {
-        holder.bind(getItem(position), onItemClicked)
+        holder.bind(getItem(position))
     }
 }
 
-class ListItemViewHolder(private val binding: ListSampleBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: ListItem, onItemClicked: (ListItem) -> Unit) {
+class ListItemViewHolder(
+    private val binding: ListSampleBinding,
+    private val onItemClicked: (ListItem) -> Unit,
+) :
+    RecyclerView.ViewHolder(binding.root) {
+    fun bind(item: ListItem) {
         with(binding) {
             SampleTvMemoTitle.text = item.title
             SampleTvMemoDate.text = item.date
-            SampleTvMemoThumbnail.setImageResource(item.image)
+            SampleIvMemoThumbnail.setImageResource(item.image)
 
-            SampleTvMemoThumbnail.setOnClickListener {
+            SampleIvMemoThumbnail.setOnClickListener {
                 onItemClicked(item)
             }
         }

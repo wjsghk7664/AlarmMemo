@@ -10,7 +10,7 @@
         android:id="@+id/textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="세팅 프래그먼트입니다"
+        android:text="설정 프래그먼트입니다"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
