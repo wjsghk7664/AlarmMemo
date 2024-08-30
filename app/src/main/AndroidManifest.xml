@@ -16,16 +16,13 @@
         android:theme="@style/Theme.AlarmMemo"
         tools:targetApi="31" >
         <activity
-            android:name=".presentation.memoLogin.LoginActivity"
-            android:exported="false" />
-        <activity
             android:name=".presentation.memo.MemoActivity"
             android:exported="true" />
         <activity
             android:name=".presentation.memoList.MeMoListActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.LoginActivity"
+            android:name=".presentation.memoLogin.LoginActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

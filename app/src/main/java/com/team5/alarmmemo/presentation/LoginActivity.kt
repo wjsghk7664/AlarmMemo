@@ -5,12 +5,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-<<<<<<<< HEAD:app/src/main/java/com/team5/alarmmemo/presentation/MainActivity.kt
+
 import com.team5.alarmmemo.R
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-========
-import com.example.alarmmemo.R
->>>>>>>> 97eaf5ea09c6b7988f415427d664ae0a37d0c0ca:app/src/main/java/com/team5/alarmmemo/presentation/LoginActivity.kt
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

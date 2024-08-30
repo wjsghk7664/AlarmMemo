@@ -10,8 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.ListFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.alarmmemo.R
-import com.example.alarmmemo.databinding.FragmentLoginBinding
+import com.team5.alarmmemo.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,6 +51,7 @@ class LoginFragment : Fragment() {
                     is UiState.Init -> null
                     is UiState.Loading -> null
                     is UiState.Success -> null //액티비티에서 처리
+                    else -> {}
                 }
             }
         }
