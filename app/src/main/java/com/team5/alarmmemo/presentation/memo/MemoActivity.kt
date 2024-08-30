@@ -1,24 +1,30 @@
-package com.example.alarmmemo.presentation.memo
+package com.team5.alarmmemo.presentation.memo
 
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.alarmmemo.R
-import com.example.alarmmemo.databinding.ActivityMemoBinding
+import com.team5.alarmmemo.R
+import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -41,19 +47,145 @@ class MemoActivity : AppCompatActivity() {
 
     private var isPickerLaunched =false
 
+    private lateinit var scaleDetector: ScaleGestureDetector
+    var scaleRatio = 1f
+
+    private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener(){
+
+        override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+            with(binding.memoMv){
+                addDrawActive = false
+                eraserActive =false
+                isScaling = true
+            }
+
+            return true
+        }
+
+        override fun onScale(detector: ScaleGestureDetector): Boolean {
+            scaleRatio *=detector.scaleFactor
+            scaleRatio = scaleRatio.coerceIn(0.75f,5.0f)
+
+            Log.d("메모 스케일", scaleRatio.toString())
+
+            binding.memoMv.scaleX=scaleRatio
+            binding.memoMv.scaleY=scaleRatio
+
+
+            return true
+        }
+
+        override fun onScaleEnd(detector: ScaleGestureDetector) {
+            binding.memoMv.isScaling = false
+        }
+
+    }
+
+    private lateinit var systemBars: Insets
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+
+
+        scaleDetector = ScaleGestureDetector(this,ScaleListener())
         initView()
     }
 
+    private var lastTouchX = 0f
+    private var lastTouchY = 0f
+    private var initFlag = false
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+
+        scaleDetector.onTouchEvent(ev)
+        val event = ev
+        if(!binding.memoMv.drawActivate&&event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1){
+            if(!initFlag){
+                initFlag = true
+                lastTouchX = event.x
+                lastTouchY = event.y
+            }else{
+                var dx = event.x- lastTouchX
+                var dy = event.y - lastTouchY
+
+                val location =IntArray(2)
+                binding.memoMv.getLocationOnScreen(location)
+                val height1 = binding.memoSvContainer.height
+                val height2 = binding.memoMv.height
+                val width = binding.memoMv.width
+                if(location[0]<-width*scaleRatio){
+                    dx = -width*scaleRatio - location[0]
+                }
+                if(location[0]>width*scaleRatio/2f){
+                    dx = width*scaleRatio/2f -location[0]
+                }
+
+                if(location[1]<-height1*scaleRatio/2f){
+                    dy = -height1*scaleRatio/2f - location[1]
+                }
+                if(location[1]>height2*scaleRatio/2f){
+                    dy = height2*scaleRatio/2f - location[1]
+                }
+                Log.d("메모 x위치", "${binding.memoMv.x}/${binding.memoMv.y}")
+                Log.d("메모 x 위치용 넓이","${location[0]}")
+
+                binding.memoMv.translationX+=dx
+                binding.memoMv.translationY+=dy
+
+
+                lastTouchX = event.x
+                lastTouchY = event.y
+            }
+
+        }
+        else if(event.pointerCount>1){
+            binding.memoSvContainer.isScrollable = true
+            if(!initFlag){
+                initFlag = true
+                lastTouchX =(event.getX(0)+event.getX(1))/2
+                lastTouchY = (event.getY(0)+event.getY(1))/2
+            }else if(event.action == MotionEvent.ACTION_MOVE){
+                var dx = (event.getX(0)+event.getX(1))/2- lastTouchX
+                var dy = (event.getY(0)+event.getY(1))/2 - lastTouchY
+
+                val location =IntArray(2)
+                binding.memoMv.getLocationOnScreen(location)
+                val height1 = binding.memoSvContainer.height
+                val height2 = binding.memoMv.height
+                val width = binding.memoMv.width
+                if(location[0]<-width*scaleRatio){
+                    dx = -width*scaleRatio - location[0]
+                }
+                if(location[0]>width*scaleRatio/2f){
+                    dx = width*scaleRatio/2f -location[0]
+                }
+
+                if(location[1]<-height1*scaleRatio/2f){
+                    dy = -height1*scaleRatio/2f - location[1]
+                }
+                if(location[1]>height2*scaleRatio/2f){
+                    dy = height2*scaleRatio/2f - location[1]
+                }
+
+                binding.memoMv.translationX+=dx
+                binding.memoMv.translationY+=dy
+
+
+                lastTouchX = (event.getX(0)+event.getX(1))/2
+                lastTouchY = (event.getY(0)+event.getY(1))/2
+            }
+        }else{
+            initFlag =false
+            if(binding.memoIvWriteDrawSelector.isSelected) binding.memoSvContainer.isScrollable = false
+        }
+
 
         if(ev.action == MotionEvent.ACTION_DOWN){
             val x = ev.x
@@ -69,6 +201,18 @@ class MemoActivity : AppCompatActivity() {
 
 
         return super.dispatchTouchEvent(ev)
+    }
+
+    private fun adjustView(keypadHeight:Int){
+        val layoutParams = binding.memoLlToolContainer.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.bottomMargin = keypadHeight - systemBars.bottom
+        binding.memoLlToolContainer.layoutParams = layoutParams
+    }
+
+    private fun resetView(){
+        val layoutParams = binding.memoLlToolContainer.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.bottomMargin = 0
+        binding.memoLlToolContainer.layoutParams = layoutParams
     }
 
 
@@ -88,6 +232,22 @@ class MemoActivity : AppCompatActivity() {
             }
             false
         }
+
+        root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener{
+            override fun onGlobalLayout() {
+                val rect = Rect()
+                root.getWindowVisibleDisplayFrame(rect)
+                val height = root.height
+                val keypadHeight = height - rect.bottom
+
+                if(keypadHeight>height*0.15){
+                    adjustView(keypadHeight)
+                }else{
+                    resetView()
+                }
+            }
+
+        })
 
 
 
@@ -191,6 +351,8 @@ class MemoActivity : AppCompatActivity() {
 
             }
         }
+
+
 
         memoMv.let{ memo->
 
@@ -299,10 +461,12 @@ class MemoActivity : AppCompatActivity() {
                     memoMv.setTextDrawMode(true)
                     memoClContainerDraw.visibility = View.VISIBLE
                     memoClContainerWrite.visibility = View.GONE
+                    memoSvContainer.isScrollable = false
                 }else{
                     memoMv.setTextDrawMode(false)
                     memoClContainerDraw.visibility = View.GONE
                     memoClContainerWrite.visibility = View.VISIBLE
+                    memoSvContainer.isScrollable = true
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.example.alarmmemo.presentation.memoList
+package com.team5.alarmmemo.presentation.memoList
 
 import android.os.Bundle
 import android.view.View
@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.example.alarmmemo.R
-import com.example.alarmmemo.databinding.ActivityMemoListBinding
+import com.team5.alarmmemo.R
+import com.team5.alarmmemo.databinding.ActivityMemoListBinding
 
 class MeMoListActivity : AppCompatActivity() {
 
