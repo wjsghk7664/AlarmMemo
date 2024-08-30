@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -68,18 +69,47 @@ class MemoListActivity : AppCompatActivity() {
                 memoListBtnBackButton.visibility = View.GONE
                 showFragment(ListFragment())
             }
-        }
 
-        var check = false
-        binding.memoListIvSettingButton.setOnClickListener {
-            if (!check) {
-                binding.memoListLlDropdownMenu.visibility = View.VISIBLE
-                check = true
-            } else {
-                binding.memoListLlDropdownMenu.visibility = View.GONE
-                check = false
+            var check = false
+            memoListIvSettingButton.setOnClickListener {
+                if (!check) {
+                    binding.drawerLayout.openDrawer(GravityCompat.END)
+                    check = true
+                } else {
+                    binding.drawerLayout.closeDrawer(GravityCompat.END)
+                    check = false
+                }
+            }
+
+            navigationView.setNavigationItemSelectedListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.navigation_list -> {
+                        "목록".also { binding.memoListTvTitle.text = it }
+                        showFragment(ListFragment())
+                        binding.drawerLayout.closeDrawer(GravityCompat.END)
+                        true
+                    }
+                    R.id.navigation_setting -> {
+                        "설정".also { binding.memoListTvTitle.text = it }
+                        showFragment(SettingFragment())
+                        binding.drawerLayout.closeDrawer(GravityCompat.END)
+                        true
+                    }
+                    else -> false
+                }
             }
         }
+
+//        var check = false
+//        binding.memoListIvSettingButton.setOnClickListener {
+//            if (!check) {
+//                binding.memoListLlDropdownMenu.visibility = View.VISIBLE
+//                check = true
+//            } else {
+//                binding.memoListLlDropdownMenu.visibility = View.GONE
+//                check = false
+//            }
+//        }
     }
 
     private fun listFragment(spanCount : Int) {
