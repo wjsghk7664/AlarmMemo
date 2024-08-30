@@ -40,6 +40,28 @@
 
     <LinearLayout
         android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="68dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Current"
+            style="@style/body_400"
+            android:textColor="@color/light_gray"/>
+        <TextView
+            android:layout_width="0dp"
+            android:paddingStart="12dp"
+            android:layout_height="wrap_content"
+            android:text="Previous"
+            android:layout_weight="1"
+            style="@style/body_400"
+            android:textColor="@color/light_gray"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="300dp"
         android:layout_height="48dp"
         android:gravity="center_vertical"
         android:orientation="horizontal">

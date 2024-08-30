@@ -81,20 +81,32 @@
         app:layout_constraintTop_toBottomOf="@id/memo_ll_alarm_container" />
 
 
-    <ScrollView
+    <com.example.alarmmemo.presentation.memo.MemoScrollView
+        android:id="@+id/memo_sv_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/light_gray"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@+id/meme_v_divider3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2">
-        <com.example.alarmmemo.presentation.memo.MemoView
-            android:id="@+id/memo_mv"
-            android:layout_width="match_parent"
-            android:minHeight="1000dp"
-            android:layout_height="wrap_content" />
 
-    </ScrollView>
+        <LinearLayout
+            android:id="@+id/memo_ll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <com.example.alarmmemo.presentation.memo.MemoView
+                android:id="@+id/memo_mv"
+                android:layout_width="match_parent"
+                android:minHeight="1000dp"
+                android:layout_height="wrap_content"
+                android:background="@color/white"/>
+        </LinearLayout>
+
+
+    </com.example.alarmmemo.presentation.memo.MemoScrollView>
 
 
     <View
@@ -102,7 +114,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_gray"
-        app:layout_constraintBottom_toTopOf="@+id/memo_ll_tool_container"
+        android:layout_marginBottom="56dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -113,6 +126,7 @@
         android:orientation="horizontal"
         android:paddingHorizontal="12dp"
         android:paddingVertical="4dp"
+        android:background="@color/basic_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
