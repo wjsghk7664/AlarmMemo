@@ -8,7 +8,7 @@
         app:duration="500">
         <OnClick
             app:clickAction="transitionToEnd"
-            app:targetId="@+id/tvSpinner" />
+            app:targetId="@+id/memoList_tv_Spinner" />
     </Transition>
 
     <Transition
@@ -17,7 +17,7 @@
         app:duration="500">
         <OnClick
             app:clickAction="transitionToEnd"
-            app:targetId="@+id/tvSpinner"/>
+            app:targetId="@+id/memoList_tv_Spinner"/>
     </Transition>
 
     <ConstraintSet android:id="@+id/firstAnimation">

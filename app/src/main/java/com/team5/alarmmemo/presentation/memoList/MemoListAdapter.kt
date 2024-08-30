@@ -36,11 +36,11 @@ class ListItemViewHolder(
     RecyclerView.ViewHolder(binding.root) {
     fun bind(item: ListItem) {
         with(binding) {
-            SampleTvMemoTitle.text = item.title
-            SampleTvMemoDate.text = item.date
-            SampleIvMemoThumbnail.setImageResource(item.image)
+            sampleTvMemoTitle.text = item.title
+            sampleTvMemoDate.text = item.date
+            sampleIvMemoThumbnail.setImageResource(item.image)
 
-            SampleIvMemoThumbnail.setOnClickListener {
+            sampleIvMemoThumbnail.setOnClickListener {
                 onItemClicked(item)
             }
         }

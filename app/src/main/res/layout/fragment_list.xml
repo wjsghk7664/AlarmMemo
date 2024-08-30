@@ -18,7 +18,7 @@
         android:background="@drawable/spinner_corner_border_box">
 
         <TextView
-            android:id="@+id/tvSpinner"
+            android:id="@+id/memoList_tv_Spinner"
             android:layout_width="60dp"
             android:layout_height="36dp"
             android:background="@android:color/transparent"
@@ -29,16 +29,16 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/dropDown_button"
+            android:id="@+id/memoList_iv_dropDown_button"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:src="@drawable/ic_arrow_drop_down"
-            app:layout_constraintStart_toEndOf="@id/tvSpinner"
-            app:layout_constraintTop_toTopOf="@id/tvSpinner"
+            app:layout_constraintStart_toEndOf="@id/memoList_tv_Spinner"
+            app:layout_constraintTop_toTopOf="@id/memoList_tv_Spinner"
             tools:ignore="ContentDescription" />
 
         <TextView
-            android:id="@+id/sortLatest"
+            android:id="@+id/memoList_tv_sort_time"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/white"
@@ -47,10 +47,10 @@
             android:text="@string/memoList_drop_down_sample_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvSpinner" />
+            app:layout_constraintTop_toBottomOf="@+id/memoList_tv_Spinner" />
 
         <TextView
-            android:id="@+id/sortOldest"
+            android:id="@+id/memoList_tv_sort_title"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/white"
@@ -59,12 +59,12 @@
             android:text="@string/memoList_drop_down_sample_text_2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sortLatest" />
+            app:layout_constraintTop_toBottomOf="@id/memoList_tv_sort_time" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/MemoList_rv_memoList"
+        android:id="@+id/memoList_rv_memoList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -74,7 +74,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button"
+        android:id="@+id/memoList_btn_add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"

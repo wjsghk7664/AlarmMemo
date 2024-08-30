@@ -46,8 +46,8 @@ class ListFragment : Fragment() {
         val spanCount = arguments?.getInt("spanCount") ?: 2
         Log.d("ListFragment", spanCount.toString())
         with(binding) {
-            MemoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
-            MemoListRvMemoList.adapter = adapter
+            memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+            memoListRvMemoList.adapter = adapter
         }
 
         listViewModel.sampleData.observe(viewLifecycleOwner){ sampleData ->
@@ -55,37 +55,37 @@ class ListFragment : Fragment() {
         }
 
         with(binding) {
-            button.setOnClickListener {
+            memoListBtnAddButton.setOnClickListener {
                 listViewModel.addSampleItem()
             }
 
-            tvSpinner.setOnClickListener {
+            memoListTvSpinner.setOnClickListener {
 //                showDropDownMenu()
             }
 
-            sortLatest.setOnClickListener {
+            memoListTvSortTime.setOnClickListener {
 //            adapter.submitList(sampleData)
-                "시간순".also { binding.tvSpinner.text = it }
-                tvSpinner.callOnClick()
+                "시간순".also { binding.memoListTvSpinner.text = it }
+                memoListTvSpinner.callOnClick()
             }
 
-            sortOldest.setOnClickListener {
+            memoListTvSortTitle.setOnClickListener {
 //            adapter.submitList(sampleData)
-                "제목순".also { binding.tvSpinner.text = it }
-                tvSpinner.callOnClick()
+                "제목순".also { binding.memoListTvSpinner.text = it }
+                memoListTvSpinner.callOnClick()
             }
 
-            dropDownButton.setOnClickListener {
+            memoListIvDropDownButton.setOnClickListener {
                 val currentList = listViewModel.sampleData.value ?: listOf()
                 if (!check) {
                     val sortedList = currentList.sortedByDescending { it.number }
                     adapter.submitList(sortedList)
-                    binding.dropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
+                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
                     check = true
                 } else {
                     val sortedList = currentList.sortedBy { it.number }
                     adapter.submitList(sortedList)
-                    binding.dropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
+                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
                     check = false
                 }
             }
