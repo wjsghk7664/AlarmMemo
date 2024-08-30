@@ -37,7 +37,8 @@
             android:layout_height="144dp"
             android:layout_marginStart="20dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/MemoList_rv_memoList"/>
     </ConstraintSet>
 
 </MotionScene>

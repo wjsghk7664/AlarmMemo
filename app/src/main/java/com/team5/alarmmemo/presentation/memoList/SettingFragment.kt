@@ -1,11 +1,11 @@
-package com.example.alarmmemo.presentation.memoList
+package com.team5.alarmmemo.presentation.memoList
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.alarmmemo.databinding.FragmentSettingBinding
+import com.team5.alarmmemo.databinding.FragmentSettingBinding
 
 class SettingFragment : Fragment() {
 

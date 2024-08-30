@@ -1,4 +1,4 @@
-package com.example.alarmmemo.data.model
+package com.team5.alarmmemo.data.model
 
 import android.graphics.RectF
 import android.net.Uri
