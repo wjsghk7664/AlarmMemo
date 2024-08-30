@@ -1,4 +1,4 @@
-package com.example.alarmmemo.presentation.memoLogin
+package com.team5.alarmmemo.presentation.memoLogin
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
