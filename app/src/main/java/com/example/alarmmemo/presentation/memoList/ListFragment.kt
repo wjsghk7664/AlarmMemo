@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.alarmmemo.R
 import android.graphics.Color
 import android.util.Log
+import androidx.fragment.app.activityViewModels
 import com.example.alarmmemo.databinding.FragmentListBinding
 import com.example.alarmmemo.presentation.memo.MemoActivity
 
@@ -18,9 +19,10 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: MemoListAdapter
-    private var sampleData = listOf<ListItem>()
-    private var number = 0
+//    private var sampleData = listOf<ListItem>()
+//    private var number = 0
     private var check = false
+    private val listViewModel: ListViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,38 +50,41 @@ class ListFragment : Fragment() {
             MemoListRvMemoList.adapter = adapter
         }
 
-        adapter.submitList(sampleData)
+        listViewModel.sampleData.observe(viewLifecycleOwner){ sampleData ->
+            adapter.submitList(sampleData)
+        }
 
         with(binding) {
             button.setOnClickListener {
-                addSampleItem()
+                listViewModel.addSampleItem()
             }
 
             tvSpinner.setOnClickListener {
-                showDropDownMenu()
+//                showDropDownMenu()
             }
 
             sortLatest.setOnClickListener {
 //            adapter.submitList(sampleData)
                 "시간순".also { binding.tvSpinner.text = it }
-                showDropDownMenu()
+                tvSpinner.callOnClick()
             }
 
             sortOldest.setOnClickListener {
 //            adapter.submitList(sampleData)
                 "제목순".also { binding.tvSpinner.text = it }
-                showDropDownMenu()
+                tvSpinner.callOnClick()
             }
 
             dropDownButton.setOnClickListener {
+                val currentList = listViewModel.sampleData.value ?: listOf()
                 if (!check) {
-                    sampleData = sampleData.sortedByDescending { it.number }
-                    adapter.submitList(sampleData)
+                    val sortedList = currentList.sortedByDescending { it.number }
+                    adapter.submitList(sortedList)
                     binding.dropDownButton.setImageResource(R.drawable.spinner_bg)
                     check = true
                 } else {
-                    sampleData = sampleData.sortedBy { it.number }
-                    adapter.submitList(sampleData)
+                    val sortedList = currentList.sortedBy { it.number }
+                    adapter.submitList(sortedList)
                     binding.dropDownButton.setImageResource(R.drawable.ic_pad)
                     check = false
                 }
@@ -89,26 +94,34 @@ class ListFragment : Fragment() {
 
     private fun showDropDownMenu() {
         if (check) {
-            binding.popupMenuLayout.visibility = View.GONE
-            binding.tvSpinner.setBackgroundColor(Color.TRANSPARENT)
+            with(binding) {
+//                sortLatest.visibility = View.GONE
+//                sortOldest.visibility = View.GONE
+                motionLayout.transitionToEnd()
+                tvSpinner.setBackgroundColor(Color.TRANSPARENT)
+            }
             check = false
         } else {
-            binding.popupMenuLayout.visibility = View.VISIBLE
-            binding.tvSpinner.setBackgroundColor(Color.WHITE)
+            with(binding) {
+//                sortLatest.visibility = View.VISIBLE
+//                sortOldest.visibility = View.VISIBLE
+                motionLayout.transitionToEnd()
+                tvSpinner.setBackgroundColor(Color.WHITE)
+            }
             check = true
         }
     }
 
-    private fun addSampleItem() {
-        val item = ListItem(
-            number = number++,
-            title = "새 메모",
-            date = "2024-08-28",
-            image = R.mipmap.ic_launcher
-        )
-        sampleData += item
-        adapter.submitList(sampleData.toMutableList())
-    }
+//    private fun addSampleItem() {
+//        val item = ListItem(
+//            number = number++,
+//            title = "새 메모",
+//            date = "2024-08-28",
+//            image = R.mipmap.ic_launcher
+//        )
+//        sampleData += item
+//        adapter.submitList(sampleData.toMutableList())
+//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

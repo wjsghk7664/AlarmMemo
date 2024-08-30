@@ -30,7 +30,6 @@ class MemoListActivity : AppCompatActivity() {
         with(binding) {
             MemoListTvList.setOnClickListener {
                 with(binding) {
-                    "목록".also { MemoListTvTitle.text = it }
                     MemoListLlNewDropdownMenu.visibility = View.VISIBLE
                     MemoListLlDropdownMenu.visibility = View.VISIBLE
                     backButton.visibility = View.GONE
@@ -47,6 +46,7 @@ class MemoListActivity : AppCompatActivity() {
             }
 
             MemoListTvList2.setOnClickListener {
+                "목록".also { MemoListTvTitle.text = it }
                 with(binding) {
                     MemoListLlNewDropdownMenu.visibility = View.GONE
                     MemoListLlDropdownMenu.visibility = View.GONE
@@ -55,6 +55,7 @@ class MemoListActivity : AppCompatActivity() {
             }
 
             MemoListTvList3.setOnClickListener {
+                "목록".also { MemoListTvTitle.text = it }
                 with(binding) {
                     MemoListLlNewDropdownMenu.visibility = View.GONE
                     MemoListLlDropdownMenu.visibility = View.GONE

@@ -19,12 +19,13 @@
             android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_arrow_back"
             android:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/MemoList_tv_title"
@@ -108,17 +109,16 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MemoList_ll_new_dropdown_menu"
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="end"
-            android:layout_marginTop="10dp"
             android:layout_marginEnd="40dp"
             android:background="@android:color/white"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/MemoList_ll_dropdown_menu"
             app:layout_constraintTop_toBottomOf="@id/MemoList_ll_dropdown_menu">
 
             <TextView

@@ -18,7 +18,7 @@
             android:exported="true" />
         <activity
             android:name=".presentation.memoList.MemoListActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".presentation.LoginActivity"
             android:exported="true" >
