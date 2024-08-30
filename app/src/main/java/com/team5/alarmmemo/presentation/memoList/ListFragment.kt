@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.alarmmemo.R
-import com.example.alarmmemo.databinding.FragmentListBinding
+import com.team5.alarmmemo.R
+import com.team5.alarmmemo.databinding.FragmentListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 
 class ListFragment : Fragment() {
