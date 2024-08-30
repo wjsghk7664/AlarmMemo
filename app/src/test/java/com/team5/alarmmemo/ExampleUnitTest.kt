@@ -1,4 +1,4 @@
-package com.example.alarmmemo
+package com.team5.alarmmemo
 
 import org.junit.Test
 

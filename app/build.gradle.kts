@@ -12,11 +12,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.alarmmemo"
+    namespace = "com.team5.alarmmemo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.alarmmemo"
+        applicationId = "com.team5.alarmmemo"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

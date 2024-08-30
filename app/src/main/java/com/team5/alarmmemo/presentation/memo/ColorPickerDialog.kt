@@ -1,4 +1,4 @@
-package com.example.alarmmemo.presentation.memo
+package com.team5.alarmmemo.presentation.memo
 
 import android.content.Context
 import android.content.res.ColorStateList

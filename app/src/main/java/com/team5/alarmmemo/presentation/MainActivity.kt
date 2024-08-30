@@ -1,4 +1,4 @@
-package com.example.alarmmemo.presentation
+package com.team5.alarmmemo.presentation
 
 import android.content.Intent
 import android.os.Bundle

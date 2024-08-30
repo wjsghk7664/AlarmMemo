@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.memo.MemoActivity">
+    tools:context="com.team5.alarmmemo.presentation.memo.MemoActivity">
 
     <LinearLayout
         android:paddingHorizontal="4dp"
@@ -81,7 +81,7 @@
         app:layout_constraintTop_toBottomOf="@id/memo_ll_alarm_container" />
 
 
-    <com.example.alarmmemo.presentation.memo.MemoScrollView
+    <com.team5.alarmmemo.presentation.memo.MemoScrollView
         android:id="@+id/memo_sv_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -97,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <com.example.alarmmemo.presentation.memo.MemoView
+            <com.team5.alarmmemo.presentation.memo.MemoView
                 android:id="@+id/memo_mv"
                 android:layout_width="match_parent"
                 android:minHeight="1000dp"
@@ -106,7 +106,7 @@
         </LinearLayout>
 
 
-    </com.example.alarmmemo.presentation.memo.MemoScrollView>
+    </com.team5.alarmmemo.presentation.memo.MemoScrollView>
 
 
     <View
@@ -182,7 +182,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.example.alarmmemo.presentation.memoList.CustomSpinner
+                <com.team5.alarmmemo.presentation.memoList.CustomSpinner
                     android:id="@+id/memo_sp_pensize"
                     style="@style/Widget.Custom.Spinner"
                     android:layout_width="wrap_content"
@@ -235,7 +235,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.example.alarmmemo.presentation.memoList.CustomSpinner
+                <com.team5.alarmmemo.presentation.memoList.CustomSpinner
                     android:id="@+id/memo_sp_textsize"
                     style="@style/Widget.Custom.Spinner"
                     android:layout_width="wrap_content"

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.MainActivity">
+    tools:context="com.team5.alarmmemo.presentation.MainActivity">
 
     <!-- 커스텀 폰트 잘 나오는지 테스트 (나중에 지우시면 됩니다.) -->
 

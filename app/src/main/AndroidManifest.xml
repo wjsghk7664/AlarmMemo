@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name=".MemoApplication"
+        android:name="com.team5.alarmmemo.MemoApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -14,13 +14,13 @@
         android:theme="@style/Theme.AlarmMemo"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.memo.MemoActivity"
+            android:name="com.team5.alarmmemo.presentation.memo.MemoActivity"
             android:exported="true" />
         <activity
-            android:name=".presentation.memoList.MeMoListActivity"
+            android:name="com.team5.alarmmemo.presentation.memoList.MeMoListActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.MainActivity"
+            android:name="com.team5.alarmmemo.presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
