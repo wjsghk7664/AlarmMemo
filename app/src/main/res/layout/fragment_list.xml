@@ -64,6 +64,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!--여기가 문제인 것을 발견함-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MemoList_rv_memoList"
         android:layout_width="0dp"
