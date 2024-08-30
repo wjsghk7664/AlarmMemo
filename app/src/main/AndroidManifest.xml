@@ -20,8 +20,8 @@
             android:windowSoftInputMode="adjustPan"
             android:exported="true" />
         <activity
-            android:name=".presentation.memoList.MeMoListActivity"
-            android:exported="false" />
+            android:name=".presentation.memoList.MemoListActivity"
+            android:exported="true" />
         <activity
             android:name=".presentation.memoLogin.LoginActivity"
             android:exported="true" >

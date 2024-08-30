@@ -1,10 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/motionLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.team5.alarmmemo.presentation.memoList.ListFragment">
+    app:layoutDescription="@xml/motion_scene"
+    tools:context=".presentation.memoList.ListFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/memoList_cl_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="4dp"
+        android:elevation="4dp"
+        android:paddingHorizontal="12dp"
+        android:background="@drawable/spinner_corner_border_box">
+
+        <TextView
+            android:id="@+id/tvSpinner"
+            android:layout_width="60dp"
+            android:layout_height="36dp"
+            android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:text="@string/memoList_drop_down_sample_text"
+            android:textColor="@color/brown"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/dropDown_button"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_arrow_drop_down"
+            app:layout_constraintStart_toEndOf="@id/tvSpinner"
+            app:layout_constraintTop_toTopOf="@id/tvSpinner"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/sortLatest"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@color/white"
+            android:gravity="center_vertical|start"
+            android:paddingHorizontal="8dp"
+            android:text="@string/memoList_drop_down_sample_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSpinner" />
+
+        <TextView
+            android:id="@+id/sortOldest"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@color/white"
+            android:gravity="center_vertical|start"
+            android:paddingHorizontal="8dp"
+            android:text="@string/memoList_drop_down_sample_text_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sortLatest" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MemoList_rv_memoList"
@@ -13,6 +70,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="48dp"
         app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.team5.alarmmemo.presentation.memoList.MeMoListActivity">
+    tools:context="com.team5.alarmmemo.presentation.memoList.MemoListActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MemoList_cl_list_title"
@@ -15,17 +15,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_arrow_back"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
         <TextView
             android:id="@+id/MemoList_tv_title"
             style="@style/headline_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="@string/menuList_tv_title"
-            android:textSize="40sp"
-            android:textStyle="bold"
+            android:text="@string/memoList_tv_title"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back_button"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -37,7 +47,8 @@
             android:src="@drawable/setting_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -54,37 +65,89 @@
             android:id="@+id/MemoList_fg_fragment_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:background="@android:color/transparent" />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/MemoList_ll_dropdown_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="end"
             android:layout_marginEnd="40dp"
             android:background="@android:color/white"
-            android:elevation="4dp"
-            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:visibility="gone">
 
             <TextView
                 android:id="@+id/MemoList_tv_list"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/menuList_toggle_list"
-                android:textColor="@android:color/black" />
+                android:paddingBottom="5dp"
+                android:text="@string/memoList_toggle_list"
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/MemoList_tv_setting"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/menuList_toggle_setting"
-                android:textColor="@android:color/black" />
+                android:paddingTop="5dp"
+                android:text="@string/memoList_toggle_setting"
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/MemoList_ll_new_dropdown_menu"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="40dp"
+            android:background="@android:color/white"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/MemoList_ll_dropdown_menu"
+            app:layout_constraintTop_toBottomOf="@id/MemoList_ll_dropdown_menu">
+
+            <TextView
+                android:id="@+id/MemoList_tv_list_2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:paddingBottom="5dp"
+                android:text="@string/memoList_toggle_list_2"
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/MemoList_tv_list_3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:paddingTop="5dp"
+                android:text="@string/memoList_toggle_list_3"
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/MemoList_tv_list_2" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>
 

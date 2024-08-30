@@ -7,6 +7,15 @@
     <string name="menuList_tv_sample_date">메모 날짜 시간</string>
     <string name="menuList_toggle_list">메모 리스트</string>
     <string name="menuList_toggle_setting">설정</string>
+    <string name="memoList_drop_down_sample_text">시간순</string>
+    <string name="memoList_drop_down_sample_text_2">제목순</string>
+    <string name="memoList_tv_title">목록</string>
+    <string name="memoList_toggle_list">메모 리스트</string>
+    <string name="memoList_toggle_setting">설정</string>
+    <string name="memoList_toggle_list_2">2줄 격자</string>
+    <string name="memoList_toggle_list_3">3줄 격자</string>
+    <string name="memoList_tv_sample_title">메모 제목</string>
+    <string name="memoList_tv_sample_date">메모 날짜</string>
 
     <!--activity_login.xml 의 strings.xml 입니다 -->
     <string name="title_activity_login">LoginActivity</string>
