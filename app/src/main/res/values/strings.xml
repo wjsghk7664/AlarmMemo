@@ -1,17 +1,34 @@
 <resources>
     <string name="app_name">AlarmMemo</string>
 
-    <!--activity_memo_list.xml-->
+    <!--activity_memo_list.xml 의 strings.xml 입니다.-->
+    <string name="menuList_tv_title">목록</string>
+    <string name="menuList_tv_sample_title">메모 타이틀</string>
+    <string name="menuList_tv_sample_date">메모 날짜 시간</string>
+    <string name="menuList_toggle_list">메모 리스트</string>
+    <string name="menuList_toggle_setting">설정</string>
+    <string name="memoList_drop_down_sample_text">시간순</string>
+    <string name="memoList_drop_down_sample_text_2">제목순</string>
     <string name="memoList_tv_title">목록</string>
     <string name="memoList_toggle_list">메모 리스트</string>
     <string name="memoList_toggle_setting">설정</string>
     <string name="memoList_toggle_list_2">2줄 격자</string>
     <string name="memoList_toggle_list_3">3줄 격자</string>
-    <string name="memoList_tv_sample_title">메모 타이틀</string>
-    <string name="memoList_tv_sample_date">메모 날짜 시간</string>
+    <string name="memoList_tv_sample_title">메모 제목</string>
+    <string name="memoList_tv_sample_date">메모 날짜</string>
 
-    <!--fragment.list.xml-->
-    <string name="memoList_drop_down_sample_text">시간순</string>
-    <string name="memoList_drop_down_sample_text_2">제목순</string>
+    <!--activity_login.xml 의 strings.xml 입니다 -->
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">id</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">로그인</string>
+    <string name="action_sign_up">회원가입</string>
+    <string name="action_non_sign_in">비회원 로그인</string>
+    <string name="action_find_id">아이디 비밀번호 찾기</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 
 </resources>

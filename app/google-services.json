@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:710542293652:android:49754fd9a8f5a8f58e5281",
+        "mobilesdk_app_id": "1:710542293652:android:482aefecea9ca09f8e5281",
         "android_client_info": {
-          "package_name": "com.example.alarmmemo"
+          "package_name": "com.team5.alarmmemo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "710542293652-g19okun4pqobthpttlbrs6d3p8t2k7rp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDxjBQQergXe7irLYg_1BUVmyMe-fgDiBw"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "710542293652-g19okun4pqobthpttlbrs6d3p8t2k7rp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

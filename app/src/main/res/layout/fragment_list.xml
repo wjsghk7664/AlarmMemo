@@ -11,8 +11,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/memoList_cl_spinner"
         android:layout_width="wrap_content"
-        android:layout_height="144dp"
-        android:paddingTop="4dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="4dp"
+        android:elevation="4dp"
         android:paddingHorizontal="12dp"
         android:background="@drawable/spinner_corner_border_box">
 
@@ -29,34 +30,32 @@
 
         <ImageView
             android:id="@+id/dropDown_button"
-            android:layout_width="60dp"
+            android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/spinner_bg"
+            android:src="@drawable/ic_arrow_drop_down"
             app:layout_constraintStart_toEndOf="@id/tvSpinner"
             app:layout_constraintTop_toTopOf="@id/tvSpinner"
             tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/sortLatest"
-            android:layout_width="120dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_marginTop="12dp"
             android:background="@color/white"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical|start"
+            android:paddingHorizontal="8dp"
             android:text="@string/memoList_drop_down_sample_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.476"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvSpinner" />
 
         <TextView
             android:id="@+id/sortOldest"
-            android:layout_width="120dp"
+            android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/white"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
+            android:gravity="center_vertical|start"
+            android:paddingHorizontal="8dp"
             android:text="@string/memoList_drop_down_sample_text_2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +63,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--여기가 문제인 것을 발견함-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/MemoList_rv_memoList"
         android:layout_width="0dp"

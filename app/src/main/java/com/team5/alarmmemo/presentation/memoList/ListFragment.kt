@@ -80,37 +80,37 @@ class ListFragment : Fragment() {
                 if (!check) {
                     val sortedList = currentList.sortedByDescending { it.number }
                     adapter.submitList(sortedList)
-                    binding.dropDownButton.setImageResource(R.drawable.spinner_bg)
+                    binding.dropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
                     check = true
                 } else {
                     val sortedList = currentList.sortedBy { it.number }
                     adapter.submitList(sortedList)
-                    binding.dropDownButton.setImageResource(R.drawable.ic_pad)
+                    binding.dropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
                     check = false
                 }
             }
         }
     }
 
-    private fun showDropDownMenu() {
-        if (check) {
-            with(binding) {
+//    private fun showDropDownMenu() {
+//        if (check) {
+//            with(binding) {
 //                sortLatest.visibility = View.GONE
 //                sortOldest.visibility = View.GONE
-                motionLayout.transitionToEnd()
-                tvSpinner.setBackgroundColor(Color.TRANSPARENT)
-            }
-            check = false
-        } else {
-            with(binding) {
+//                motionLayout.transitionToEnd()
+//                tvSpinner.setBackgroundColor(Color.TRANSPARENT)
+//            }
+//            check = false
+//        } else {
+//            with(binding) {
 //                sortLatest.visibility = View.VISIBLE
 //                sortOldest.visibility = View.VISIBLE
-                motionLayout.transitionToEnd()
-                tvSpinner.setBackgroundColor(Color.WHITE)
-            }
-            check = true
-        }
-    }
+//                motionLayout.transitionToEnd()
+//                tvSpinner.setBackgroundColor(Color.WHITE)
+//            }
+//            check = true
+//        }
+//    }
 
 //    private fun addSampleItem() {
 //        val item = ListItem(

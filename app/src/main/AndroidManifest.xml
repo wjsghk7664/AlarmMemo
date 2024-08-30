@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".MemoApplication"
         android:allowBackup="true"
@@ -20,7 +22,7 @@
             android:name=".presentation.memoList.MemoListActivity"
             android:exported="true" />
         <activity
-            android:name=".presentation.LoginActivity"
+            android:name=".presentation.memoLogin.LoginActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
