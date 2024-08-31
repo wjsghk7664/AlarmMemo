@@ -59,15 +59,15 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     var outerFocusTitle =false
     var outerFocusTextBox =false
 
-    private val _activateHistoryBtnFlow = MutableSharedFlow<Pair<Int,Int>>() //max, cur
-    val activateHistoryBtnFlow = _activateHistoryBtnFlow.asSharedFlow()
+    private var onActivateHistoryBtnListener: OnActivateHistoryBtnListener? = null
 
-    private val _cursorPosition = MutableSharedFlow<Float>()
-    val cursorPosition = _cursorPosition.asSharedFlow()
+    interface OnActivateHistoryBtnListener{
+        fun onActivateHistoryBtn(max:Int, cur:Int)
+    }
 
-    //텍스트 설정
-
-
+    fun setOnActivateHistoryBtnListener(listener: OnActivateHistoryBtnListener){
+        onActivateHistoryBtnListener = listener
+    }
 
     //히스토리
     private val drawHistory = ArrayDeque<HistoryItem>()
@@ -300,24 +300,25 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
             })
 
-            setOnTouchListener{ _,event ->
-                if(event.action == MotionEvent.ACTION_DOWN){
-                    (context as MemoActivity).binding?.let{
-                        if(it.memoEtAddTextBox.isFocused||it.memoEtTitle.isFocused){
-                            it.memoEtAddTextBox.clearFocus()
-                            it.memoEtTitle.clearFocus()
-                        }
-                    }
-                }
-
-
-                if(drawActivate){
-                    this@MemoView.onTouchEvent(event)
-                    true
-                }else{
-                    false
-                }
-            }
+//            setOnTouchListener{ _,event ->
+//                if(event.action == MotionEvent.ACTION_DOWN){
+//                    Log.d("이벤트체크1","1")
+//                    (context as MemoActivity).binding?.let{
+//                        if(it.memoEtAddTextBox.isFocused||it.memoEtTitle.isFocused){
+//                            it.memoEtAddTextBox.clearFocus()
+//                            it.memoEtTitle.clearFocus()
+//                        }
+//                    }
+//                }
+//
+//
+//                if(drawActivate){
+//                    this@MemoView.onTouchEvent(event)
+//                    true
+//                }else{
+//                    false
+//                }
+//            }
 
             requestFocus()
         }
@@ -546,9 +547,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         drawHistory.addLast(historyItem)
         curDrawHistory=drawHistory.size-1
 
-        CoroutineScope(Dispatchers.IO).launch {
-            _activateHistoryBtnFlow.emit(Pair(drawHistory.size-1, curDrawHistory))
-        }
+        onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
 
     }
 
@@ -561,9 +560,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                 activatedIdx = null
 
                 invalidate()
-                CoroutineScope(Dispatchers.IO).launch {
-                    _activateHistoryBtnFlow.emit(Pair(drawHistory.size-1, curDrawHistory))
-                }
+                onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
                 historyMove = true
             }
         }
@@ -578,9 +575,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             activateTextBox = null
             activatedIdx = null
             invalidate()
-            CoroutineScope(Dispatchers.IO).launch {
-                _activateHistoryBtnFlow.emit(Pair(drawHistory.size-1, curDrawHistory))
-            }
+            onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
             historyMove = true
         }
     }
@@ -1000,16 +995,36 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         super.dispatchDraw(canvas)
     }
 
+    private var touchTime = 0L
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
         event?.let { event ->
 
+            if(event.action == MotionEvent.ACTION_DOWN){
+                Log.d("이벤트체크1","1")
+                (context as MemoActivity).binding?.let{
+                    if(it.memoEtAddTextBox.isFocused||it.memoEtTitle.isFocused){
+                        it.memoEtAddTextBox.clearFocus()
+                        it.memoEtTitle.clearFocus()
+                    }
+                    if(!textMain.isFocused&&!drawActivate) textMain.requestFocus()
+                }
+            }
 
-            if(!drawActivate){
+            if(!drawActivate&&event.action ==MotionEvent.ACTION_DOWN){
+                touchTime = System.currentTimeMillis()
+                Log.d("이벤트체크 2","2")
+                return true
+            }
 
+            if(!drawActivate&&event.action == MotionEvent.ACTION_UP){
                 (context as MemoActivity).binding.memoEtTitle.clearFocus()
-                textMain.requestFocus()
+
+                if(System.currentTimeMillis() - touchTime > 300){
+                    return false
+                }
+
                 val imm = context.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
                 if(isKeypadOn){
@@ -1031,9 +1046,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     drawPaintList.removeLast()
                     drawHistory.removeLast()
                     curDrawHistory--
-                    CoroutineScope(Dispatchers.IO).launch {
-                        _activateHistoryBtnFlow.emit(Pair(drawHistory.size-1, curDrawHistory))
-                    }
+                    onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
                 }
                 eraserActive = false
                 return true

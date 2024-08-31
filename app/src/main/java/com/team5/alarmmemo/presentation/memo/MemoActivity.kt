@@ -22,15 +22,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.marginBottom
-import androidx.lifecycle.lifecycleScope
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -106,13 +100,16 @@ class MemoActivity : AppCompatActivity() {
     private var lastTouchX = 0f
     private var lastTouchY = 0f
     private var initFlag = false
+    private var isPrevMultiTouch = false
+    private var isPrevSingleTouch = false
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-
         scaleDetector.onTouchEvent(ev)
         val event = ev
         if(!binding.memoMv.drawActivate&&event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1){
-            if(!initFlag){
+            isPrevSingleTouch = true
+            if(!initFlag||isPrevMultiTouch){
                 initFlag = true
+                isPrevMultiTouch=false
                 lastTouchX = event.x
                 lastTouchY = event.y
             }else{
@@ -130,9 +127,11 @@ class MemoActivity : AppCompatActivity() {
 
         }
         else if(event.pointerCount>1){
+            isPrevMultiTouch= true
             binding.memoMv.requestLayout()
             binding.memoSvContainer.isScrollable = true
-            if(!initFlag){
+            if(!initFlag||isPrevSingleTouch){
+                isPrevSingleTouch=false
                 initFlag = true
                 lastTouchX =(event.getX(0)+event.getX(1))/2
                 lastTouchY = (event.getY(0)+event.getY(1))/2
@@ -148,6 +147,8 @@ class MemoActivity : AppCompatActivity() {
                 lastTouchY = (event.getY(0)+event.getY(1))/2
             }
         }else{
+            isPrevMultiTouch=false
+            isPrevSingleTouch=false
             initFlag =false
             if(binding.memoIvWriteDrawSelector.isSelected) binding.memoSvContainer.isScrollable = false
         }
@@ -324,6 +325,8 @@ class MemoActivity : AppCompatActivity() {
             memoFbtnOriginlocation.setOnClickListener {
                 memoMv.translationX = 0f
                 memoMv.translationY = 0f
+                memoMv.scaleX = 1f
+                memoMv.scaleY = 1f
             }
 
             memoIvGoback.apply{
@@ -335,27 +338,26 @@ class MemoActivity : AppCompatActivity() {
                 isClickable = false
             }
 
-            lifecycleScope.launch {
-                memo.activateHistoryBtnFlow.collectLatest {
-                    val (max, cur) = it
-                    withContext(Dispatchers.Main){
-                        memoIvGoback.imageTintList= if(cur>=0) {
-                            memoIvGoback.isClickable = true
-                            getColorStateList(R.color.black)
-                        } else {
-                            memoIvGoback.isClickable = false
-                            getColorStateList(R.color.light_gray)
-                        }
-                        memoIvGoafter.imageTintList = if(cur<max) {
-                            memoIvGoafter.isClickable = true
-                            getColorStateList(R.color.black)
-                        } else {
-                            memoIvGoafter.isClickable = false
-                            getColorStateList(R.color.light_gray)
-                        }
+
+            memo.setOnActivateHistoryBtnListener(object :MemoView.OnActivateHistoryBtnListener{
+                override fun onActivateHistoryBtn(max: Int, cur: Int) {
+                    memoIvGoback.imageTintList= if(cur>=0) {
+                        memoIvGoback.isClickable = true
+                        getColorStateList(R.color.black)
+                    } else {
+                        memoIvGoback.isClickable = false
+                        getColorStateList(R.color.light_gray)
+                    }
+                    memoIvGoafter.imageTintList = if(cur<max) {
+                        memoIvGoafter.isClickable = true
+                        getColorStateList(R.color.black)
+                    } else {
+                        memoIvGoafter.isClickable = false
+                        getColorStateList(R.color.light_gray)
                     }
                 }
-            }
+
+            })
 
             memoIvGoback.setOnClickListener {
                 memo.historyGoBack()
