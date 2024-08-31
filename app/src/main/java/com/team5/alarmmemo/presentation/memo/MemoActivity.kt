@@ -1,5 +1,8 @@
 package com.team5.alarmmemo.presentation.memo
 
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
@@ -9,6 +12,7 @@ import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -19,9 +23,11 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,6 +53,8 @@ class MemoActivity : AppCompatActivity() {
 
     private lateinit var scaleDetector: ScaleGestureDetector
     var scaleRatio = 1f
+
+    private var animatorSet: AnimatorSet? =null
 
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener(){
 
@@ -91,8 +99,6 @@ class MemoActivity : AppCompatActivity() {
             insets
         }
 
-
-
         scaleDetector = ScaleGestureDetector(this,ScaleListener())
         initView()
     }
@@ -102,9 +108,54 @@ class MemoActivity : AppCompatActivity() {
     private var initFlag = false
     private var isPrevMultiTouch = false
     private var isPrevSingleTouch = false
+
+    var touchInitY=Float.MAX_VALUE
+    var touchInitTime = 0L
+    var touchEndY = Float.MAX_VALUE
+    var touchEndTime = 0L
+    var isScrolling = false
+
+    var isAnimationOrigin = false
+
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         scaleDetector.onTouchEvent(ev)
         val event = ev
+
+
+        Log.d("트랜슬레이션","${binding.memoMv.translationX} / ${binding.memoMv.translationY}")
+
+        if(event.action ==MotionEvent.ACTION_DOWN&&!isAnimationOrigin) animatorSet?.cancel()
+
+
+        if(event.pointerCount>1){
+            isScrolling = false
+        }
+        else if(event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1&&!isScrolling){
+            Log.d("메모 애니메이션 무브","1")
+            touchInitY = event.y
+            touchInitTime = System.currentTimeMillis()
+            isScrolling = true
+        }else if(event.action ==MotionEvent.ACTION_UP&&event.pointerCount==1){
+            isScrolling = false
+            touchEndY = event.y
+            touchEndTime = System.currentTimeMillis()
+
+            val length = ((touchEndY-touchInitY)*3000f/(touchEndTime - touchInitTime).toFloat()).coerceIn(-1500F..1500F)
+
+            Log.d("메모 애니메이션", "시작/ ${length}")
+
+            if(Math.abs(length)>200&&(touchEndTime-touchInitTime)<300){
+                smoothMove(binding.memoMv,targetY = binding.memoMv.translationY + length, isOrigin = false)
+                return true
+            }
+
+
+        }
+
+
+
+
+
         if(!binding.memoMv.drawActivate&&event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1){
             isPrevSingleTouch = true
             if(!initFlag||isPrevMultiTouch){
@@ -116,6 +167,7 @@ class MemoActivity : AppCompatActivity() {
                 var dx = event.x- lastTouchX
                 var dy = event.y - lastTouchY
 
+                //Log.d("메모 offset","${binding.memoSvContainer.scrollX},${binding.memoSvContainer.scrollY}")
 
                 binding.memoMv.translationX+=dx
                 binding.memoMv.translationY+=dy
@@ -129,7 +181,7 @@ class MemoActivity : AppCompatActivity() {
         else if(event.pointerCount>1){
             isPrevMultiTouch= true
             binding.memoMv.requestLayout()
-            binding.memoSvContainer.isScrollable = true
+            //binding.memoSvContainer.isScrollable = true
             if(!initFlag||isPrevSingleTouch){
                 isPrevSingleTouch=false
                 initFlag = true
@@ -150,7 +202,7 @@ class MemoActivity : AppCompatActivity() {
             isPrevMultiTouch=false
             isPrevSingleTouch=false
             initFlag =false
-            if(binding.memoIvWriteDrawSelector.isSelected) binding.memoSvContainer.isScrollable = false
+            //if(binding.memoIvWriteDrawSelector.isSelected) binding.memoSvContainer.isScrollable = false
         }
 
 
@@ -322,11 +374,13 @@ class MemoActivity : AppCompatActivity() {
 
         memoMv.let{ memo->
 
+
             memoFbtnOriginlocation.setOnClickListener {
-                memoMv.translationX = 0f
-                memoMv.translationY = 0f
-                memoMv.scaleX = 1f
-                memoMv.scaleY = 1f
+                smoothMove(memo,0f,0f,1f, isOrigin = true)
+
+                scaleRatio = 1f
+                lastTouchX = 0f
+                lastTouchY = 0f
             }
 
             memoIvGoback.apply{
@@ -433,15 +487,53 @@ class MemoActivity : AppCompatActivity() {
                     memoMv.setTextDrawMode(true)
                     memoClContainerDraw.visibility = View.VISIBLE
                     memoClContainerWrite.visibility = View.GONE
-                    memoSvContainer.isScrollable = false
                 }else{
                     memoMv.setTextDrawMode(false)
                     memoClContainerDraw.visibility = View.GONE
                     memoClContainerWrite.visibility = View.VISIBLE
-                    memoSvContainer.isScrollable = true
                 }
             }
         }
+    }
+
+    private fun smoothMove(view:View,targetX:Float = view.translationX,targetY:Float = view.translationY, scale:Float = view.scaleX, duration:Long = 500L, isOrigin:Boolean){
+        animatorSet?.cancel()
+
+        isAnimationOrigin = isOrigin
+
+        val animationX = ObjectAnimator.ofFloat(view,"translationX",view.translationX,targetX)
+        val animationY = ObjectAnimator.ofFloat(view, "translationY",view.translationY,targetY)
+        val animationSX = ObjectAnimator.ofFloat(view,"scaleX",view.scaleX,scale)
+        val animationSY = ObjectAnimator.ofFloat(view, "scaleY", view.scaleY,scale)
+
+
+        animatorSet=null
+        animatorSet = AnimatorSet().apply {
+            playTogether(animationX,animationY,animationSX,animationSY)
+            this.duration = duration
+            interpolator = DecelerateInterpolator()
+            addListener(object :Animator.AnimatorListener{
+                override fun onAnimationStart(animation: Animator) {
+                }
+
+                override fun onAnimationEnd(animation: Animator) {
+                    if(binding.memoFbtnOriginlocation.isPressed){
+                        Log.d("클릭실행","1")
+                        binding.memoFbtnOriginlocation.callOnClick()
+                        binding.memoFbtnOriginlocation.isPressed = false
+                    }
+                }
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+
+            })
+        }
+        animatorSet?.start()
+
+
+
     }
 
 

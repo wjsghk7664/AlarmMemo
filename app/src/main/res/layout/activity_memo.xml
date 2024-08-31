@@ -55,7 +55,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/meme_v_divider1"
+        android:id="@+id/memo_v_divider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_gray"
@@ -70,10 +70,10 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/meme_v_divider1"/>
+        app:layout_constraintTop_toBottomOf="@id/memo_v_divider1"/>
 
     <View
-        android:id="@+id/meme_v_divider2"
+        android:id="@+id/memo_v_divider2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_gray"
@@ -82,33 +82,22 @@
         app:layout_constraintTop_toBottomOf="@id/memo_ll_alarm_container" />
 
 
-    <com.team5.alarmmemo.presentation.memo.MemoScrollView
-        android:id="@+id/memo_sv_container"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/light_gray"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@+id/meme_v_divider3"
+    <LinearLayout
+        android:id="@+id/memo_ll_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2">
+        app:layout_constraintTop_toBottomOf="@+id/memo_v_divider2">
 
-        <LinearLayout
-            android:id="@+id/memo_ll_container"
+        <com.team5.alarmmemo.presentation.memo.MemoView
+            android:id="@+id/memo_mv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <com.team5.alarmmemo.presentation.memo.MemoView
-                android:id="@+id/memo_mv"
-                android:layout_width="match_parent"
-                android:minHeight="1000dp"
-                android:layout_height="wrap_content"
-                android:background="@color/white">
-            </com.team5.alarmmemo.presentation.memo.MemoView>
-        </LinearLayout>
-
-
-    </com.team5.alarmmemo.presentation.memo.MemoScrollView>
+            android:background="@color/white"
+            android:minHeight="1000dp"></com.team5.alarmmemo.presentation.memo.MemoView>
+    </LinearLayout>
 
 
     <View

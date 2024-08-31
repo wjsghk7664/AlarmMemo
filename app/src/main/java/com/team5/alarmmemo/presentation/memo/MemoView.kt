@@ -1002,6 +1002,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         event?.let { event ->
 
             if(event.action == MotionEvent.ACTION_DOWN){
+                touchTime = System.currentTimeMillis()
                 Log.d("이벤트체크1","1")
                 (context as MemoActivity).binding?.let{
                     if(it.memoEtAddTextBox.isFocused||it.memoEtTitle.isFocused){
@@ -1013,15 +1014,13 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             }
 
             if(!drawActivate&&event.action ==MotionEvent.ACTION_DOWN){
-                touchTime = System.currentTimeMillis()
-                Log.d("이벤트체크 2","2")
                 return true
             }
 
             if(!drawActivate&&event.action == MotionEvent.ACTION_UP){
                 (context as MemoActivity).binding.memoEtTitle.clearFocus()
 
-                if(System.currentTimeMillis() - touchTime > 300){
+                if(System.currentTimeMillis() - touchTime > 150){
                     return false
                 }
 
