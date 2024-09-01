@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:clipChildren="false"
     tools:context="com.team5.alarmmemo.presentation.memo.MemoActivity">
 
     <LinearLayout
@@ -15,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
+        android:background="@color/basic_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
@@ -68,6 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
+        android:background="@color/basic_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/memo_v_divider1"/>
@@ -82,11 +85,12 @@
         app:layout_constraintTop_toBottomOf="@id/memo_ll_alarm_container" />
 
 
-    <LinearLayout
+    <com.team5.alarmmemo.presentation.memo.MemoScrollView
         android:id="@+id/memo_ll_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:scrollbars="none"
+        android:clipChildren="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/memo_v_divider2">
@@ -95,9 +99,10 @@
             android:id="@+id/memo_mv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipChildren="false"
             android:background="@color/white"
             android:minHeight="1000dp"></com.team5.alarmmemo.presentation.memo.MemoView>
-    </LinearLayout>
+    </com.team5.alarmmemo.presentation.memo.MemoScrollView>
 
 
     <View

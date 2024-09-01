@@ -3,6 +3,8 @@ package com.team5.alarmmemo.presentation.memo
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
@@ -10,6 +12,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
@@ -25,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.graphics.Insets
+import androidx.core.graphics.translationMatrix
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -43,7 +47,10 @@ class MemoActivity : AppCompatActivity() {
     @Inject lateinit var colorpickerDialog: showColorpickerDialog
 
 
-    private var cursorY = 0f
+    private var isOriginLocation = true
+
+    private lateinit var onTranslationTouchListener: TranslationTouchListener
+
 
 
     private val fontList = List(61){it+4}
@@ -51,8 +58,11 @@ class MemoActivity : AppCompatActivity() {
 
     private var isPickerLaunched =false
 
-    private lateinit var scaleDetector: ScaleGestureDetector
     var scaleRatio = 1f
+
+
+
+
 
     private var animatorSet: AnimatorSet? =null
 
@@ -65,17 +75,42 @@ class MemoActivity : AppCompatActivity() {
                 isScaling = true
             }
 
+
+            binding.memoLlContainer.pivotX = detector.focusX
+            binding.memoLlContainer.pivotY = detector.focusY
+            Log.d("트랜슬레이션 시작","${detector.focusX},${detector.focusY},height")
+
+
+
             return true
         }
 
         override fun onScale(detector: ScaleGestureDetector): Boolean {
+
             scaleRatio *=detector.scaleFactor
             scaleRatio = scaleRatio.coerceIn(0.75f,5.0f)
 
             Log.d("메모 스케일", scaleRatio.toString())
 
-            binding.memoMv.scaleX=scaleRatio
-            binding.memoMv.scaleY=scaleRatio
+
+
+
+            binding.memoLlContainer.scaleX=scaleRatio
+            binding.memoLlContainer.scaleY=scaleRatio
+
+            binding.memoMv.textboxMenu.root.apply {
+                scaleX = 1f/scaleRatio
+                scaleY = 1f/scaleRatio
+            }
+            binding.memoMv.bitmapMenu.root.apply {
+                scaleX = 1f/scaleRatio
+                scaleY = 1f/scaleRatio
+            }
+
+
+            Log.d("트랜슬레이션 포커스", detector.focusY.toString())
+
+
 
 
             return true
@@ -86,6 +121,8 @@ class MemoActivity : AppCompatActivity() {
         }
 
     }
+
+
 
     private lateinit var systemBars: Insets
 
@@ -99,8 +136,13 @@ class MemoActivity : AppCompatActivity() {
             insets
         }
 
-        scaleDetector = ScaleGestureDetector(this,ScaleListener())
+        onTranslationTouchListener = TranslationTouchListener()
         initView()
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        onTranslationTouchListener.onTouch(binding.memoLlContainer,ev)
+        return super.dispatchTouchEvent(ev)
     }
 
     private var lastTouchX = 0f
@@ -117,108 +159,116 @@ class MemoActivity : AppCompatActivity() {
 
     var isAnimationOrigin = false
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        scaleDetector.onTouchEvent(ev)
-        val event = ev
+    private inner class TranslationTouchListener: OnTouchListener{
+
+        override fun onTouch(v: View, event: MotionEvent?): Boolean {
+            event?.let {
+                if(event.action ==MotionEvent.ACTION_DOWN&&!isAnimationOrigin) animatorSet?.cancel()
 
 
-        Log.d("트랜슬레이션","${binding.memoMv.translationX} / ${binding.memoMv.translationY}")
+                if(event.pointerCount>1){
+                    isScrolling = false
+                }
+                else if(event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1&&!isScrolling){
+                    Log.d("메모 애니메이션 무브","1")
+                    touchInitY = event.y
+                    touchInitTime = System.currentTimeMillis()
+                    isScrolling = true
+                }else if(event.action ==MotionEvent.ACTION_UP&&event.pointerCount==1&&!binding.memoMv.drawActivate){
+                    isScrolling = false
+                    touchEndY = event.y
+                    touchEndTime = System.currentTimeMillis()
 
-        if(event.action ==MotionEvent.ACTION_DOWN&&!isAnimationOrigin) animatorSet?.cancel()
+                    val length = ((touchEndY-touchInitY)*3000f/(touchEndTime - touchInitTime).toFloat()).coerceIn(-1500F..1500F)
+
+                    Log.d("메모 애니메이션", "시작/ ${length}")
+
+                    if(Math.abs(length)>200&&(touchEndTime-touchInitTime)<150){
+                        smoothMove(v,targetY = v.translationY + length, isOrigin = false)
+                        return true
+                    }
 
 
-        if(event.pointerCount>1){
-            isScrolling = false
-        }
-        else if(event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1&&!isScrolling){
-            Log.d("메모 애니메이션 무브","1")
-            touchInitY = event.y
-            touchInitTime = System.currentTimeMillis()
-            isScrolling = true
-        }else if(event.action ==MotionEvent.ACTION_UP&&event.pointerCount==1){
-            isScrolling = false
-            touchEndY = event.y
-            touchEndTime = System.currentTimeMillis()
+                }
 
-            val length = ((touchEndY-touchInitY)*3000f/(touchEndTime - touchInitTime).toFloat()).coerceIn(-1500F..1500F)
 
-            Log.d("메모 애니메이션", "시작/ ${length}")
 
-            if(Math.abs(length)>200&&(touchEndTime-touchInitTime)<300){
-                smoothMove(binding.memoMv,targetY = binding.memoMv.translationY + length, isOrigin = false)
-                return true
+
+
+                if(!binding.memoMv.drawActivate&&event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1){
+                    isPrevSingleTouch = true
+                    if(!initFlag||isPrevMultiTouch){
+                        initFlag = true
+                        isPrevMultiTouch=false
+                        lastTouchX = event.x
+                        lastTouchY = event.y
+                    }else{
+                        var dx = event.x- lastTouchX
+                        var dy = event.y - lastTouchY
+
+                        //Log.d("메모 offset","${binding.memoSvContainer.scrollX},${binding.memoSvContainer.scrollY}")
+
+                        v.translationX+=dx
+                        v.translationY+=dy
+
+                        if(isOriginLocation){
+                            isOriginLocation = false
+                            binding.memoFbtnOriginlocation.setImageResource(R.drawable.ic_location_empty)
+                        }
+
+
+                        lastTouchX = event.x
+                        lastTouchY = event.y
+                    }
+
+                }
+                else if(event.pointerCount>1){
+                    isPrevMultiTouch= true
+                    binding.memoMv.requestLayout()
+                    //binding.memoSvContainer.isScrollable = true
+                    if(!initFlag||isPrevSingleTouch){
+                        isPrevSingleTouch=false
+                        initFlag = true
+                        lastTouchX =(event.getX(0)+event.getX(1))/2
+                        lastTouchY = (event.getY(0)+event.getY(1))/2
+                    }else if(event.action == MotionEvent.ACTION_MOVE){
+                        var dx = (event.getX(0)+event.getX(1))/2- lastTouchX
+                        var dy = (event.getY(0)+event.getY(1))/2 - lastTouchY
+
+                        v.translationX+=dx
+                        v.translationY+=dy
+
+                        if(isOriginLocation){
+                            isOriginLocation = false
+                            binding.memoFbtnOriginlocation.setImageResource(R.drawable.ic_location_empty)
+                        }
+
+                        lastTouchX = (event.getX(0)+event.getX(1))/2
+                        lastTouchY = (event.getY(0)+event.getY(1))/2
+                    }
+                }else{
+                    isPrevMultiTouch=false
+                    isPrevSingleTouch=false
+                    initFlag =false
+                    //if(binding.memoIvWriteDrawSelector.isSelected) binding.memoSvContainer.isScrollable = false
+                }
+
+
+                if(event.action == MotionEvent.ACTION_DOWN){
+                    val x = event.x
+                    val y = event.y
+
+                    val location = IntArray(2)
+                    binding.memoMv.getLocationOnScreen(location)
+                    val rect = Rect(location[0],location[1],location[0]+binding.memoMv.width,location[1]+binding.memoMv.height)
+                    if(!rect.contains(x.toInt(),y.toInt())&&!binding.memoMv.modifyTextActivate){
+                        binding.memoMv.removeActivate()
+                    }
+                }
             }
-
-
+            return true
         }
 
-
-
-
-
-        if(!binding.memoMv.drawActivate&&event.action == MotionEvent.ACTION_MOVE&&event.pointerCount==1){
-            isPrevSingleTouch = true
-            if(!initFlag||isPrevMultiTouch){
-                initFlag = true
-                isPrevMultiTouch=false
-                lastTouchX = event.x
-                lastTouchY = event.y
-            }else{
-                var dx = event.x- lastTouchX
-                var dy = event.y - lastTouchY
-
-                //Log.d("메모 offset","${binding.memoSvContainer.scrollX},${binding.memoSvContainer.scrollY}")
-
-                binding.memoMv.translationX+=dx
-                binding.memoMv.translationY+=dy
-
-
-                lastTouchX = event.x
-                lastTouchY = event.y
-            }
-
-        }
-        else if(event.pointerCount>1){
-            isPrevMultiTouch= true
-            binding.memoMv.requestLayout()
-            //binding.memoSvContainer.isScrollable = true
-            if(!initFlag||isPrevSingleTouch){
-                isPrevSingleTouch=false
-                initFlag = true
-                lastTouchX =(event.getX(0)+event.getX(1))/2
-                lastTouchY = (event.getY(0)+event.getY(1))/2
-            }else if(event.action == MotionEvent.ACTION_MOVE){
-                var dx = (event.getX(0)+event.getX(1))/2- lastTouchX
-                var dy = (event.getY(0)+event.getY(1))/2 - lastTouchY
-
-                binding.memoMv.translationX+=dx
-                binding.memoMv.translationY+=dy
-
-
-                lastTouchX = (event.getX(0)+event.getX(1))/2
-                lastTouchY = (event.getY(0)+event.getY(1))/2
-            }
-        }else{
-            isPrevMultiTouch=false
-            isPrevSingleTouch=false
-            initFlag =false
-            //if(binding.memoIvWriteDrawSelector.isSelected) binding.memoSvContainer.isScrollable = false
-        }
-
-
-        if(ev.action == MotionEvent.ACTION_DOWN){
-            val x = ev.x
-            val y = ev.y
-
-            val location = IntArray(2)
-            binding.memoMv.getLocationOnScreen(location)
-            val rect = Rect(location[0],location[1],location[0]+binding.memoMv.width,location[1]+binding.memoMv.height)
-            if(!rect.contains(x.toInt(),y.toInt())&&!binding.memoMv.modifyTextActivate){
-                binding.memoMv.removeActivate()
-            }
-        }
-
-        return super.dispatchTouchEvent(ev)
     }
 
     private fun adjustView(keypadHeight:Int){
@@ -266,6 +316,12 @@ class MemoActivity : AppCompatActivity() {
             }
 
         })
+
+        memoLlContainer.translationZ = -1f
+
+        memoLlContainer.scaleDetector = ScaleGestureDetector(binding.memoLlContainer.context,ScaleListener())
+
+        memoLlContainer.isScrollable =false
 
 
 
@@ -319,6 +375,9 @@ class MemoActivity : AppCompatActivity() {
                 Log.d("메모 텍스트 체크","실패")
                 if(memoEtAddTextBox.keyListener==null){
                     memoEtAddTextBox.keyListener=inputType
+                }
+                memoMv.activateTextBox?.let{
+                    memoEtAddTextBox.setText(memoMv.textList.getOrNull(it)?:"")
                 }
                 memoMv.outerFocusTextBox = true
             }
@@ -374,13 +433,26 @@ class MemoActivity : AppCompatActivity() {
 
         memoMv.let{ memo->
 
+            memo.setOnModifyTextBoxListener(object :MemoView.OnModifyTextBoxListener{
+                override fun onModifyTextBox() {
+                    memoEtAddTextBox.visibility = View.VISIBLE
+                    memoEtAddTextBox.requestFocus()
+                    memo.outerFocusTextBox = true
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(memoEtAddTextBox, InputMethodManager.SHOW_IMPLICIT)
+                }
+
+            })
 
             memoFbtnOriginlocation.setOnClickListener {
-                smoothMove(memo,0f,0f,1f, isOrigin = true)
+                smoothMove(memoLlContainer,0f,0f,1f, isOrigin = true)
 
                 scaleRatio = 1f
                 lastTouchX = 0f
                 lastTouchY = 0f
+                isOriginLocation = true
+                memoFbtnOriginlocation.setImageResource(R.drawable.ic_location)
+
             }
 
             memoIvGoback.apply{
