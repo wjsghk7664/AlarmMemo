@@ -445,6 +445,15 @@ class MemoActivity : AppCompatActivity() {
             })
 
             memoFbtnOriginlocation.setOnClickListener {
+                memo.bitmapMenu.root.apply {
+                    scaleX = 1f
+                    scaleY = 1f
+                }
+
+                memo.textboxMenu.root.apply {
+                    scaleX = 1f
+                    scaleY = 1f
+                }
                 smoothMove(memoLlContainer,0f,0f,1f, isOrigin = true)
 
                 scaleRatio = 1f
@@ -452,6 +461,8 @@ class MemoActivity : AppCompatActivity() {
                 lastTouchY = 0f
                 isOriginLocation = true
                 memoFbtnOriginlocation.setImageResource(R.drawable.ic_location)
+
+
 
             }
 
@@ -586,6 +597,7 @@ class MemoActivity : AppCompatActivity() {
             interpolator = DecelerateInterpolator()
             addListener(object :Animator.AnimatorListener{
                 override fun onAnimationStart(animation: Animator) {
+                    binding.memoMv.isAnimatorActive = true
                 }
 
                 override fun onAnimationEnd(animation: Animator) {
@@ -594,9 +606,12 @@ class MemoActivity : AppCompatActivity() {
                         binding.memoFbtnOriginlocation.callOnClick()
                         binding.memoFbtnOriginlocation.isPressed = false
                     }
+                    binding.memoMv.isAnimatorActive = false
                 }
 
-                override fun onAnimationCancel(animation: Animator) {}
+                override fun onAnimationCancel(animation: Animator) {
+                    binding.memoMv.isAnimatorActive = false
+                }
 
                 override fun onAnimationRepeat(animation: Animator) {}
 

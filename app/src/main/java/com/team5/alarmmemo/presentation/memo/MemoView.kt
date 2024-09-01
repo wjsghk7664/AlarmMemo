@@ -989,6 +989,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     }
 
     private var touchTime = 0L
+    var isAnimatorActive = false
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
@@ -1013,7 +1014,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             if(!drawActivate&&event.action == MotionEvent.ACTION_UP){
                 (context as MemoActivity).binding.memoEtTitle.clearFocus()
 
-                if(System.currentTimeMillis() - touchTime > 150){
+                if(System.currentTimeMillis() - touchTime > 150||isAnimatorActive){
                     return false
                 }
 
@@ -1129,36 +1130,42 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                         }
                         activatedIdx?.let { it1 ->
                             bitmapMenu.root.visibility = View.VISIBLE
-                            val x = (bitmapRectFs[it1].left+bitmapRectFs[it1].right)/2f - bitmapMenuWidth/2f
-                            bitmapMenu.root.x= if(x+bitmapMenuWidth>width){
-                                width - bitmapMenuWidth
-                            }else if(x<0){
-                                0f
-                            }else{
-                                x
-                            }
-                            val y= bitmapRectFs[it1].top - dpToPx(context,50f)
-                            bitmapMenu.root.y=if(y<0) 0f else y
+                            bitmapMenu.root.post{
+                                val x = (bitmapRectFs[it1].left+bitmapRectFs[it1].right)/2f - bitmapMenuWidth/2f
+                                bitmapMenu.root.x= if(x+bitmapMenuWidth>width){
+                                    width - bitmapMenuWidth
+                                }else if(x<0){
+                                    0f
+                                }else{
+                                    x
+                                }
+                                val y= bitmapRectFs[it1].top - dpToPx(context,50f) - bitmapMenu.root.height - dpToPx(context,15f)/scaleX
+                                bitmapMenu.root.y=if(y<0) 0f else y
 
-                            addHistory(HistoryItem(ActionType.ModifyBitamp,it1,bitmapHistory[it1]?.size))
-                            bitmapHistory[it1]!!.add(RectF(bitmapRectFs[it1]))
+                                addHistory(HistoryItem(ActionType.ModifyBitamp,it1,bitmapHistory[it1]?.size))
+                                bitmapHistory[it1]!!.add(RectF(bitmapRectFs[it1]))
+                            }
+
                         }
 
                         activateTextBox?.let { it2 ->
                             textboxMenu.root.visibility = View.VISIBLE
-                            val x =(textRectFList[it2].left+textRectFList[it2].right)/2f - textMenuWidth/2f
-                            textboxMenu.root.x= if(x+textMenuWidth>width){
-                                width -textMenuWidth
-                            }else if(x<0){
-                                0f
-                            }else{
-                                x
-                            }
-                            val y = textRectFList[it2].top - dpToPx(context,50f)
-                            textboxMenu.root.y = if(y<0) 0f else y
+                            textboxMenu.root.post{
+                                val x =(textRectFList[it2].left+textRectFList[it2].right)/2f - textMenuWidth/2f
+                                textboxMenu.root.x= if(x+textMenuWidth>width){
+                                    width -textMenuWidth
+                                }else if(x<0){
+                                    0f
+                                }else{
+                                    x
+                                }
+                                val y = textRectFList[it2].top - textboxMenu.root.height - dpToPx(context,15f)/scaleX
+                                textboxMenu.root.y = if(y<0) 0f else y
 
-                            addHistory(HistoryItem(ActionType.ModifyTextBox,it2,textboxHistory[it2]?.size))
-                            textboxHistory[it2]!!.add(Triple(String(textList[it2].toCharArray()),RectF(textRectFList[it2]),Paint(textPaintList[it2])))
+                                addHistory(HistoryItem(ActionType.ModifyTextBox,it2,textboxHistory[it2]?.size))
+                                textboxHistory[it2]!!.add(Triple(String(textList[it2].toCharArray()),RectF(textRectFList[it2]),Paint(textPaintList[it2])))
+                            }
+
                         }
                         addDrawActive = false
                         eraserActive=false
