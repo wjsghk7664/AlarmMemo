@@ -29,40 +29,40 @@ class MemoListActivity : AppCompatActivity() {
         showFragment(ListFragment())
 
         with(binding) {
-            memoListTvList.setOnClickListener {
-                with(binding) {
-                    memoListLlNewDropdownMenu.visibility = View.VISIBLE
-                    memoListLlDropdownMenu.visibility = View.VISIBLE
-                    memoListBtnBackButton.visibility = View.GONE
-                }
-            }
-
-            memoListTvSetting.setOnClickListener {
-                with(binding) {
-                    "설정".also { memoListTvTitle.text = it }
-                    memoListLlDropdownMenu.visibility = View.GONE
-                    memoListBtnBackButton.visibility = View.VISIBLE
-                }
-                showFragment(SettingFragment())
-            }
-
-            memoListTvList2.setOnClickListener {
-                "목록".also { memoListTvTitle.text = it }
-                with(binding) {
-                    memoListLlNewDropdownMenu.visibility = View.GONE
-                    memoListLlDropdownMenu.visibility = View.GONE
-                }
-                listFragment(2)
-            }
-
-            memoListTvList3.setOnClickListener {
-                "목록".also { memoListTvTitle.text = it }
-                with(binding) {
-                    memoListLlNewDropdownMenu.visibility = View.GONE
-                    memoListLlDropdownMenu.visibility = View.GONE
-                }
-                listFragment(3)
-            }
+//            memoListTvList.setOnClickListener {
+//                with(binding) {
+//                    memoListLlNewDropdownMenu.visibility = View.VISIBLE
+//                    memoListLlDropdownMenu.visibility = View.VISIBLE
+//                    memoListBtnBackButton.visibility = View.GONE
+//                }
+//            }
+//
+//            memoListTvSetting.setOnClickListener {
+//                with(binding) {
+//                    "설정".also { memoListTvTitle.text = it }
+//                    memoListLlDropdownMenu.visibility = View.GONE
+//                    memoListBtnBackButton.visibility = View.VISIBLE
+//                }
+//                showFragment(SettingFragment())
+//            }
+//
+//            memoListTvList2.setOnClickListener {
+//                "목록".also { memoListTvTitle.text = it }
+//                with(binding) {
+//                    memoListLlNewDropdownMenu.visibility = View.GONE
+//                    memoListLlDropdownMenu.visibility = View.GONE
+//                }
+//                listFragment(2)
+//            }
+//
+//            memoListTvList3.setOnClickListener {
+//                "목록".also { memoListTvTitle.text = it }
+//                with(binding) {
+//                    memoListLlNewDropdownMenu.visibility = View.GONE
+//                    memoListLlDropdownMenu.visibility = View.GONE
+//                }
+//                listFragment(3)
+//            }
 
             memoListBtnBackButton.setOnClickListener {
                 "목록".also { memoListTvTitle.text = it }
@@ -101,16 +101,16 @@ class MemoListActivity : AppCompatActivity() {
         }
     }
 
-    private fun listFragment(spanCount : Int) {
-        val fragment = ListFragment().apply {
-            arguments = Bundle().apply {
-                putInt("spanCount", spanCount)
-                Log.d("ListActivity", spanCount.toString())
-            }
-        }
-
-        showFragment(fragment)
-    }
+//    private fun listFragment(spanCount : Int) {
+//        val fragment = ListFragment().apply {
+//            arguments = Bundle().apply {
+//                putInt("spanCount", spanCount)
+//                Log.d("ListActivity", spanCount.toString())
+//            }
+//        }
+//
+//        showFragment(fragment)
+//    }
 
     private fun showFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
