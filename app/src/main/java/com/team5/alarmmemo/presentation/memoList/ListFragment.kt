@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
-import android.graphics.Color
 import android.util.Log
 import androidx.fragment.app.activityViewModels
 import com.team5.alarmmemo.databinding.FragmentListBinding
@@ -19,10 +18,10 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: MemoListAdapter
-//    private var sampleData = listOf<ListItem>()
-//    private var number = 0
     private var check = false
     private val listViewModel: ListViewModel by activityViewModels()
+//    private var sampleData = listOf<ListItem>()
+//    private var number = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,68 +59,40 @@ class ListFragment : Fragment() {
             }
 
             memoListTvSpinner.setOnClickListener {
-//                showDropDownMenu()
+                if (check) {
+                    binding.motionLayout.transitionToStart()
+                } else {
+                    binding.motionLayout.transitionToEnd()
+                }
+                check = !check
             }
 
             memoListTvSortTime.setOnClickListener {
-//            adapter.submitList(sampleData)
                 "시간순".also { binding.memoListTvSpinner.text = it }
+                val currentList = listViewModel.sampleData.value ?: listOf()
+                val sortedList = currentList.sortedBy { it.date }
+                adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
             }
 
             memoListTvSortTitle.setOnClickListener {
-//            adapter.submitList(sampleData)
                 "제목순".also { binding.memoListTvSpinner.text = it }
+                val currentList = listViewModel.sampleData.value ?: listOf()
+                val sortedList = currentList.sortedBy { it.title }
+                adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
             }
 
             memoListIvDropDownButton.setOnClickListener {
-                val currentList = listViewModel.sampleData.value ?: listOf()
                 if (!check) {
-                    val sortedList = currentList.sortedByDescending { it.number }
-                    adapter.submitList(sortedList)
                     binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
-                    check = true
                 } else {
-                    val sortedList = currentList.sortedBy { it.number }
-                    adapter.submitList(sortedList)
                     binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
-                    check = false
                 }
+                check = !check
             }
         }
     }
-
-//    private fun showDropDownMenu() {
-//        if (check) {
-//            with(binding) {
-//                sortLatest.visibility = View.GONE
-//                sortOldest.visibility = View.GONE
-//                motionLayout.transitionToEnd()
-//                tvSpinner.setBackgroundColor(Color.TRANSPARENT)
-//            }
-//            check = false
-//        } else {
-//            with(binding) {
-//                sortLatest.visibility = View.VISIBLE
-//                sortOldest.visibility = View.VISIBLE
-//                motionLayout.transitionToEnd()
-//                tvSpinner.setBackgroundColor(Color.WHITE)
-//            }
-//            check = true
-//        }
-//    }
-
-//    private fun addSampleItem() {
-//        val item = ListItem(
-//            number = number++,
-//            title = "새 메모",
-//            date = "2024-08-28",
-//            image = R.mipmap.ic_launcher
-//        )
-//        sampleData += item
-//        adapter.submitList(sampleData.toMutableList())
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()

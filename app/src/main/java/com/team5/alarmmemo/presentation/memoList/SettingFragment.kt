@@ -1,5 +1,6 @@
 package com.team5.alarmmemo.presentation.memoList
 
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -37,6 +38,8 @@ class SettingFragment : Fragment() {
             profileLogoutButton.setOnClickListener {
                 val intent = Intent(requireContext(), LoginActivity::class.java)
                 startActivity(intent)
+
+                Toast.makeText(requireContext(), "로그 아웃 완료!.", Toast.LENGTH_SHORT).show()
             }
 
             profileDeleteButton.setOnClickListener {
@@ -55,17 +58,32 @@ class SettingFragment : Fragment() {
         val listener = DialogInterface.OnClickListener { _, _ ->
             val newName = dialogBinding.dialogInput.text.toString()
             if (newName.isNotEmpty()) {
+                saveData(newName)
                 binding.profileTvNameText.text = newName
             } else {
-                Toast.makeText(requireContext(), "이름을 입력해 주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "이름을 변경하지 않았습니다.", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
+            loadData()
         }
 
         builder.setPositiveButton("이름 변경", listener)
         builder.setNegativeButton("취소", null)
 
         builder.show()
+    }
+
+    private fun saveData(newName: String) {
+        val preferences = requireContext().getSharedPreferences("newName", Context.MODE_PRIVATE)
+        val edit = preferences.edit()
+        edit.putString("name", newName)
+        edit.apply()
+    }
+
+    private fun loadData() {
+        val preferences = requireContext().getSharedPreferences("newName", Context.MODE_PRIVATE)
+        val saveNewName = preferences.getString("name", "설정")
+        binding.profileTvNameText.text = saveNewName
     }
 
     override fun onDestroyView() {

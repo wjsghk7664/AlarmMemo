@@ -12,10 +12,10 @@
         android:id="@+id/memoList_cl_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingVertical="4dp"
+        android:background="@drawable/spinner_corner_border_box"
         android:elevation="4dp"
         android:paddingHorizontal="12dp"
-        android:background="@drawable/spinner_corner_border_box">
+        android:paddingVertical="4dp">
 
         <TextView
             android:id="@+id/memoList_tv_Spinner"
@@ -67,10 +67,10 @@
         android:id="@+id/memoList_rv_memoList"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="48dp"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

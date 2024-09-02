@@ -99,17 +99,6 @@ class MemoListActivity : AppCompatActivity() {
                 }
             }
         }
-
-//        var check = false
-//        binding.memoListIvSettingButton.setOnClickListener {
-//            if (!check) {
-//                binding.memoListLlDropdownMenu.visibility = View.VISIBLE
-//                check = true
-//            } else {
-//                binding.memoListLlDropdownMenu.visibility = View.GONE
-//                check = false
-//            }
-//        }
     }
 
     private fun listFragment(spanCount : Int) {

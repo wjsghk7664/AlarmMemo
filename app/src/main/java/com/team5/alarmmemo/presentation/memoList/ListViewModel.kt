@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.team5.alarmmemo.R
 
-// ViewModel 일단 임시 생성
 class ListViewModel : ViewModel() {
     private val _sampleData = MutableLiveData<List<ListItem>>()
     val sampleData: LiveData<List<ListItem>> get() = _sampleData

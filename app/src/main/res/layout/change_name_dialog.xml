@@ -9,7 +9,7 @@
         android:id="@+id/dialog_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="변경할 이름을 입력하세요"
+        android:hint="@string/dialog_et_dialog_change_name"
         android:inputType="text"
         tools:ignore="Autofill,MissingConstraints" />
 
