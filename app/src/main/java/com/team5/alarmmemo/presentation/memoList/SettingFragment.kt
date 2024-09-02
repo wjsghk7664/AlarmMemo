@@ -67,7 +67,7 @@ class SettingFragment : Fragment() {
             loadData()
         }
 
-        builder.setPositiveButton("이름 변경", listener)
+        builder.setPositiveButton("변경", listener)
         builder.setNegativeButton("취소", null)
 
         builder.show()
@@ -82,7 +82,7 @@ class SettingFragment : Fragment() {
 
     private fun loadData() {
         val preferences = requireContext().getSharedPreferences("newName", Context.MODE_PRIVATE)
-        val saveNewName = preferences.getString("name", "설정")
+        val saveNewName = preferences.getString("name", "테스트")
         binding.profileTvNameText.text = saveNewName
     }
 
