@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
-import android.util.Log
 import androidx.fragment.app.activityViewModels
 import com.team5.alarmmemo.databinding.FragmentListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
@@ -43,13 +42,13 @@ class ListFragment : Fragment() {
         )
 
         val spanCount = arguments?.getInt("spanCount") ?: 2
-        Log.d("ListFragment", spanCount.toString())
+
         with(binding) {
             memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
             memoListRvMemoList.adapter = adapter
         }
 
-        listViewModel.sampleData.observe(viewLifecycleOwner){ sampleData ->
+        listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
             adapter.submitList(sampleData)
         }
 
