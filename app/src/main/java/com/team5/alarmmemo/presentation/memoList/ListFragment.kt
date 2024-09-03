@@ -19,6 +19,7 @@ class ListFragment : Fragment() {
     private lateinit var adapter: MemoListAdapter
     private var check = false
     private val listViewModel: ListViewModel by activityViewModels()
+    private var spanCount = 2
 //    private var sampleData = listOf<ListItem>()
 //    private var number = 0
 
@@ -40,8 +41,6 @@ class ListFragment : Fragment() {
                 startActivity(intent)
             }
         )
-
-        val spanCount = arguments?.getInt("spanCount") ?: 2
 
         with(binding) {
             memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
@@ -89,6 +88,14 @@ class ListFragment : Fragment() {
                     binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
                 }
                 check = !check
+            }
+
+            memoListIvFilterButton.setOnClickListener {
+                val bottomSheet = BottomSheetFragment { newSpanCount ->
+                    spanCount = newSpanCount
+                    binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+                }
+                bottomSheet.show(childFragmentManager, bottomSheet.tag)
             }
         }
     }
