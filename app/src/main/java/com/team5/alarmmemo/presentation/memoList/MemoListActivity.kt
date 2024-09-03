@@ -24,6 +24,7 @@ class MemoListActivity : AppCompatActivity() {
             "목록".also { binding.memoListTvTitle.text = it }
             supportFragmentManager.popBackStack("setting", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             binding.memoListBtnBackButton.visibility = View.GONE
+            showFragment(ListFragment())
 
             if (System.currentTimeMillis() - backPressedTime <= 2000) {
                 finish()
@@ -54,12 +55,13 @@ class MemoListActivity : AppCompatActivity() {
     }
 
     private fun initView() = with(binding) {
-//        memoListBtnBackButton.setOnClickListener {
+        memoListBtnBackButton.setOnClickListener {
 //            "목록".also { memoListTvTitle.text = it }
 //            memoListBtnBackButton.visibility = View.GONE
-
-//                showFragment(ListFragment())
-//        }
+//
+//            showFragment(ListFragment())
+            onBackPressedCallback.handleOnBackPressed()
+        }
 
         var check = false
         memoListIvSettingButton.setOnClickListener {
