@@ -63,6 +63,16 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <ImageView
+        android:id="@+id/memoList_iv_filter_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/filter"
+        app:layout_constraintTop_toTopOf="@id/memoList_cl_spinner"
+        app:layout_constraintBottom_toBottomOf="@id/memoList_cl_spinner"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/memoList_rv_memoList"
         android:layout_width="0dp"

@@ -92,11 +92,6 @@ class MemoListActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
-        memoListIvFilterButton.setOnClickListener {
-            Toast.makeText(this@MemoListActivity, "아직 미구현 버튼 입니다. 필터 버튼 추가", Toast.LENGTH_SHORT).show()
-            return@setOnClickListener
-        }
     }
 
 //    private fun listFragment(spanCount : Int) {
