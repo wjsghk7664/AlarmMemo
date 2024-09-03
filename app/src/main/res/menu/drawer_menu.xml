@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_oss"
-        android:title="라이센스"/>
+        android:title="@string/drawer_item_license"/>
 
     <item
         android:id="@+id/navigation_profile"
-        android:title="프로필"/>
+        android:title="@string/drawer_item_profile"/>
 </menu>

@@ -31,6 +31,10 @@
     <string name="profile_tv_logout_text">로그아웃</string>
     <string name="profile_tv_delete_profile_text">회원 탈퇴</string>
 
+    <!---drawer_menu.xml 의 strings.xml 입니다.-->
+    <string name="drawer_item_license">라이센스</string>
+    <string name="drawer_item_profile">프로필</string>
+
     <!--activity_login.xml 의 strings.xml 입니다 -->
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">id</string>
