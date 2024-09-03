@@ -66,6 +66,9 @@ class MemoActivity : AppCompatActivity() {
 
     private var animatorSet: AnimatorSet? =null
 
+    @Volatile
+    var init = true
+
     private inner class ScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener(){
 
         override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
@@ -317,6 +320,9 @@ class MemoActivity : AppCompatActivity() {
 
         })
 
+        memoEtAddTextBox.keyListener = null
+        memoEtAddTextBox.visibility = View.GONE
+
         memoLlContainer.translationZ = -1f
 
         memoLlContainer.scaleDetector = ScaleGestureDetector(binding.memoLlContainer.context,ScaleListener())
@@ -387,6 +393,7 @@ class MemoActivity : AppCompatActivity() {
             val fontAdapter= ArrayAdapter(this@MemoActivity, R.layout.spinner_item,fontList).apply {
                 setDropDownViewResource(R.layout.spinner_dropdown_item)
             }
+
             adapter = fontAdapter
             setSelection(4)
             onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
@@ -396,6 +403,11 @@ class MemoActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
+                    if(init) {
+                        init = false
+                        return
+                    }
+                    Log.d("텍스트 크기 설정",fontList[position].toString())
                     memoMv.setTextSize(dpToPx(this@MemoActivity,fontList[position].toFloat()))
                 }
 
@@ -475,9 +487,28 @@ class MemoActivity : AppCompatActivity() {
                 isClickable = false
             }
 
+//            memo.setOnStyleButtonNotifyListener(object : MemoView.OnStyleButtonNotifyListener{
+//                override fun onStyleButtonNotify(style: MemoView.StringStyle) {
+//                    memoIvBold.apply {
+//                        isSelected = style.isBold
+//                        if(isSelected){
+//                            imageTintList = getColorStateList(R.color.orange)
+//                        }else{
+//                            imageTintList = getColorStateList(R.color.black)
+//                        }
+//                    }
+//                    memoIvTextcolor.imageTintList = ColorStateList.valueOf(style.color)
+//                    Log.d("텍스트 크기",(pxToDp(this@MemoActivity,style.size).toInt()+4).toString())
+//                    init = true
+//                    memoSpTextsize.setSelection(pxToDp(this@MemoActivity,style.size).toInt())
+//                }
+//
+//            })
+
 
             memo.setOnActivateHistoryBtnListener(object :MemoView.OnActivateHistoryBtnListener{
                 override fun onActivateHistoryBtn(max: Int, cur: Int) {
+                    Log.d("히스토리 버튼 리스너","${max} / ${cur}")
                     memoIvGoback.imageTintList= if(cur>=0) {
                         memoIvGoback.isClickable = true
                         getColorStateList(R.color.black)

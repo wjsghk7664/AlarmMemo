@@ -27,6 +27,7 @@ import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
@@ -42,6 +43,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
+import androidx.core.widget.addTextChangedListener
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.MemoBitmapMenuBinding
 import com.team5.alarmmemo.databinding.MemoTextboxMenuBinding
@@ -51,6 +53,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -72,6 +75,8 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     private var onActivateHistoryBtnListener: OnActivateHistoryBtnListener? = null
 
+    private var onStyleButtonNotifyListener: OnStyleButtonNotifyListener? = null
+
     private var modifyTextBoxListener:OnModifyTextBoxListener? = null
 
     interface OnModifyTextBoxListener{
@@ -82,6 +87,10 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         fun onActivateHistoryBtn(max:Int, cur:Int)
     }
 
+    interface OnStyleButtonNotifyListener{
+        fun onStyleButtonNotify(style:StringStyle)
+    }
+
     fun setOnModifyTextBoxListener(listener: OnModifyTextBoxListener){
         modifyTextBoxListener = listener
     }
@@ -90,8 +99,13 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         onActivateHistoryBtnListener = listener
     }
 
+    fun setOnStyleButtonNotifyListener(listener: OnStyleButtonNotifyListener){
+        onStyleButtonNotifyListener = listener
+    }
+
     //히스토리
     private val drawHistory = ArrayDeque<HistoryItem>()
+    @Volatile
     private var curDrawHistory = -1
 
     private val textboxHistory = HashMap<Int,ArrayList<Triple<String,RectF,Paint>>>()
@@ -195,28 +209,43 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     private var selStart = 0
     private var selEnd = 0
-    private var zidxString = 0
-    private var setterFlag = false
+    private var selBefore = 0
 
     private var textSize = dpToPx(context,8f)
     private var isBold = false
     private var textColor = Color.BLACK
 
-    private var curStart = 0
-    private var curCount = 0
 
     private var isSettingChanged = false
+    private var isSelectionChanged = false
     private var changedFocus = false
-
-    private var prevStart = 0
-    private var prevEnd = 0
 
     private var historyMove = false
 
+    private var textCheck:String? = ""
 
+    private var zidxText = 0
+
+    private var settingEdit = false
+
+    private var prevSelectionStart = 0
+    private var prevSelectionEnd = 0
+
+    private var newEditable:Editable? = null
+    private var isSettingChangeActive = false
+    private var isSelectionChangeActive = false
+
+    private var lastTextHistoryItem:HistoryItem? =null
+
+    private var initText = true
+
+    private var targetZIdx = 0
+
+    private var textBackSaveActive = false
 
     val textMain by lazy {
         CustomEditText(context).apply {
+            setText("")
             setTextColor(Color.BLACK)
             setBackgroundColor(Color.TRANSPARENT)
             setTypeface(typeface,Typeface.NORMAL)
@@ -238,104 +267,116 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                 }
             }
 
-            //selection이 바뀌는건 action_Up일때 바뀜
-            //즉, 터치이벤트에서 action_down일때 prevSelection을 저장하고 onSelectionChanged에서 Exclusive-inclusive로 span지정하면됨
+
             setOnSelectionChangedListener(object :CustomEditText.OnSelectionChangedListener{
+                override fun onStartSelectionChange(prevStart: Int, prevEnd: Int) {
+
+                }
+
                 override fun onSelectionChanged(selStart: Int, selEnd: Int) {
 
-                    if((selEnd == 0&&changedFocus)||selEnd==prevStart||setterFlag){
-                        Log.d("메모 셀렉션 세팅","${prevStart},${prevEnd}")
-                        if(historyMove&&selEnd == text?.length?:0){
-                            historyMove = false
+                    if(selEnd==selStart&&text!=null&&textCheck==text?.toString()){
+                        val spans = text!!.getSpans(selEnd,selEnd, Any::class.java)
+                        var style:Boolean? =null
+                        var size:Int? =null
+                        var color:Int? =null
+                        for(i in spans){
+                            when(i){
+                                is StyleSpan -> style = i.style == Typeface.BOLD
+                                is ForegroundColorSpan -> color = i.foregroundColor
+                                is AbsoluteSizeSpan -> {
+                                    size = i.size
+                                    Log.d("텍스트 사이즈",size.toString())
+                                    Log.d("변환값",context.resources.displayMetrics.density.toString())
+                                }
+                            }
                         }
-                        else if(prevEnd !in 0..(text?.length?:0)){
-                            setSelection(text?.length?:0,text?.length?:0)
-                        }else{
-                            setSelection(prevStart,prevEnd)
-                        }
-
-                    }else{
-                        prevStart = selStart
-                        prevEnd = selEnd
+                        val stringStyle=StringStyle(size?.toFloat()?:8f,style?:false,color?:Color.BLACK)
+                        onStyleButtonNotifyListener?.onStyleButtonNotify(stringStyle)
+                        Log.d("스타일 변경",stringStyle.toString())
                     }
-                    Log.d("메모 셀렉션","${prevStart},${prevEnd}")
+
+                    Log.d("변경점","${textCheck} / ${text.toString()} / ${selStart} / ${selEnd}")
+
+                    //selection만 바꾼경우
+                    //이때만 selection을 여기서 바꿔줌
+                    //selection이 바뀐경우 텍스트 바뀌기 전 값을 저장해두도록 변수설정
+                    //save과정에서 setting되는 경우와 setSelection으로 바뀌는 경우는 예외처리
+                    if(textCheck==text?.toString()){
+
+                        Log.d("셀렉션 변경","ㅇㅇ")
+                        isSelectionChanged = true
+                        if(!isSelectionChangeActive&&text?.isNotEmpty()?:false){
+                            isSelectionChangeActive = true
+
+                            if(historyMove){
+                                return
+                            }
+                            if(initText){
+                                initText = false
+                                return
+                            }
+                            Log.d("추가지점","1")
+                            saveHistoryOfEditable(text)
+                        }
+                        this@MemoView.selStart = selStart
+                        this@MemoView.selEnd = selEnd
 
 
+                    }
+                    textCheck = text?.toString()
                 }
 
             })
 
-
-            addTextChangedListener(object : TextWatcher{
+            addTextChangedListener(object :TextWatcher{
                 override fun beforeTextChanged(
                     s: CharSequence?,
                     start: Int,
                     count: Int,
                     after: Int
                 ) {
-                    if(setterFlag) return
-
-                    //여러문자 추가전에 히스토리 저장
-                    //selection이 바뀌면 히스토리 저장
-                    if(count>1||after>1||(curString.isEmpty()&&(text?:"").isEmpty())||isSettingChanged||changedFocus){
-                        curString = deepCopyOfSpannableStringBuilder(curString)
-                        addHistory(HistoryItem(ActionType.ModifyText,zidxString++,curString))
-                    }else if(selEnd!=start+count){
-                        curString = deepCopyOfSpannableStringBuilder(curString)
-                        addHistory(HistoryItem(ActionType.ModifyText,zidxString++,curString))
+                    if(initText){
+                        saveHistoryOfEditable(text)
                     }
-                    isSettingChanged = false
-                    changedFocus=false
-                    Log.d("메모 히스토리 텍스트값","start:${start} / count:${count} / after:${after} / selEnd:${selEnd}")
-                    Log.d("메모 히스토리 내역",drawHistory.toString())
+                    if(historyMove){
+                        saveHistoryOfEditable(text)
+                        historyMove = false
+                    }
+                    if(settingEdit) return
+                    isSettingChangeActive = false
+                    isSelectionChangeActive = false
+                    textBackSaveActive = true
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-                    //setter로 변경되는 경우는 넘김
-                    if(setterFlag) return
-
-                    curStart = start
-                    curCount = count
-                    //삭제 부터 처리
-                    if(before>0){
-                        curString = modifyText(Pair(start,start+before),"",curString,false)
-                    }
-                    //텍스트 추가
-                    if(count>0){
-                        val addString = s?.slice(start..start+count-1)?.toString()?:""
-                        curString = modifyText(Pair(start,start+1),addString,curString,true)
-
-                        val style = StringStyle(dpToPx(context,this@MemoView.textSize),isBold, textColor)
-                        curString = modifyStyle(Pair(start,start+count),style,curString)
-
-                    }
-                    selEnd=start + count
-                    Log.d("메모 히스토리 curstring",curString.toString())
-
-
+                    if(settingEdit) return
+                    selStart = start
+                    selBefore = before
+                    selEnd = start + count
+                    Log.d("메모 값","${start}/${before}/${count}")
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    Log.d("메모 텍스트 변경완료", curString.toString())
-                    if(!setterFlag){
-                        s?.let {
-                            if(curCount==0) return
-                            val style = StringStyle(dpToPx(context,this@MemoView.textSize),isBold, textColor)
-                            modifyEditableStyle(curStart,curStart+curCount,it,style)
-                            Log.d("메모 히스토리 스팬범위","${curStart},${curCount}")
-                        }
+                    if(settingEdit) {
+                        settingEdit = false
+                        return
                     }
-
-
-
-
-
-                    setterFlag = false
+                    if(isSettingChanged||isSelectionChanged){
+                        modifyRangeText(selStart,selEnd,s)
+                        isSettingChanged = false
+                        isSelectionChanged = false
+                    }
+                    post {
+                        lastTextHistoryItem?.data = s
+                        Log.d("추가 히스토리",drawHistory.toString())
+                    }
 
                 }
 
             })
+
 
             setOnTouchListener { v, event ->
                 if(drawActivate){
@@ -350,7 +391,6 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         }
 
     }
-
 
     var isScaling = false
 
@@ -384,8 +424,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     private val spanOder = HashMap<Any,Int>()
     private var spanIdx = 0
 
-    @Volatile
-    private var curString = SpannableStringBuilder("")
+
 
 
     fun deepCopyOfSpannableStringBuilder(spannableStringBuilder: SpannableStringBuilder):SpannableStringBuilder{
@@ -405,60 +444,46 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     }
 
 
-    fun modifyEditableStyle(s:Int, e:Int, editable: Editable, modifiedStyle:StringStyle){
-        try{
-            editable.apply {
-                val abSpan = AbsoluteSizeSpan(modifiedStyle.size.toInt(),false)
-                val stSpan = StyleSpan(if(modifiedStyle.isBold) Typeface.BOLD else Typeface.NORMAL)
-                val foreSpan = ForegroundColorSpan(modifiedStyle.color)
+    fun modifyEditableStyle(s:Int, e:Int, editable: Editable?, modifiedStyle:StringStyle){
+        Log.d("수정 진입",editable.toString()+": ${s},${e} / "+modifiedStyle.toString())
+        editable?.run {
 
-                spanOder.put(abSpan,spanIdx)
-                spanOder.put(stSpan,spanIdx)
-                spanOder.put(foreSpan,spanIdx)
-                spanIdx++
+            getSpans(s, e, Any::class.java).forEach {
+                if(it is AbsoluteSizeSpan||it is StyleSpan||it is ForegroundColorSpan){
 
-                setSpan(abSpan,s,e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                setSpan(stSpan,s,e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                setSpan(foreSpan,s,e,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+                    val start = getSpanStart(it)
+                    val end = getSpanEnd(it)
+
+                    removeSpan(it)
+                    Log.d("수정 스팬범위","${start},${end}")
+                    if(start<s){
+                        when(it){
+                            is AbsoluteSizeSpan -> setSpan(AbsoluteSizeSpan(it.size, it.dip), start, s,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            is StyleSpan -> setSpan(StyleSpan(it.style), start,s,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            is ForegroundColorSpan -> setSpan(ForegroundColorSpan(it.foregroundColor), start,s,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        }
+                    }
+                    if(end>e){
+                        when(it){
+                            is AbsoluteSizeSpan -> setSpan(AbsoluteSizeSpan(it.size, it.dip), e,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            is StyleSpan -> setSpan(StyleSpan(it.style), e,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            is ForegroundColorSpan -> setSpan(ForegroundColorSpan(it.foregroundColor), e,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        }
+                    }
+                }
             }
-        }catch (e:Exception){}
 
-    }
+            val abSpan = AbsoluteSizeSpan(modifiedStyle.size.toInt(),false)
+            val stSpan = StyleSpan(if(modifiedStyle.isBold) Typeface.BOLD else Typeface.NORMAL)
+            val foreSpan = ForegroundColorSpan(modifiedStyle.color)
 
-    fun modifyText(modifyIndex:Pair<Int,Int>,modifiedText:String, spannableText: SpannableStringBuilder,isAdd:Boolean): SpannableStringBuilder {
-        val result = spannableText
-        val (s,e) = modifyIndex
-        Log.d("메모 수정 인덱스",modifyIndex.toString())
-        return runCatching{
-            if (e - s <= 1 && isAdd) result.insert(s, modifiedText) else result.replace(
-                s,
-                e,
-                modifiedText
-            )
-        }.getOrNull()?:spannableText
-    }
-
-    fun modifyStyle(modifyIndex: Pair<Int, Int>, modifiedStyle: StringStyle, spannableText: SpannableStringBuilder): SpannableStringBuilder {
-        val result = spannableText
-        val (s,e) = modifyIndex
-
-        return result.apply {
-            runCatching {
-                val abSpan = AbsoluteSizeSpan(modifiedStyle.size.toInt(),false)
-                val stSpan = StyleSpan(if(modifiedStyle.isBold) Typeface.BOLD else Typeface.NORMAL)
-                val foreSpan = ForegroundColorSpan(modifiedStyle.color)
-
-                spanOder.put(abSpan,spanIdx)
-                spanOder.put(stSpan,spanIdx)
-                spanOder.put(foreSpan,spanIdx)
-                spanIdx++
-
-                setSpan(abSpan,s,e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                setSpan(stSpan,s,e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                setSpan(foreSpan,s,e,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            }.getOrNull()?:spannableText
+            setSpan(abSpan,s,e, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            setSpan(stSpan,s,e, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            setSpan(foreSpan,s,e,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
 
         }
+
     }
 
     data class StringStyle(
@@ -469,32 +494,70 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     fun setBold(isBold: Boolean){
         this.isBold = isBold
-        isSettingChanged = true
-        modifyRangeText()
+        settingEditable()
     }
 
     fun setTextSize(size:Float){
         textSize = size
-        isSettingChanged = true
-        modifyRangeText()
+        settingEditable()
     }
 
     fun setTextColor(color:Int){
         textColor = color
-        isSettingChanged =true
-        modifyRangeText()
-
+        settingEditable()
     }
 
-    fun modifyRangeText(){
-        val style = StringStyle(dpToPx(context,this@MemoView.textSize),isBold, textColor)
-        modifyStyle(Pair(textMain.selectionStart,textMain.selectionEnd),style,curString)
-        setterFlag = true
-        textMain.setText(curString)
-        post{
-            textMain.clearFocus()
-            textMain.requestFocus()
+    fun settingEditable(){
+        selStart = textMain.selectionStart
+        selEnd = textMain.selectionEnd
+        if(!isSettingChangeActive){
+            targetZIdx = zidxText+1
+            saveHistoryOfEditable(textMain.text)
+            Log.d("추가지점","2")
+            isSettingChangeActive = true
         }
+        if(selEnd-selStart>1){
+            settingEditText()
+            textMain.post {
+                modifyRangeText(selStart,selEnd,textMain.text)
+            }
+        }else{
+            isSettingChanged = true
+        }
+    }
+
+    fun saveHistoryOfEditable(editable: Editable?, isTextHistoryBack:Boolean = false){
+
+        editable?.let {
+            drawHistory.removeIf { it.action==ActionType.InitText }
+            textBackSaveActive = false
+            textMain.post {
+                newEditable = deepCopyOfSpannableStringBuilder(it as SpannableStringBuilder)
+                Log.d("새 eidtable추가",newEditable.toString())
+                lastTextHistoryItem =HistoryItem(ActionType.ModifyText,zidxText++,newEditable)
+                addHistory(lastTextHistoryItem!!,isTextHistoryBack)
+                Log.d("추가지점 히스토리",drawHistory.toString())
+            }
+
+        }
+    }
+
+    fun settingEditText(){
+        prevSelectionStart = textMain.selectionStart
+        prevSelectionEnd = textMain.selectionEnd
+        settingEdit =true
+        textMain.post {
+            textMain.text = newEditable
+            Log.d("세팅 텍스트","${textMain.text},${newEditable}")
+            textMain.setSelection(prevSelectionStart,prevSelectionEnd)
+        }
+    }
+
+
+    //시작 텍스트가 없는 상태에서 지정하면 오류가 나기때문에 첫 글자가 타이핑되는 타이밍에 서식을 지정해야함
+    fun modifyRangeText(s:Int,e:Int, editable: Editable?){
+        val style = StringStyle(dpToPx(context,this@MemoView.textSize),isBold, textColor)
+        modifyEditableStyle(s,e,editable,style)
 
     }
 
@@ -504,6 +567,11 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         drawActivate=isDrawActive
         textMain.clearFocus()
         if(!isDrawActive) {
+            if(textBackSaveActive){
+                targetZIdx = zidxText+1
+                saveHistoryOfEditable(textMain.text)
+                Log.d("추가지점","3")
+            }
             outerFocusTextBox = false
             outerFocusTitle = false
             textMain.requestFocus()
@@ -522,7 +590,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         invalidate()
     }
 
-    private fun addHistory(historyItem: HistoryItem){
+    private fun addHistory(historyItem: HistoryItem,isTextHistoryBack: Boolean = false){
         if(curDrawHistory!=drawHistory.size-1){
             for(i in curDrawHistory+1..drawHistory.size-1){
                 drawHistory.removeLast()
@@ -531,29 +599,59 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         drawHistory.addLast(historyItem)
         curDrawHistory=drawHistory.size-1
 
-        if(curDrawHistory>3){
-            fixedDrawList = generateFilteredList(0)
+        if(curDrawHistory>50){
+            val gen = generateFilteredList(0)
+            fixedDrawList = gen.first
+            fixedString = gen.second
             drawHistory.removeFirst()
             curDrawHistory--
         }
+        if(isTextHistoryBack){
+            curDrawHistory--
+        }
+
 
         onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
 
     }
 
+    //뒤로가기나 앞으로가기 후 새 텍스트를 작성하면 히스토리 저장
+    fun isLastHistoryText():Boolean{
+        if(curDrawHistory!=drawHistory.size-1) return false
+        val lastAction =drawHistory.last().action
+        return if(lastAction==ActionType.ModifyText||lastAction==ActionType.InitText) true else false
+    }
+
     fun historyGoBack(){
-        textMain.clearFocus()
+        if(!drawActivate){
+            textMain.clearFocus()
+        }
+        historyMove = true
+        Log.d("현재 인덱스 전","${curDrawHistory} / ${drawHistory.size-1}")
         textMain.post{
             if(curDrawHistory>=0){
-                curDrawHistory--
-                activateTextBox = null
-                activatedIdx = null
+                //마지막 글은 다른 작업으로 넘어가거나 뒤로가기시 저장
+                //다른작업으로 넘어감:drawactive가 변경되는 시점
+                //뒤로가기시: 히스토리의 마지막이 modifytext나 inittext인 경우이면서 textBacksaveActive가 true인경우
+//                if(!drawActivate&&textBackSaveActive&&isLastHistoryText()){
+//                    targetZIdx = zidxText +1
+//                    saveHistoryOfEditable(textMain.text,true)
+//                    Log.d("추가지점","4")
+//                }
 
-                invalidate()
-                onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
-                historyMove = true
+                textMain.post {
+                    curDrawHistory--
+                    activateTextBox = null
+                    activatedIdx = null
+                    Log.d("현재 인덱스 후","${curDrawHistory} / ${drawHistory.size-1}")
+                    onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
+
+                    invalidate()
+                }
+
             }
         }
+
 
 
     }
@@ -564,9 +662,10 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
             curDrawHistory++
             activateTextBox = null
             activatedIdx = null
-            invalidate()
-            onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
             historyMove = true
+            onActivateHistoryBtnListener?.onActivateHistoryBtn(drawHistory.size-1,curDrawHistory)
+
+            invalidate()
         }
     }
 
@@ -854,7 +953,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     private fun setActivate(x:Float?,y:Float?){
         if(x==null||y==null) return
-        val list= generateFilteredList()
+        val list= generateFilteredList().first
         list.forEach {
             if(it.type== MemoType.TextBox){
                 val (text,rectf,paint) = it.data as Triple<String,RectF,Paint>
@@ -921,10 +1020,11 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
 
     //true면 고정 히스토리 제너레이트
-    fun generateFilteredList(upper:Int = curDrawHistory, type:Boolean = false):ArrayList<CheckItem>{
-        Log.d("메모 히스토리",drawHistory.toString())
+    private fun generateFilteredList(upper:Int = curDrawHistory, type:Boolean = false):Triple<ArrayList<CheckItem>,SpannableStringBuilder,Int>{
+        Log.d("메모 추가 히스토리",drawHistory.toString())
         val list = ArrayList<CheckItem>(fixedDrawList)
-        var isTextExist = false
+        var string = fixedString
+        var stringIdx = 0
         drawHistory.filterIndexed { index, historyItem -> index<=upper }.forEach {
             when(it.action){
                 ActionType.EraseTextBox -> list.remove(CheckItem(MemoType.TextBox, textboxHistory[it.zidx]!!.last(),it.zidx))
@@ -934,13 +1034,8 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                 ActionType.AddDraw -> list+= CheckItem(MemoType.Draw,it.data,it.zidx)
                 ActionType.AddBitmap -> list+= CheckItem(MemoType.Bitmap,Pair(bitmaps[it.zidx],bitmapHistory[it.zidx]!![0]),it.zidx)
                 ActionType.ModifyText -> {
-                    if(!type){
-                        isTextExist = true
-                        curString = it.data as SpannableStringBuilder
-                    }else{
-                        fixedString = it.data as SpannableStringBuilder
-                    }
-
+                    string = it.data as SpannableStringBuilder
+                    stringIdx = it.zidx
                 }
                 ActionType.ModifyTextBox -> {
                     val hisIdx = it.data as Int
@@ -954,31 +1049,17 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     val listIdx = list.indexOf(listItem)
                     list[listIdx] = CheckItem(MemoType.Bitmap, Pair(bitmaps[it.zidx],bitmapHistory[it.zidx]!![hisIdx]),it.zidx)
                 }
+
+                ActionType.InitText -> {} //처음 텍스트작성시 히스토리 생성용 더미 값
             }
         }
-        if(!type){
-            if(!isTextExist) curString = deepCopyOfSpannableStringBuilder(curString).apply{ clear() }
-            Log.d("메모 히스토리 텍스트 적용전",curString.toString())
-            setterFlag = true
 
-            val curSelection = textMain.selectionStart
-            textMain.setText(curString)
-            if(curSelection> (textMain.text?:"").length){
-                textMain.setSelection((textMain.text?:"").length)
-            }else{
-                textMain.setSelection(curSelection)
-            }
-
-            Log.d("메모 히스토리 텍스트 적용",curString.toString())
-        }
-
-
-        return list
+        return Triple(list,string,stringIdx)
     }
 
     override fun dispatchDraw(canvas: Canvas) {
 
-        val list =generateFilteredList()
+        val (list,string,stringIdx) =generateFilteredList()
         list.forEach {
             if(it.type== MemoType.Bitmap &&it.zidx == activatedIdx?:-2){
                 canvas.drawBitmap(bitmaps[it.zidx],null,bitmapRectFs[it.zidx],bitmapPaint)
@@ -1019,6 +1100,15 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
         if(eraserActive){
             canvas.drawCircle(curX,curY,20f,Paint().apply { style = Paint.Style.STROKE })
+        }
+
+
+        textMain.post {
+            Log.d("메모 스트링","${historyMove} / "+string.toString())
+            if(historyMove){
+                textMain.text = string
+                lastTextHistoryItem = HistoryItem(ActionType.ModifyText,stringIdx,string)
+            }
         }
 
         super.dispatchDraw(canvas)
@@ -1227,6 +1317,11 @@ fun dpToPx(context: Context, dp:Float): Float{
     )
 }
 
+fun pxToDp(context: Context, px: Float): Float {
+    val metrics = context.resources.displayMetrics
+    return px / (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT).toFloat()
+}
+
 fun getBitmapFromUri(context: Context, uri: Uri):Result<Bitmap>{
     return runCatching {
         val inputStream = context.contentResolver.openInputStream(uri)
@@ -1253,14 +1348,15 @@ enum class ActionType(val type:Int){
     AddBitmap(1),
     ModifyBitamp(2),
     ModifyTextBox(2),
-    ModifyText(2)
+    ModifyText(2),
+    InitText(3)
 
 }
 
 data class HistoryItem(
     val action: ActionType,
     val zidx: Int,
-    val data:Any?
+    var data:Any?
 )
 
 data class CheckItem(

@@ -18,11 +18,13 @@ class CustomEditText:androidx.appcompat.widget.AppCompatEditText {
     private var latestStart = 0
     private var latestEnd =0
 
+
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
         super.onSelectionChanged(selStart, selEnd)
+        onSelectionChangedListener?.onStartSelectionChange(latestStart,latestEnd)
         latestStart = selStart
         latestEnd = selEnd
-        onSelectionChangedListener?.onSelectionChanged(selStart,selEnd)
+        onSelectionChangedListener?.onSelectionChanged(latestStart,latestEnd)
     }
 
     fun setOnSelectionChangedListener(listener: OnSelectionChangedListener){
@@ -32,6 +34,7 @@ class CustomEditText:androidx.appcompat.widget.AppCompatEditText {
     fun callOnSelection() = onSelectionChangedListener?.onSelectionChanged(latestStart,latestEnd)
 
     interface OnSelectionChangedListener{
+        fun onStartSelectionChange(prevStart:Int,prevEnd:Int)
         fun onSelectionChanged(selStart: Int, selEnd: Int)
     }
 
