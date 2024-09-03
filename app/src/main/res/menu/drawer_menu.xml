@@ -1,10 +1,10 @@
 <!-- res/menu/drawer_menu.xml -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/navigation_list"
-        android:title="메모 리스트"/>
+        android:id="@+id/navigation_oss"
+        android:title="라이센스"/>
 
     <item
-        android:id="@+id/navigation_setting"
-        android:title="설정"/>
+        android:id="@+id/navigation_profile"
+        android:title="프로필"/>
 </menu>
