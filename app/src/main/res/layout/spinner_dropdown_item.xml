@@ -6,6 +6,6 @@
     android:paddingLeft="8dp"
     android:paddingVertical="8dp"
     android:maxLines="1"
-    android:textSize="16dp"
+    android:textSize="18dp"
     android:textStyle="bold"
     android:textColor="@color/black"/>

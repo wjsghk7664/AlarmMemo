@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Bundle
@@ -32,6 +33,7 @@ import androidx.core.graphics.translationMatrix
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -143,9 +145,30 @@ class MemoActivity : AppCompatActivity() {
         initView()
     }
 
+    //툴 컨테이너가 아닌 영역에서 시작해야 모션 이벤트 감지가능
+    private var innerFlag = false
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        onTranslationTouchListener.onTouch(binding.memoLlContainer,ev)
+        if(!checkToolContainer(ev?.x,ev?.y)&&ev?.action==MotionEvent.ACTION_DOWN){
+            innerFlag = true
+        }
+        if(checkToolContainer(ev?.x,ev?.y)&&ev?.action==MotionEvent.ACTION_DOWN){
+            innerFlag = false
+        }
+        if(!innerFlag){
+            onTranslationTouchListener.onTouch(binding.memoLlContainer,ev)
+        }
+
         return super.dispatchTouchEvent(ev)
+    }
+
+    //툴 컨테이너가 포함중이면 false반환
+    private fun checkToolContainer(x:Float?,y:Float?):Boolean{
+        if(x==null||y==null) return false
+        val region = Rect()
+
+        binding.memoLlToolContainer.getGlobalVisibleRect(region)
+
+        return if(region.contains(x.toInt(),y.toInt())) false else true
     }
 
     private var lastTouchX = 0f
@@ -165,6 +188,7 @@ class MemoActivity : AppCompatActivity() {
     private inner class TranslationTouchListener: OnTouchListener{
 
         override fun onTouch(v: View, event: MotionEvent?): Boolean {
+
             event?.let {
                 if(event.action ==MotionEvent.ACTION_DOWN&&!isAnimationOrigin) animatorSet?.cancel()
 
@@ -319,6 +343,10 @@ class MemoActivity : AppCompatActivity() {
             }
 
         })
+
+
+
+
 
         memoEtAddTextBox.keyListener = null
         memoEtAddTextBox.visibility = View.GONE

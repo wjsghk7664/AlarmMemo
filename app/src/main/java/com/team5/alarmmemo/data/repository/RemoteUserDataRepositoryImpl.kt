@@ -21,6 +21,7 @@ class RemoteUserDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
         }
     }
 
+
     override fun addOrModifyUserData(user: User, callback: (Boolean, String?) -> Unit) {
         db.collection("User").document(user.emailOrToekn).set(user).addOnSuccessListener {
             callback(true,null)
