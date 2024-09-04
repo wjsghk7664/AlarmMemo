@@ -42,16 +42,17 @@ class ListFragment : Fragment() {
             }
         )
 
+        listViewModel.spanCount.observe(viewLifecycleOwner) { spanCount ->
+            binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+        }
+
         with(binding) {
-            memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
             memoListRvMemoList.adapter = adapter
-        }
 
-        listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
-            adapter.submitList(sampleData)
-        }
+            listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
+                adapter.submitList(sampleData)
+            }
 
-        with(binding) {
             memoListBtnAddButton.setOnClickListener {
                 listViewModel.addSampleItem()
             }
@@ -92,8 +93,7 @@ class ListFragment : Fragment() {
 
             memoListIvFilterButton.setOnClickListener {
                 val bottomSheet = BottomSheetFragment { newSpanCount ->
-                    spanCount = newSpanCount
-                    binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+                    listViewModel.setSpanCount(newSpanCount)
                 }
                 bottomSheet.show(childFragmentManager, bottomSheet.tag)
             }

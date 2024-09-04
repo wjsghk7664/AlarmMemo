@@ -9,6 +9,9 @@ class ListViewModel : ViewModel() {
     private val _sampleData = MutableLiveData<List<ListItem>>()
     val sampleData: LiveData<List<ListItem>> get() = _sampleData
 
+    private val _spanCount = MutableLiveData(2)
+    val spanCount: LiveData<Int> get() = _spanCount
+
     private var number = 0
 
     fun addSampleItem() {
@@ -21,5 +24,9 @@ class ListViewModel : ViewModel() {
         val itemList = _sampleData.value?.toMutableList() ?: mutableListOf()
         itemList.add(item)
         _sampleData.value = itemList
+    }
+
+    fun setSpanCount(count: Int) {
+        _spanCount.value = count
     }
 }
