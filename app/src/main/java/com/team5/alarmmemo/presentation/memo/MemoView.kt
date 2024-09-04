@@ -1,7 +1,5 @@
 package com.team5.alarmmemo.presentation.memo
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,49 +9,33 @@ import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PathMeasure
-import android.graphics.PointF
 import android.graphics.Rect
 import android.graphics.RectF
-import android.graphics.Region
 import android.graphics.Typeface
 import android.net.Uri
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.TextPaint
 import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.util.Log
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
-import androidx.core.widget.addTextChangedListener
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.MemoBitmapMenuBinding
 import com.team5.alarmmemo.databinding.MemoTextboxMenuBinding
+import com.team5.alarmmemo.util.DpPxUtil.dpToPx
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -63,6 +45,9 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     private var fixedDrawList : List<CheckItem> = listOf()
     private var fixedString = SpannableStringBuilder("")
+
+    private var isSettingAutoChagned = false
+
 
     var drawActivate = false
 
@@ -134,29 +119,29 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     var activateTextBox:Int? = null
 
     private var curCase:Int = 0
-    private val minHeight = dpToPx(context,10f)
-    private val minWidth = dpToPx(context,10f)
-    private var borderSize = dpToPx(context,8f)
+    private val minHeight = dpToPx(10f)
+    private val minWidth = dpToPx(10f)
+    private var borderSize = dpToPx(8f)
     private val bitmaps = ArrayList<Bitmap>()
     private val bitmapRectFs = ArrayList<RectF>()
     private val bitmapPaint = Paint()
     private val borderPaint = Paint().apply {
         color = context.getColor(R.color.black)
         style = Paint.Style.STROKE
-        strokeWidth = dpToPx(context,2f)
+        strokeWidth = dpToPx(2f)
         pathEffect = DashPathEffect(floatArrayOf(10f,10f),0f)
     }
     private var drawPaint = Paint().apply {
         color = context.getColor(R.color.black)
         style = Paint.Style.STROKE
-        strokeWidth = dpToPx(context,4f)
+        strokeWidth = dpToPx(4f)
     }
 
 
 
 
-    private val bitmapMenuWidth = dpToPx(context,196f)
-    private val textMenuWidth = dpToPx(context,364f)
+    private val bitmapMenuWidth = dpToPx(196f)
+    private val textMenuWidth = dpToPx(364f)
 
     val bitmapMenu by lazy {
         val inflater = LayoutInflater.from(context)
@@ -207,7 +192,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         }
     }
 
-    private var textSize = dpToPx(context,8f)
+    private var textSize = 24f
     private var isBold = false
     private var textColor = Color.BLACK
 
@@ -235,19 +220,21 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     private var prevStart = 0
 
+    private var prevText = ""
+
     val textMain by lazy {
         CustomEditText(context).apply {
             setText("")
             setTextColor(Color.BLACK)
             setBackgroundColor(Color.TRANSPARENT)
             setTypeface(typeface,Typeface.NORMAL)
-            textSize = dpToPx(context,8f)
+            textSize = 24f
             gravity = Gravity.START
             setPadding(
-                dpToPx(context,12f).toInt(),
-                dpToPx(context,12f).toInt(),
-                dpToPx(context,12f).toInt(),
-                dpToPx(context,12f).toInt())
+                dpToPx(12f).toInt(),
+                dpToPx(12f).toInt(),
+                dpToPx(12f).toInt(),
+                dpToPx(12f).toInt())
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -269,27 +256,30 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     Log.d("셀렉션 변경 테스트","${selectionChangeTest++}:${selStart}/${selEnd}")
                     Log.d("히스토리",drawHistory.toString())
 
-//                    if(selEnd==selStart&&text!=null){
-//                        val spans = text!!.getSpans(selEnd,selEnd, Any::class.java)
-//                        var style:Boolean? =null
-//                        var size:Int? =null
-//                        var color:Int? =null
-//                        for(i in spans){
-//                            when(i){
-//                                is StyleSpan -> style = i.style == Typeface.BOLD
-//                                is ForegroundColorSpan -> color = i.foregroundColor
-//                                is AbsoluteSizeSpan -> {
-//                                    size = i.size
-//                                    Log.d("텍스트 사이즈",size.toString())
-//                                    Log.d("변환값",context.resources.displayMetrics.density.toString())
-//                                }
-//                            }
-//                        }
-//                        val stringStyle=StringStyle(size?.toFloat()?:8f,style?:false,color?:Color.BLACK)
-//                        onStyleButtonNotifyListener?.onStyleButtonNotify(stringStyle)
-//                        Log.d("스타일 변경",stringStyle.toString())
-//                    }
+                    if(selEnd==selStart&&text!=null&&prevText==text.toString()){
+                        val spans = text!!.getSpans(selEnd,selEnd, Any::class.java)
+                        var style:Boolean? =null
+                        var size:Int? =null
+                        var color:Int? =null
+                        for(i in spans){
+                            when(i){
+                                is StyleSpan -> style = i.style == Typeface.BOLD
+                                is ForegroundColorSpan -> color = i.foregroundColor
+                                is AbsoluteSizeSpan -> {
+                                    size = i.size
+                                    Log.d("텍스트 사이즈",size.toString())
+                                    Log.d("변환값",context.resources.displayMetrics.density.toString())
+                                }
+                            }
+                        }
+                        val stringStyle=StringStyle(size?.toFloat()?: dpToPx(8f),style?:false,color?:Color.BLACK)
+                        textColor = stringStyle.color
+                        isBold = stringStyle.isBold
+                        isSettingAutoChagned = true
+                        onStyleButtonNotifyListener?.onStyleButtonNotify(stringStyle)
+                    }
 
+                    prevText=text?.toString()?:""
                     Log.d("변경점","${textCheck} / ${text.toString()} / ${selStart} / ${selEnd}")
 
 
@@ -372,6 +362,8 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         addView(textboxMenu.root)
         addView(textMain)
 
+        settingEditable()
+
         rootView.viewTreeObserver.addOnGlobalLayoutListener {
             val rect = Rect()
             rootView.getWindowVisibleDisplayFrame(rect)
@@ -428,7 +420,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     fun modifyEditableStyle(s:Int, e:Int, editable: Editable?, modifiedStyle:StringStyle){
         Log.d("수정 진입",editable.toString()+": ${s},${e} / "+modifiedStyle.toString())
         editable?.run {
-
+            Log.d("스타일 px값",modifiedStyle.size.toString())
             getSpans(s, e, Any::class.java).forEach {
                 if(it is AbsoluteSizeSpan||it is StyleSpan||it is ForegroundColorSpan){
 
@@ -475,16 +467,23 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     fun setBold(isBold: Boolean){
         this.isBold = isBold
+
         settingEditable()
     }
 
     fun setTextSize(size:Float){
         textSize = size
+        if(isSettingAutoChagned){
+            Log.d("오토 세팅","true")
+            isSettingAutoChagned = false
+            return
+        }
         settingEditable()
     }
 
     fun setTextColor(color:Int){
         textColor = color
+
         settingEditable()
     }
 
@@ -533,7 +532,8 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     //시작 텍스트가 없는 상태에서 지정하면 오류가 나기때문에 첫 글자가 타이핑되는 타이밍에 서식을 지정해야함
     fun modifyRangeText(s:Int,e:Int, editable: Editable?){
-        val style = StringStyle(dpToPx(context,this@MemoView.textSize),isBold, textColor)
+        val style = StringStyle(dpToPx(this@MemoView.textSize),isBold, textColor)
+        Log.d("스타일 적용전 px값","${this@MemoView.textSize} -> ${style.size}")
         modifyEditableStyle(s,e,editable,style)
 
     }
@@ -628,7 +628,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         val idx = textList.size
         textList+=""
         textPaintList+=Paint().apply {
-            textSize = dpToPx(context,24f)
+            textSize = dpToPx(24f)
             color = Color.BLACK
             style =Paint.Style.FILL
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
@@ -697,7 +697,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
         textRectFList[idx] = RectF().apply {
             left=(width - maxWidth)/2f
-            top = dpToPx(context,80f)
+            top = dpToPx(80f)
             right = left + maxWidth
             bottom = top +totalHeight
         }
@@ -715,7 +715,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     fun addBitmap(uri: Uri){
         getBitmapFromUri(context,uri).getOrNull()?.let {
             bitmaps+=it
-            bitmapRectFs+=RectF((width- dpToPx(context,100f))/2f,30f, (width- dpToPx(context,100f))/2f+ dpToPx(context,100f),30f+it.height.toFloat()* dpToPx(context,100f) /it.width.toFloat())
+            bitmapRectFs+=RectF((width- dpToPx(100f))/2f,30f, (width- dpToPx(100f))/2f+ dpToPx(100f),30f+it.height.toFloat()* dpToPx(100f) /it.width.toFloat())
             addHistory(HistoryItem(ActionType.AddBitmap,bitmaps.size-1,Pair(bitmaps.last(),bitmapRectFs.last())))
             bitmapHistory.put(bitmaps.size-1, ArrayList())
             bitmapHistory[bitmaps.size-1]!!.add(RectF(bitmapRectFs.last()))
@@ -749,7 +749,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         drawPaintList+=Paint().apply {
             color = penColor
             style = Paint.Style.STROKE
-            strokeWidth = dpToPx(context,penSize.toFloat())
+            strokeWidth = dpToPx(penSize.toFloat())
         }
         addHistory(HistoryItem(ActionType.AddDraw, drawList.size-1,Pair(drawList.last(),drawPaintList.last())))
     }
@@ -1224,7 +1224,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                                 }else{
                                     x
                                 }
-                                val y= bitmapRectFs[it1].top - dpToPx(context,50f) - bitmapMenu.root.height - dpToPx(context,15f)/scaleX
+                                val y= bitmapRectFs[it1].top - dpToPx(50f) - bitmapMenu.root.height - dpToPx(15f)/scaleX
                                 bitmapMenu.root.y=if(y<0) 0f else y
 
                                 addHistory(HistoryItem(ActionType.ModifyBitamp,it1,bitmapHistory[it1]?.size))
@@ -1244,7 +1244,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                                 }else{
                                     x
                                 }
-                                val y = textRectFList[it2].top - textboxMenu.root.height - dpToPx(context,15f)/scaleX
+                                val y = textRectFList[it2].top - textboxMenu.root.height - dpToPx(15f)/scaleX
                                 textboxMenu.root.y = if(y<0) 0f else y
 
                                 addHistory(HistoryItem(ActionType.ModifyTextBox,it2,textboxHistory[it2]?.size))
@@ -1266,19 +1266,6 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
         return super.onTouchEvent(event)
     }
-}
-
-fun dpToPx(context: Context, dp:Float): Float{
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp,
-        context.resources.displayMetrics
-    )
-}
-
-fun pxToDp(context: Context, px: Float): Float {
-    val metrics = context.resources.displayMetrics
-    return px / (metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT).toFloat()
 }
 
 fun getBitmapFromUri(context: Context, uri: Uri):Result<Bitmap>{

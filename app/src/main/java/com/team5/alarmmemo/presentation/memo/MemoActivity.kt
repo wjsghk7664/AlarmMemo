@@ -3,8 +3,6 @@ package com.team5.alarmmemo.presentation.memo
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Bundle
@@ -14,28 +12,23 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.View.OnTouchListener
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.graphics.Insets
-import androidx.core.graphics.translationMatrix
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
+import com.team5.alarmmemo.util.DpPxUtil.pxToDp
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -61,6 +54,7 @@ class MemoActivity : AppCompatActivity() {
     private var isPickerLaunched =false
 
     var scaleRatio = 1f
+
 
 
 
@@ -423,7 +417,7 @@ class MemoActivity : AppCompatActivity() {
             }
 
             adapter = fontAdapter
-            setSelection(4)
+            setSelection(20)
             onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -436,7 +430,7 @@ class MemoActivity : AppCompatActivity() {
                         return
                     }
                     Log.d("텍스트 크기 설정",fontList[position].toString())
-                    memoMv.setTextSize(dpToPx(this@MemoActivity,fontList[position].toFloat()))
+                    memoMv.setTextSize(fontList[position].toFloat())
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -515,23 +509,21 @@ class MemoActivity : AppCompatActivity() {
                 isClickable = false
             }
 
-//            memo.setOnStyleButtonNotifyListener(object : MemoView.OnStyleButtonNotifyListener{
-//                override fun onStyleButtonNotify(style: MemoView.StringStyle) {
-//                    memoIvBold.apply {
-//                        isSelected = style.isBold
-//                        if(isSelected){
-//                            imageTintList = getColorStateList(R.color.orange)
-//                        }else{
-//                            imageTintList = getColorStateList(R.color.black)
-//                        }
-//                    }
-//                    memoIvTextcolor.imageTintList = ColorStateList.valueOf(style.color)
-//                    Log.d("텍스트 크기",(pxToDp(this@MemoActivity,style.size).toInt()+4).toString())
-//                    init = true
-//                    memoSpTextsize.setSelection(pxToDp(this@MemoActivity,style.size).toInt())
-//                }
-//
-//            })
+            memo.setOnStyleButtonNotifyListener(object : MemoView.OnStyleButtonNotifyListener{
+                override fun onStyleButtonNotify(style: MemoView.StringStyle) {
+                    memoIvBold.apply {
+                        isSelected = style.isBold
+                        if(isSelected){
+                            imageTintList = getColorStateList(R.color.orange)
+                        }else{
+                            imageTintList = getColorStateList(R.color.black)
+                        }
+                    }
+                    memoIvTextcolor.imageTintList = ColorStateList.valueOf(style.color)
+                    memoSpTextsize.setSelection(pxToDp(style.size).toInt() - 4)
+                }
+
+            })
 
 
             memo.setOnActivateHistoryBtnListener(object :MemoView.OnActivateHistoryBtnListener{
