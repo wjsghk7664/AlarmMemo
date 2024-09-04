@@ -9,10 +9,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.FragmentBottomSheetBinding
 
-class BottomSheetFragment (private val onFilterSelected: (Int) -> Unit) : BottomSheetDialogFragment() {
+class BottomSheetFragment (private val selected: (Int) -> Unit) : BottomSheetDialogFragment() {
 
     private var _binding: FragmentBottomSheetBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppBottomSheetDialogTheme)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +38,7 @@ class BottomSheetFragment (private val onFilterSelected: (Int) -> Unit) : Bottom
             }
             Toast.makeText(requireContext(), "${spanCount}줄 격자 선택", Toast.LENGTH_SHORT).show()
 
-            onFilterSelected(spanCount)
+            selected(spanCount)
             dismiss()
         }
     }
