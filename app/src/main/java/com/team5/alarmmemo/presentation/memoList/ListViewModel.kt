@@ -16,7 +16,7 @@ class ListViewModel : ViewModel() {
             number = number++,
             title = "새 메모",
             date = "2024-08-28",
-            image = R.mipmap.ic_launcher
+            image = R.drawable.memo_thumbnail_bg
         )
         val itemList = _sampleData.value?.toMutableList() ?: mutableListOf()
         itemList.add(item)

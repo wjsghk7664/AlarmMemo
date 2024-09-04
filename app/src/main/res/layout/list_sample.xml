@@ -8,11 +8,10 @@
 
     <ImageView
         android:id="@+id/sample_iv_memo_thumbnail"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="128dp"
+        android:layout_height="140dp"
         android:layout_marginTop="20dp"
-        android:src="@drawable/calendar"
-        android:scaleType="centerCrop"
+        android:background="@drawable/memo_thumbnail_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
