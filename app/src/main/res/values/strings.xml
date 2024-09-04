@@ -6,21 +6,21 @@
     <string name="memoList_toggle_list">메모 리스트</string>
     <string name="memoList_toggle_setting">설정</string>
 
-    <!--fragment_list.xml 의 strings.xml 입니다-->
+    <!--fragment_list.xml 의 문자열 리소스-->
     <string name="memoList_drop_down_sample_text">시간순</string>
     <string name="memoList_drop_down_sample_text_2">제목순</string>
 
-    <!--list_sample.xml 의 strings.xml 입니다-->
+    <!--list_sample.xml 의 문자열 리소스-->
     <string name="memoList_tv_sample_title">메모 제목</string>
     <string name="memoList_tv_sample_date">메모 날짜</string>
 
-    <!--change_name_dialog.xml 의 strings.xml 입니다-->
+    <!--change_name_dialog.xml 의 문자열 리소스-->
     <string name="dialog_et_dialog_change_name">변경할 이름을 입력하세요</string>
 
-    <!--navigation_header.xml 의 strings.xml 입니다-->
+    <!--navigation_header.xml 의 문자열 리소스-->
     <string name="drawer_tv_drawer_profile_name">이름</string>
 
-    <!--fragment_profile.xml 의 strings.xml 입니다.-->
+    <!--fragment_profile.xml의 문자열 리소스-->
     <string name="profile_tv_name_title">이름</string>
     <string name="profile_tv_name_text">테스트</string>
     <string name="profile_tv_id_title">아이디</string>
@@ -29,11 +29,11 @@
     <string name="profile_tv_logout_text">로그아웃</string>
     <string name="profile_tv_delete_profile_text">회원 탈퇴</string>
 
-    <!---drawer_menu.xml 의 strings.xml 입니다.-->
+    <!---drawer_menu.xml 의 문자열 리소스-->
     <string name="drawer_item_license">라이센스</string>
     <string name="drawer_item_profile">프로필</string>
 
-    <!--fragment_filter_bottom_sheet.xml 의 strings.xml 입니다-->
+    <!--fragment_filter_bottom_sheet.xml 의 문자열 리소스-->
     <string name="bottom_sheet_tv_title">필터</string>
     <string name="memoList_toggle_list_2">2개씩 보기</string>
     <string name="memoList_toggle_list_3">3개씩 보기</string>
