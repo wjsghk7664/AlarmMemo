@@ -81,7 +81,6 @@ class LoginFragment : Fragment() {
         }
 
         loginSignUpBtn.setOnClickListener {
-            startActivity(Intent(requireContext(), SignUpActivity::class.java))
 //            parentFragmentManager.beginTransaction().replace(R.id.main, SignUpFragment.newInstance()).addToBackStack(null).commit()
         }
 
