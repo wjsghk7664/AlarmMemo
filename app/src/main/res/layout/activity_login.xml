@@ -58,7 +58,7 @@
         android:layout_width="260dp"
         android:layout_height="40dp"
         android:layout_marginTop="30dp"
-        android:background="@drawable/btn_login"
+        android:background="@drawable/btn_filled_sky_blue"
         android:text="로그인"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"

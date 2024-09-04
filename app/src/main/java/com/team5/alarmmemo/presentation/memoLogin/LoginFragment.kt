@@ -11,6 +11,7 @@ import androidx.fragment.app.ListFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.team5.alarmmemo.databinding.FragmentLoginBinding
+import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -80,6 +81,7 @@ class LoginFragment : Fragment() {
         }
 
         loginSignUpBtn.setOnClickListener {
+            startActivity(Intent(requireContext(), SignUpActivity::class.java))
 //            parentFragmentManager.beginTransaction().replace(R.id.main, SignUpFragment.newInstance()).addToBackStack(null).commit()
         }
 
