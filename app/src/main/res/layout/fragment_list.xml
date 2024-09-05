@@ -12,6 +12,7 @@
         android:id="@+id/memoList_cl_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:background="@drawable/spinner_corner_border_box"
         android:elevation="4dp"
         android:paddingHorizontal="12dp"
@@ -19,6 +20,7 @@
 
         <TextView
             android:id="@+id/memoList_tv_Spinner"
+            style="@style/subtitle_500"
             android:layout_width="60dp"
             android:layout_height="36dp"
             android:background="@android:color/transparent"
@@ -39,6 +41,7 @@
 
         <TextView
             android:id="@+id/memoList_tv_sort_time"
+            style="@style/subtitle_500"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/white"
@@ -51,6 +54,7 @@
 
         <TextView
             android:id="@+id/memoList_tv_sort_title"
+            style="@style/subtitle_500"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/white"

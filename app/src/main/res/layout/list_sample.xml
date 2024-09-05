@@ -11,6 +11,7 @@
         android:layout_width="128dp"
         android:layout_height="140dp"
         android:layout_marginTop="20dp"
+        android:elevation="3dp"
         android:background="@drawable/memo_thumbnail_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,13 +31,12 @@
 
     <TextView
         android:id="@+id/sample_tv_memo_title"
+        style="@style/subtitle_700"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="@string/memoList_tv_sample_title"
-        android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/sample_iv_date_icon"
         app:layout_constraintTop_toBottomOf="@id/sample_iv_memo_thumbnail" />
 
@@ -47,7 +47,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="20dp"
         android:text="@string/memoList_tv_sample_date"
-        android:textSize="14sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/sample_iv_date_icon"
         app:layout_constraintTop_toBottomOf="@id/sample_tv_memo_title" />
