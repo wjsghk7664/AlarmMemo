@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.team5.alarmmemo.databinding.ListSampleBinding
+import com.team5.alarmmemo.databinding.ListSample2Binding
 
 class MemoListAdapter(
     private val onItemClicked: (ListItem) -> Unit,
@@ -20,7 +20,7 @@ class MemoListAdapter(
 }) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = ListSampleBinding.inflate(layoutInflater, parent, false)
+        val binding = ListSample2Binding.inflate(layoutInflater, parent, false)
         return ListItemViewHolder(binding, onItemClicked)
     }
 
@@ -30,7 +30,7 @@ class MemoListAdapter(
 }
 
 class ListItemViewHolder(
-    private val binding: ListSampleBinding,
+    private val binding: ListSample2Binding,
     private val onItemClicked: (ListItem) -> Unit,
 ) :
     RecyclerView.ViewHolder(binding.root) {
