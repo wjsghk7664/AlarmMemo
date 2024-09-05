@@ -11,6 +11,8 @@ import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
 import com.team5.alarmmemo.databinding.FragmentListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ListFragment : Fragment() {
 
@@ -69,7 +71,10 @@ class ListFragment : Fragment() {
             memoListTvSortTime.setOnClickListener {
                 "시간순".also { binding.memoListTvSpinner.text = it }
                 val currentList = listViewModel.sampleData.value ?: listOf()
-                val sortedList = currentList.sortedBy { it.date }
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                val sortedList = currentList.sortedByDescending { item ->
+                    dateFormat.parse(item.date)
+                }
                 adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
             }

@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.team5.alarmmemo.R
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ListViewModel : ViewModel() {
     private val _sampleData = MutableLiveData<List<ListItem>>()
@@ -15,10 +18,12 @@ class ListViewModel : ViewModel() {
     private var number = 0
 
     fun addSampleItem() {
+        val dateNow = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
+
         val item = ListItem(
             number = number++,
             title = "새 메모",
-            date = "2024-08-28",
+            date = dateNow,
             image = R.drawable.memo_thumbnail_bg
         )
         val itemList = _sampleData.value?.toMutableList() ?: mutableListOf()
