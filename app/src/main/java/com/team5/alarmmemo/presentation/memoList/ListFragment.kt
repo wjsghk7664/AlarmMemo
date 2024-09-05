@@ -21,7 +21,6 @@ class ListFragment : Fragment() {
     private lateinit var adapter: MemoListAdapter
     private var check = false
     private val listViewModel: ListViewModel by activityViewModels()
-    private var spanCount = 2
 //    private var sampleData = listOf<ListItem>()
 //    private var number = 0
 
