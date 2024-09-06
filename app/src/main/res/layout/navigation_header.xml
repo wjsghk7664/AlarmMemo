@@ -8,21 +8,8 @@
     android:paddingTop="100dp"
     android:paddingBottom="16dp">
 
-    <ImageView
-        android:id="@+id/nav_header_image"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/profile_image_bg"
-        android:clipToOutline="true"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ic_launcher"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
-
     <TextView
-        android:id="@+id/nav_header_name"
+        android:id="@+id/navigation_tv_nav_header_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -31,7 +18,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/nav_header_image"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

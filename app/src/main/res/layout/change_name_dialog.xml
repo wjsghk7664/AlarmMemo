@@ -6,7 +6,7 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/dialog_input"
+        android:id="@+id/name_change_et_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/dialog_et_dialog_change_name"

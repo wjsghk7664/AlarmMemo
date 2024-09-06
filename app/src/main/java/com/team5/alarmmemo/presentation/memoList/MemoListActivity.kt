@@ -76,7 +76,7 @@ class MemoListActivity : AppCompatActivity() {
         }
 
         // 각 drawer의 메뉴 별로 클릭했을 때 어디로 이동할 지 설정
-        navigationView.setNavigationItemSelectedListener { menuItem ->
+        memoListNvNavigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navigation_oss -> {
                     startActivity(Intent(this@MemoListActivity, OssLicensesMenuActivity::class.java))

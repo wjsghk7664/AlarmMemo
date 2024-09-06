@@ -31,10 +31,10 @@ class BottomSheetFragment (private val selected: (Int) -> Unit) : BottomSheetDia
         super.onViewCreated(view, savedInstanceState)
 
         // RadioGroup 선택에 따라 ListFragment에 SpanCount를 맞춰서 보냄
-        binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
+        binding.bottomSheetRgRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             val spanCount = when (checkedId) {
-                R.id.radio_button_1 -> 2
-                R.id.radio_button_2 -> 3
+                R.id.bottom_sheet_rb_radio_button_1 -> 2
+                R.id.bottom_sheet_rb_radio_button_2 -> 3
                 else -> 2
             }
             Toast.makeText(requireContext(), "${spanCount}개씩 보기 선택", Toast.LENGTH_SHORT).show()

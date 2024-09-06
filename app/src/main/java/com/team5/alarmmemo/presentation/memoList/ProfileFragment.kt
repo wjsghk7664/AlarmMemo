@@ -65,7 +65,7 @@ class ProfileFragment : Fragment() {
             setView(dialogBinding.root)
 
             setPositiveButton("변경") { dialog, _ ->
-                val newName = dialogBinding.dialogInput.text.toString()
+                val newName = dialogBinding.nameChangeEtDialog.text.toString()
                 binding.profileTvNameText.text = newName
                 Toast.makeText(requireContext(), getString(R.string.profile_name_message), Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
