@@ -6,14 +6,23 @@
     android:layout_height="match_parent"
     tools:context="com.team5.alarmmemo.presentation.memoList.ProfileFragment">
 
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/profile_dv_divider_0"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:dividerColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profile_cl_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/profile_dv_divider_0">
 
         <TextView
             android:id="@+id/profile_tv_name_title"
@@ -50,6 +59,16 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/profile_dv_divider_1"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:dividerColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@id/profile_cl_id"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_cl_name" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profile_cl_id"
         android:layout_width="0dp"
@@ -82,6 +101,16 @@
             tools:ignore="MissingConstraints" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/profile_dv_divider_2"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:dividerColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@id/profile_cl_password"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_cl_id" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profile_cl_password"
@@ -116,6 +145,16 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/profile_dv_divider_3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="24dp"
+        app:dividerColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/profile_cl_password" />
+
     <TextView
         android:id="@+id/profile_logout_button"
         style="@style/subtitle_700"
@@ -138,6 +177,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="60dp"
         android:text="@string/profile_tv_delete_profile_text"
+        android:textColor="@color/light_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/profile_logout_button"
