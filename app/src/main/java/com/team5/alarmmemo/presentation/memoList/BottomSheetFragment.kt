@@ -36,7 +36,7 @@ class BottomSheetFragment (private val selected: (Int) -> Unit) : BottomSheetDia
                 R.id.radio_button_2 -> 3
                 else -> 2
             }
-            Toast.makeText(requireContext(), "${spanCount}줄 격자 선택", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "${spanCount}개씩 보기 선택", Toast.LENGTH_SHORT).show()
 
             selected(spanCount)
             dismiss()
