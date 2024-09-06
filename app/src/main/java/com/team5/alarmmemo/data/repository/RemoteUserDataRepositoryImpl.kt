@@ -2,15 +2,18 @@ package com.team5.alarmmemo.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.team5.alarmmemo.data.model.User
+import com.team5.alarmmemo.Constants.USER
 import javax.inject.Inject
 
-class RemoteUserDataRepositoryImpl @Inject constructor(private val db:FirebaseFirestore):RemoteUserDataRepository {
+class RemoteUserDataRepositoryImpl @Inject constructor(private val store:FirebaseFirestore):RemoteUserDataRepository {
+
+    // 이메일 중복 체크
     override fun getByUserEmail(email: String, callback: (Boolean, String?) -> Unit) {
-        if(email.isEmpty()){
-            callback(false,"Empty email")
-            return
-        }
-        db.collection("User").document(email).get().addOnSuccessListener {
+//        if(email.isEmpty()){
+//            callback(false,"Empty email")
+//            return
+//        }
+        store.collection(USER).document(email).get().addOnSuccessListener {
             if(!it.exists()){
                 callback(true,null)
             }else{
@@ -21,17 +24,18 @@ class RemoteUserDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
         }
     }
 
-
+    // 유저 데이터 추가 및 수정
     override fun addOrModifyUserData(user: User, callback: (Boolean, String?) -> Unit) {
-        db.collection("User").document(user.emailOrToekn).set(user).addOnSuccessListener {
+        store.collection(USER).document(user.email).set(user).addOnSuccessListener {
             callback(true,null)
         }.addOnFailureListener {
             callback(false,it.message)
         }
     }
 
+    // 유저 데이터 삭제
     override fun deleteUserData(email: String, callback: (Boolean, String?) -> Unit) {
-        db.collection("User").document(email).delete().addOnSuccessListener {
+        store.collection(USER).document(email).delete().addOnSuccessListener {
             callback(true,null)
         }.addOnFailureListener {
             callback(false,it.message)
@@ -44,23 +48,26 @@ class RemoteUserDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
         password: String?,
         callback: (User?, String?) -> Unit
     ) {
-        db.collection("User").document(emailOrToken).get().addOnSuccessListener {
-            if(it.exists()){
+        store.collection(USER).document(emailOrToken).get().addOnSuccessListener {
+            if (it.exists()) {
                 val user = it.toObject(User::class.java)
-                if(password==null||password==user!!.password){
-                    callback(user,null)
-                }else{
-                    callback(null,"wrong password")
+                if (password == null || password == user!!.password) {
+                    callback(user, null)
+                } else {
+                    callback(null, "wrong password")
                 }
-            }else{
-                if(password==null){
-                    callback(null, "Socail Login Init") //이 값을 받으면 바로 addOrModifyUserData로  계정 생성하고 로그인 재시도
-                }else{
-                    callback(null,"wrong id")
+            } else {
+                if (password == null) {
+                    callback(
+                        null,
+                        "Socail Login Init"
+                    ) //이 값을 받으면 바로 addOrModifyUserData로  계정 생성하고 로그인 재시도
+                } else {
+                    callback(null, "wrong id")
                 }
             }
         }.addOnFailureListener {
-            callback(null,it.message)
+            callback(null, it.message)
         }
     }
 
