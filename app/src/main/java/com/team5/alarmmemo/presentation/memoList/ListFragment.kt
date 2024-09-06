@@ -81,6 +81,14 @@ class ListFragment : Fragment() {
             // 아이템 추가 버튼 클릭 시 아이템 추가
             memoListBtnAddButton.setOnClickListener {
                 listViewModel.addSampleItem()
+                val addList = listViewModel.sampleData.value ?: listOf()
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+
+                val sortedList = addList.sortedByDescending { item ->
+                    dateFormat.parse(item.date)
+                }
+
+                adapter.submitList(sortedList)
             }
 
             // Spinner 클릭시 Motion Layout 적용
