@@ -6,6 +6,7 @@
 
     <application
         android:name=".MemoApplication"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AlarmMemo"
         tools:targetApi="31" >
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="eijuta9wl4"/>
         <activity
             android:name=".presentation.memo.MemoActivity"
             android:windowSoftInputMode="adjustResize"

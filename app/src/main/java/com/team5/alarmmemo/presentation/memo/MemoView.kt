@@ -36,6 +36,9 @@ import com.team5.alarmmemo.databinding.MemoBitmapMenuBinding
 import com.team5.alarmmemo.databinding.MemoTextboxMenuBinding
 import com.team5.alarmmemo.util.DpPxUtil.dpToPx
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,8 +46,28 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     @Inject lateinit var colorpickerDialog: showColorpickerDialog
 
-    private var fixedDrawList : List<CheckItem> = listOf()
-    private var fixedString = SpannableStringBuilder("")
+    interface OnMemoChangeListener{
+        suspend fun onMemoChange(str:SpannableStringBuilder?)
+    }
+    private var onMemoChangeListener : OnMemoChangeListener? = null
+    fun setOnMemoChangeListener(listener: OnMemoChangeListener){
+        onMemoChangeListener = listener
+    }
+
+    interface OnDrawChangeListener{
+        suspend fun onDrawChange(draw:List<CheckItem>)
+    }
+    private var onDrawChangeListener : OnDrawChangeListener? = null
+    fun setOnDrawChangeListener(listener: OnDrawChangeListener){
+        onDrawChangeListener = listener
+    }
+
+
+    var latestList:List<CheckItem> = listOf()
+
+
+    var fixedDrawList : List<CheckItem> = listOf()
+    var fixedString = SpannableStringBuilder("")
 
     private var isSettingAutoChagned = false
 
@@ -329,12 +352,18 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     }
                     lastTextHistoryItem?.data = deepCopyOfSpannableStringBuilder(s as SpannableStringBuilder)
 
+                    CoroutineScope(Dispatchers.IO).launch{
+                        onMemoChangeListener?.onMemoChange(lastTextHistoryItem?.data as SpannableStringBuilder)
+                    }
+
+
                     if(s.isEmpty()){
                         initText = true
                     }
                 }
 
             })
+
 
 
             setOnTouchListener { v, event ->
@@ -345,8 +374,6 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     false
                 }
             }
-
-            requestFocus()
         }
 
     }
@@ -515,6 +542,10 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         if(s!=e){
             modifyRangeText(s,e,lastTextHistoryItem?.data as SpannableStringBuilder)
             modifyRangeText(s,e,textMain.text)
+
+            CoroutineScope(Dispatchers.IO).launch{
+                onMemoChangeListener?.onMemoChange(lastTextHistoryItem?.data as SpannableStringBuilder)
+            }
         }
         //단일 서식 변경
         //새 히스토리 추가 2
@@ -1007,6 +1038,11 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
                 ActionType.InitText -> {} //처음 텍스트작성시 히스토리 생성용 더미 값
             }
+        }
+
+        latestList = list
+        CoroutineScope(Dispatchers.IO).launch{
+            onDrawChangeListener?.onDrawChange(latestList)
         }
 
         return Triple(list,string,stringPrev)

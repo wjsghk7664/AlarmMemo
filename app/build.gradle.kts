@@ -67,6 +67,8 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
 
+    implementation("com.naver.maps:map-sdk:3.19.1")
+
     implementation(libs.bundles.retrofit)
 
     //hilt
