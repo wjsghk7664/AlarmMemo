@@ -21,8 +21,6 @@ class RemoteUserDataRepositoryImpl @Inject constructor(private val store:Firebas
             }
         }.addOnFailureListener {
             callback(false,it.message)
-
-            // it.message = e
         }
     }
 
