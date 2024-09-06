@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
@@ -21,8 +22,6 @@ class ListFragment : Fragment() {
     private lateinit var adapter: MemoListAdapter
     private var check = false
     private val listViewModel: ListViewModel by activityViewModels()
-//    private var sampleData = listOf<ListItem>()
-//    private var number = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,10 +35,29 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        listViewModel.loadList()
+
         adapter = MemoListAdapter(
             onItemClicked = { _ ->
                 val intent = Intent(requireContext(), MemoActivity::class.java)
                 startActivity(intent)
+            },
+
+            onItemLongClicked = { item ->
+                val builder = AlertDialog.Builder(requireContext()).apply {
+                    setTitle("메모 삭제")
+                    setMessage("정말로 이 메모를 삭제하시겠습니까?")
+
+                    setPositiveButton("삭제") { _, _ ->
+                        listViewModel.deleteItem(item)
+                    }
+
+                    setNegativeButton("취소") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                }
+
+                builder.show()
             }
         )
 
