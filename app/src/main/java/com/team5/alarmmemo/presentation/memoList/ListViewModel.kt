@@ -23,11 +23,13 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences = application.getSharedPreferences("sharedPreferences", Application.MODE_PRIVATE)
     private val gson = GsonBuilder().create()
 
+    // 아이템 리스트 불러오기
     fun loadList() {
         loadData()
         loadSpanCount()
     }
 
+    // 아이템 추가하는 메소드
     fun addSampleItem() {
         val dateNow = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
 
@@ -44,6 +46,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
         saveData(itemList)
     }
 
+    // 아이템 리스트 저장하는 메소드
     private fun saveData(itemList: List<ListItem>) {
         val json = gson.toJson(itemList)
         sharedPreferences.edit()
@@ -51,6 +54,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
             .apply()
     }
 
+    // 아이템 리스트 앱 재시작 시 불러오는 메소드
     private fun loadData() {
         val json = sharedPreferences.getString("sampleData", null)
         val typeToken = object : TypeToken<List<ListItem>>() {}.type
@@ -58,6 +62,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
         _sampleData.value = itemList ?: emptyList()
     }
 
+    // 아이템 (썸네일) 길게 눌렀을 때 삭제하는 메소드
     fun deleteItem(item: ListItem) {
         val itemList = _sampleData.value?.toMutableList()
         itemList?.remove(item)
@@ -65,6 +70,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
         saveData(itemList ?: emptyList())
     }
 
+    // SpanCount 업데이트 하는 메소드
     fun setSpanCount(count: Int) {
         _spanCount.value = count
         sharedPreferences.edit()
@@ -72,6 +78,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
             .apply()
     }
 
+    // SpanCount를 저장했던 걸 불러오는 메소드
     private fun loadSpanCount() {
         val saveSpanCount = sharedPreferences.getInt("spanCount", 2)
         _spanCount.value = saveSpanCount

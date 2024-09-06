@@ -19,6 +19,8 @@ import com.team5.alarmmemo.databinding.ActivityMemoListBinding
 class MemoListActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMemoListBinding.inflate(layoutInflater) }
+
+    // 프로필 화면에서 내비게이션 바의 뒤로 가기 했을 때 리스트 화면으로 돌아가도록 설정
     private var onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             "목록".also { binding.memoListTvTitle.text = it }
@@ -30,7 +32,7 @@ class MemoListActivity : AppCompatActivity() {
                 finish()
             } else {
                 backPressedTime = System.currentTimeMillis()
-                Toast.makeText(this@MemoListActivity, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MemoListActivity, getString(R.string.memoList_back_pressed_message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -49,20 +51,19 @@ class MemoListActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
+        // 기본 화면은 리스트 화면
         showFragment(ListFragment())
 
         initView()
     }
 
     private fun initView() = with(binding) {
+        // 프로필 화면에서 뒤로 가기 버튼 눌러도 리스트 화면으로 돌아가도록 설정
         memoListBtnBackButton.setOnClickListener {
-//            "목록".also { memoListTvTitle.text = it }
-//            memoListBtnBackButton.visibility = View.GONE
-//
-//            showFragment(ListFragment())
             onBackPressedCallback.handleOnBackPressed()
         }
 
+        // 설정 메뉴 버튼 눌렀을 때 drawer 열리고 닫히도록 설정
         var check = false
         memoListIvSettingButton.setOnClickListener {
             if (!check) {
@@ -74,6 +75,7 @@ class MemoListActivity : AppCompatActivity() {
             }
         }
 
+        // 각 drawer의 메뉴 별로 클릭했을 때 어디로 이동할 지 설정
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.navigation_oss -> {
@@ -94,17 +96,7 @@ class MemoListActivity : AppCompatActivity() {
         }
     }
 
-//    private fun listFragment(spanCount : Int) {
-//        val fragment = ListFragment().apply {
-//            arguments = Bundle().apply {
-//                putInt("spanCount", spanCount)
-//                Log.d("ListActivity", spanCount.toString())
-//            }
-//        }
-//
-//        showFragment(fragment)
-//    }
-
+    // 프래그먼트를 새로 생성하면서 보여주는 메소드
     private fun showFragment(fragment: Fragment) {
         supportFragmentManager.popBackStack("setting", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager.beginTransaction()

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ChangeNameDialogBinding
 import com.team5.alarmmemo.databinding.FragmentProfileBinding
 import com.team5.alarmmemo.presentation.memoLogin.LoginActivity
@@ -29,28 +30,33 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
+            // 로그 아웃 버튼 클릭 시
             profileLogoutButton.setOnClickListener {
                 val intent = Intent(requireContext(), LoginActivity::class.java)
                 startActivity(intent)
 
-                Toast.makeText(requireContext(), "로그 아웃 완료!.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.profile_logout_message), Toast.LENGTH_SHORT).show()
             }
 
+            // 회원 탈퇴 버튼 클릭 시
             profileDeleteButton.setOnClickListener {
-                Toast.makeText(requireContext(), "회원 탈퇴 버튼입니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.profile_delete_message), Toast.LENGTH_SHORT).show()
             }
 
+            // 이름 변경 버튼 클릭 시
             profileIvNameChangeButton.setOnClickListener {
                 changeName()
             }
 
+            // 비밀번호 변경 버튼 클릭 시
             profileIvPasswordChangeButton.setOnClickListener {
-                Toast.makeText(requireContext(), "비밀번호가 변경되었습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.profile_password_message), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
         }
     }
 
+    // 이름 변경 다이얼로그 띄우는 메소드
     private fun changeName() {
         val dialogBinding = ChangeNameDialogBinding.inflate(LayoutInflater.from(requireContext()))
 
@@ -61,6 +67,7 @@ class ProfileFragment : Fragment() {
             setPositiveButton("변경") { dialog, _ ->
                 val newName = dialogBinding.dialogInput.text.toString()
                 binding.profileTvNameText.text = newName
+                Toast.makeText(requireContext(), getString(R.string.profile_name_message), Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
 

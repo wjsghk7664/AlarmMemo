@@ -30,6 +30,7 @@ class BottomSheetFragment (private val selected: (Int) -> Unit) : BottomSheetDia
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // RadioGroup 선택에 따라 ListFragment에 SpanCount를 맞춰서 보냄
         binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             val spanCount = when (checkedId) {
                 R.id.radio_button_1 -> 2

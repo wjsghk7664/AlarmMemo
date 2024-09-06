@@ -35,18 +35,22 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 저장된 리스트를 불러옴
         listViewModel.loadList()
 
+        // Adapter랑 연결
         adapter = MemoListAdapter(
+            // 아이템 (썸네일) 클릭 시 메모 Activity로 이동
             onItemClicked = { _ ->
                 val intent = Intent(requireContext(), MemoActivity::class.java)
                 startActivity(intent)
             },
 
+            // 길게 클릭 시 아이템 삭제 다이얼로그 실행
             onItemLongClicked = { item ->
                 val builder = AlertDialog.Builder(requireContext()).apply {
-                    setTitle("메모 삭제")
-                    setMessage("정말로 이 메모를 삭제하시겠습니까?")
+                    setTitle(getString(R.string.memoList_dialog_title))
+                    setMessage(getString(R.string.memoList_dialog_message))
 
                     setPositiveButton("삭제") { _, _ ->
                         listViewModel.deleteItem(item)
@@ -61,21 +65,25 @@ class ListFragment : Fragment() {
             }
         )
 
+        // SpanCount 관련 LiveData로 업데이트
         listViewModel.spanCount.observe(viewLifecycleOwner) { spanCount ->
             binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+        }
+
+        // 아이템 데이터 업데이트
+        listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
+            adapter.submitList(sampleData)
         }
 
         with(binding) {
             memoListRvMemoList.adapter = adapter
 
-            listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
-                adapter.submitList(sampleData)
-            }
-
+            // 아이템 추가 버튼 클릭 시 아이템 추가
             memoListBtnAddButton.setOnClickListener {
                 listViewModel.addSampleItem()
             }
 
+            // Spinner 클릭시 Motion Layout 적용
             memoListTvSpinner.setOnClickListener {
                 if (check) {
                     binding.motionLayout.transitionToStart()
@@ -85,6 +93,7 @@ class ListFragment : Fragment() {
                 check = !check
             }
 
+            // Spinner에서 시간 순 텍스트 클릭 시 시간(최신 -> 과거) 순으로 리스트 아이템 정렬
             memoListTvSortTime.setOnClickListener {
                 "시간순".also { binding.memoListTvSpinner.text = it }
                 val currentList = listViewModel.sampleData.value ?: listOf()
@@ -96,6 +105,7 @@ class ListFragment : Fragment() {
                 memoListTvSpinner.callOnClick()
             }
 
+            // Spinner에서 제목 순 텍스트 클릭 시 제목(ㄱ -> ㅎ) 순으로 리스트 아이템 정렬
             memoListTvSortTitle.setOnClickListener {
                 "제목순".also { binding.memoListTvSpinner.text = it }
                 val currentList = listViewModel.sampleData.value ?: listOf()
@@ -104,15 +114,16 @@ class ListFragment : Fragment() {
                 memoListTvSpinner.callOnClick()
             }
 
-            memoListIvDropDownButton.setOnClickListener {
-                if (!check) {
-                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
-                } else {
-                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
-                }
-                check = !check
-            }
+//            memoListIvDropDownButton.setOnClickListener {
+//                if (!check) {
+//                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
+//                } else {
+//                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
+//                }
+//                check = !check
+//            }
 
+            // filter 버튼 클릭 시 2줄 격자, 3줄 격자 선택하는 bottom sheet 나오게 하고 거기서 SpanCount 꺼내서 가져 오기(?)
             memoListIvFilterButton.setOnClickListener {
                 val bottomSheet = BottomSheetFragment { newSpanCount ->
                     listViewModel.setSpanCount(newSpanCount)
