@@ -65,15 +65,642 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/memo_ll_title_container" />
 
-    <LinearLayout
-        android:id="@+id/memo_ll_alarm_container"
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/memo_ml_alarm_container"
+        app:layoutDescription="@xml/memo_motion"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:background="@color/basic_background"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/memo_v_divider1"/>
+        app:layout_constraintTop_toBottomOf="@id/memo_v_divider1">
+
+        <LinearLayout
+            android:id="@+id/memo_ll_alarm_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/basic_background"
+            android:gravity="top"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="24dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/memo_cb_alarm_on"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/checkbox_selector"
+                        android:button="@null" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="8dp"
+                        android:text="알림 설정" />
+                </LinearLayout>
+
+
+                <Spinner
+                    android:id="@+id/memo_sp_setting_category"
+                    style="@style/Widget.Custom.Spinner.Category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/memo_tv_setting_save"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="알림 설정 저장"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:background="@drawable/light_gray_corner_box_selector"
+                    android:padding="4dp"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/memo_cl_additional_alarm_setting_reminder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="24dp"
+                android:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/memo_cb_reminder_time"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/checkbox_selector"
+                    android:button="@null"
+                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_time_setting"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/memo_tv_time_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:text="시간 반복"
+                    app:layout_constraintStart_toEndOf="@+id/memo_cb_reminder_time"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/memo_vertical_divider1"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginLeft="12dp"
+                    android:background="@color/light_gray"
+                    app:layout_constraintStart_toEndOf="@+id/memo_tv_time_setting"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/memo_et_timesetting"
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:background="@drawable/border_box"
+                    android:gravity="right"
+                    android:maxLength="5"
+                    android:hint="반복 간격"
+                    android:inputType="number"
+                    android:digits="0123456789"
+                    android:padding="4dp"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@+id/memo_vertical_divider1"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/memo_tv_min"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:background="@android:color/transparent"
+                    android:focusable="false"
+                    android:paddingVertical="4dp"
+                    android:text="분"
+                    android:textColor="@color/gray"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/memo_et_timesetting"
+                    app:layout_constraintStart_toEndOf="@+id/memo_et_timesetting" />
+
+                <View
+                    android:id="@+id/memo_vertical_divider2"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/light_gray"
+                    app:layout_constraintStart_toEndOf="@+id/memo_tv_min"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/memo_et_numsetting"
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:background="@drawable/border_box"
+                    android:gravity="right"
+                    android:maxLength="5"
+                    android:hint="반복 횟수"
+                    android:inputType="number"
+                    android:digits="0123456789"
+                    android:padding="4dp"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@+id/memo_vertical_divider2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/memo_tv_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:background="@android:color/transparent"
+                    android:focusable="false"
+                    android:paddingVertical="4dp"
+                    android:text="번"
+                    android:textColor="@color/gray"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/memo_et_numsetting"
+                    app:layout_constraintStart_toEndOf="@+id/memo_et_numsetting" />
+
+                <CheckBox
+                    android:id="@+id/memo_cb_reminder_on_noti"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/checkbox_selector"
+                    android:button="@null"
+                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_on_setting_noti"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/memo_vertical_divider1" />
+
+                <TextView
+                    android:id="@+id/memo_tv_on_setting_noti"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:text="화면 켤 때마다 알림"
+                    app:layout_constraintStart_toEndOf="@+id/memo_cb_reminder_on_noti"
+                    app:layout_constraintTop_toBottomOf="@id/memo_vertical_divider1" />
+
+                <CheckBox
+                    android:id="@+id/memo_cb_reminder_on"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/checkbox_selector"
+                    android:button="@null"
+                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_on_setting"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/memo_tv_on_setting_noti" />
+
+                <TextView
+                    android:id="@+id/memo_tv_on_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:text="화면 켤 때마다 메모 띄우기"
+                    app:layout_constraintStart_toEndOf="@+id/memo_cb_reminder_on"
+                    app:layout_constraintTop_toBottomOf="@+id/memo_tv_on_setting_noti" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/memo_cl_additional_alarm_setting_time"
+                android:padding="24dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/memo_tv_time_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="26dp"
+                    android:text="시간 설정"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <View
+                    android:id="@+id/memo_vertical_divider4"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/light_gray"
+                    app:layout_constraintStart_toEndOf="@+id/memo_tv_time_time"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/memo_ll_time_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginLeft="16dp"
+                    app:layout_constraintStart_toEndOf="@+id/memo_vertical_divider4"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <EditText
+                        android:id="@+id/memo_et_time_hour"
+                        android:layout_width="24dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_box"
+                        android:inputType="number"
+                        android:digits="0123456789"
+                        android:gravity="right"
+                        android:maxLength="2"
+                        android:padding="2dp"
+                        android:hint="0"
+                        android:textSize="16dp" />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:layout_marginLeft="4dp"
+                        android:focusable="false"
+                        android:padding="2dp"
+                        android:text="시"
+                        android:textSize="12dp" />
+                    <EditText
+                        android:id="@+id/memo_et_time_minute"
+                        android:layout_width="24dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/border_box"
+                        android:layout_marginLeft="8dp"
+                        android:inputType="number"
+                        android:digits="0123456789"
+                        android:gravity="right"
+                        android:maxLength="2"
+                        android:padding="2dp"
+                        android:hint="0"
+                        android:textSize="16dp" />
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:layout_marginLeft="4dp"
+                        android:focusable="false"
+                        android:padding="2dp"
+                        android:text="분"
+                        android:textSize="12dp" />
+
+
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/memo_tv_select_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="시간선택"
+                    android:clickable="true"
+                    android:background="@drawable/light_gray_corner_box_selector"
+                    android:padding="4dp"
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toEndOf="@+id/memo_ll_time_container"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+
+                <CheckBox
+                    android:id="@+id/memo_cb_time_weekly"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/checkbox_selector"
+                    android:button="@null"
+                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_time_weekly"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/memo_tv_time_time" />
+
+                <TextView
+                    android:id="@+id/memo_tv_time_weekly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:text="요일별 알림"
+                    app:layout_constraintStart_toEndOf="@+id/memo_cb_time_weekly"
+                    app:layout_constraintTop_toBottomOf="@id/memo_tv_time_time" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/memo_cl_week_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="12dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/memo_cb_time_weekly">
+
+
+                    <TextView
+                        android:id="@+id/memo_tv_week_mon"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/week_tv_box_selector"
+                        android:gravity="center"
+                        android:text="월"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/memo_tv_week_tue"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/memo_tv_week_tue"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/week_tv_box_selector"
+                        android:gravity="center"
+                        android:text="화"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/memo_tv_week_wed"
+                        app:layout_constraintStart_toEndOf="@+id/memo_tv_week_mon"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/memo_tv_week_wed"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/week_tv_box_selector"
+                        android:gravity="center"
+                        android:text="수"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/memo_tv_week_thu"
+                        app:layout_constraintStart_toEndOf="@+id/memo_tv_week_tue"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/memo_tv_week_thu"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/week_tv_box_selector"
+                        android:gravity="center"
+                        android:text="목"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/memo_tv_week_fri"
+                        app:layout_constraintStart_toEndOf="@+id/memo_tv_week_wed"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/memo_tv_week_fri"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/week_tv_box_selector"
+                        android:gravity="center"
+                        android:text="금"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/memo_tv_week_sat"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/memo_tv_week_thu"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/memo_tv_week_sat"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/week_tv_box_selector"
+                        android:gravity="center"
+                        android:text="토"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toStartOf="@+id/memo_tv_week_sun"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/memo_tv_week_fri"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/memo_tv_week_sun"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/week_tv_box_selector"
+                        android:gravity="center"
+                        android:text="일"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/memo_tv_week_sat"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <CheckBox
+                    android:id="@+id/memo_cb_time_date"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="26dp"
+                    android:background="@drawable/checkbox_selector"
+                    android:button="@null"
+                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_time_date"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/memo_cl_week_container" />
+
+                <TextView
+                    android:id="@+id/memo_tv_time_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="26dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="8dp"
+                    android:text="날짜 알림"
+                    app:layout_constraintStart_toEndOf="@+id/memo_cb_time_date"
+                    app:layout_constraintTop_toBottomOf="@id/memo_cl_week_container" />
+
+                <View
+                    android:id="@+id/memo_vertical_divider3"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@color/light_gray"
+                    app:layout_constraintStart_toEndOf="@+id/memo_tv_time_date"
+                    app:layout_constraintTop_toBottomOf="@+id/memo_cl_week_container" />
+
+                <LinearLayout
+                    android:id="@+id/memo_ll_date_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginLeft="16dp"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="2dp"
+                    android:background="@drawable/round_light_gray_border_box_small"
+                    app:layout_constraintStart_toEndOf="@+id/memo_vertical_divider3"
+                    app:layout_constraintTop_toBottomOf="@+id/memo_cl_week_container">
+                    <TextView
+                        android:id="@+id/memo_tv_date"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="12dp"
+                        android:text="2024. 09. 12"/>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:padding="4dp"
+                        android:src="@drawable/calendar"/>
+
+
+
+                </LinearLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/memo_cl_additional_alarm_setting_location"
+                android:layout_marginTop="24dp"
+                android:padding = "24dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+
+                <TextView
+                    android:id="@+id/memo_tv_select_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:text="위치 설정"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/memo_vertical_divider5"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="22dp"
+                    android:background="@color/light_gray"
+                    app:layout_constraintStart_toEndOf="@+id/memo_tv_select_location"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/memo_et_select_location"
+                    android:layout_width="0dp"
+                    android:minWidth="160dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/border_box"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginLeft="16dp"
+                    android:focusable="false"
+                    android:inputType="text"
+                    android:padding="2dp"
+                    android:text=""
+                    android:textSize="16dp"
+                    app:layout_constraintStart_toEndOf="@+id/memo_vertical_divider5"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/memo_tv_select_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="주소찾기"
+                    android:clickable="true"
+                    android:background="@drawable/light_gray_corner_box_selector"
+                    android:padding="4dp"
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toEndOf="@+id/memo_et_select_location"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/memo_fcv_map"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/round_light_gray_border_box"
+                    android:clipToOutline="true"
+                    android:name="com.naver.maps.map.MapFragment"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/memo_et_select_location" />
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:elevation="1dp"
+                    android:layout_marginTop="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/memo_et_select_location"
+                    android:background="@drawable/round_light_gray_border_box"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/memo_iv_addtional_alarm_setting_spread"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:background="@color/light_gray"
+            android:paddingVertical="4dp"
+            android:src="@drawable/memo_alarmcontainer_selector"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/memo_ll_alarm_container"
+            />
+
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 
     <View
         android:id="@+id/memo_v_divider2"
@@ -82,7 +709,7 @@
         android:background="@color/light_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/memo_ll_alarm_container" />
+        app:layout_constraintTop_toBottomOf="@id/memo_ml_alarm_container" />
 
 
     <com.team5.alarmmemo.presentation.memo.MemoScrollView
@@ -100,6 +727,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipChildren="false"
+            android:elevation="-1dp"
             android:background="@color/white"
             android:minHeight="1000dp"></com.team5.alarmmemo.presentation.memo.MemoView>
     </com.team5.alarmmemo.presentation.memo.MemoScrollView>
@@ -235,6 +863,7 @@
                     style="@style/Widget.Custom.Spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/memo_fl_textcolor_container"
                     app:layout_constraintStart_toEndOf="@+id/memo_iv_bold"
@@ -274,9 +903,10 @@
         android:id="@+id/memo_et_addTextBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@android:color/white"
         android:gravity="center_horizontal"
-        android:minWidth="12dp"
+        android:visibility="gone"
+        android:minWidth="56dp"
         android:padding="4dp"
         android:textSize="16dp"
         android:layout_marginTop="128dp"
@@ -294,6 +924,16 @@
         app:layout_constraintBottom_toTopOf="@id/memo_ll_tool_container"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/ic_location" />
+
+
+    <ProgressBar
+        android:id="@+id/memo_progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
