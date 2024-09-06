@@ -79,17 +79,20 @@
     <string name="sign_up_btn_cancel">가입취소</string>
 
     <!-- SignUpAcitivy의 문자열 리소스 -->
+    <string name="sign_up_email_invalid_format">이메일 형식이 올바르지 않습니다.</string>
+    <string name="sign_up_email_empty">이메일을 입력해주세요.</string>
+    <string name="sign_up_email_validation_request">이메일 인증 요청을 진행해주세요.</string>
     <string name="sign_up_email_validation_loading">"이메일 인증 요청을 보내는 중입니다."</string>
     <string name="sign_up_email_validation_period">인증 유효 기간: %1$s</string>
     <string name="sign_up_email_validation_expired">인증 유효 기간이 만료되었습니다.</string>
     <string name="sign_up_email_validation_compeleted">이메일 인증이 완료되었습니다.</string>
     <string name="sign_up_email_validation_duplicated">이미 사용 중인 이메일입니다.</string>
-    <string name="sign_up_email_validation_invalid_format">이메일 형식이 올바르지 않습니다.</string>
-    <string name="sign_up_email_validation_empty">이메일을 입력해주세요.</string>
-    <string name="sign_up_email_validation_request">이메일 인증 요청을 진행해주세요.</string>
-    <string name="sign_up_password_validation_empty">비밀번호를 입력해 주세요.</string>
-    <string name="sign_up_password_validation_invalid_format">비밀번호 형식이 올바르지 않습니다.</string>
-    <string name="sign_up_password_check_validation_error">비밀번호가 일치하지 않습니다.</string>
-    <string name="sign_up_compeleted">회원가입이 완료되었습니다.</string>
+    <string name="sign_up_email_validation_error">"인증 오류가 발생했습니다.</string>
+    <string name="sign_up_password_empty">비밀번호를 입력해 주세요.</string>
+    <string name="sign_up_password_invalid_format">비밀번호 형식이 올바르지 않습니다.</string>
+    <string name="sign_up_password_check_error">비밀번호가 일치하지 않습니다.</string>
+    <string name="sign_up_submit">회원가입이 완료되었습니다.</string>
+    <string name="sign_up_submit_error">회원가입 오류가 발생했습니다.</string>
+
 
 </resources>
