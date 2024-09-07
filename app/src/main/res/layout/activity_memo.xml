@@ -5,9 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:clipChildren="false"
-    tools:context="com.team5.alarmmemo.presentation.memo.MemoActivity">
+    tools:context=".presentation.memo.MemoActivity">
 
     <LinearLayout
         android:paddingHorizontal="4dp"
@@ -16,7 +14,6 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
-        android:background="@color/basic_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
@@ -57,7 +54,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/memo_v_divider1"
+        android:id="@+id/meme_v_divider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_gray"
@@ -70,13 +67,12 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal"
-        android:background="@color/basic_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/memo_v_divider1"/>
+        app:layout_constraintTop_toBottomOf="@id/meme_v_divider1"/>
 
     <View
-        android:id="@+id/memo_v_divider2"
+        android:id="@+id/meme_v_divider2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_gray"
@@ -85,24 +81,20 @@
         app:layout_constraintTop_toBottomOf="@id/memo_ll_alarm_container" />
 
 
-    <com.team5.alarmmemo.presentation.memo.MemoScrollView
-        android:id="@+id/memo_ll_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:clipChildren="false"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/meme_v_divider3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/memo_v_divider2">
-
+        app:layout_constraintTop_toBottomOf="@+id/meme_v_divider2">
         <com.team5.alarmmemo.presentation.memo.MemoView
             android:id="@+id/memo_mv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:background="@color/white"
-            android:minHeight="1000dp"></com.team5.alarmmemo.presentation.memo.MemoView>
-    </com.team5.alarmmemo.presentation.memo.MemoScrollView>
+            android:minHeight="1000dp"
+            android:layout_height="wrap_content" />
+
+    </ScrollView>
 
 
     <View
@@ -110,7 +102,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/light_gray"
-        app:layout_constraintBottom_toTopOf="@id/memo_ll_tool_container"
+        app:layout_constraintBottom_toTopOf="@+id/memo_ll_tool_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -121,7 +113,6 @@
         android:orientation="horizontal"
         android:paddingHorizontal="12dp"
         android:paddingVertical="4dp"
-        android:background="@color/basic_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -283,17 +274,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/memo_fbtn_originlocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:layout_margin="16dp"
-        android:backgroundTint="@color/white"
-        app:layout_constraintBottom_toTopOf="@id/memo_ll_tool_container"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_location" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

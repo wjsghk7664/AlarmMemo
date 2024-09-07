@@ -33,6 +33,9 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <data android:host="oauth"
+                    android:scheme="kakao39ca23e670f1a6755ed9349b4552d5cd" />
             </intent-filter>
         </activity>
     </application>

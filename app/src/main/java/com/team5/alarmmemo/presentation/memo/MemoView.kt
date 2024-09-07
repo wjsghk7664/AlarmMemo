@@ -40,10 +40,13 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+<<<<<<< Updated upstream
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
 import androidx.core.widget.addTextChangedListener
+=======
+>>>>>>> Stashed changes
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.MemoBitmapMenuBinding
 import com.team5.alarmmemo.databinding.MemoTextboxMenuBinding

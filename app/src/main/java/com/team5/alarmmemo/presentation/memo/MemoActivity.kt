@@ -1,40 +1,60 @@
 package com.team5.alarmmemo.presentation.memo
 
+<<<<<<< Updated upstream
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
+=======
+>>>>>>> Stashed changes
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.MotionEvent
+<<<<<<< Updated upstream
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
+=======
+import android.view.View
+>>>>>>> Stashed changes
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+<<<<<<< Updated upstream
 import android.widget.LinearLayout
+=======
+>>>>>>> Stashed changes
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+<<<<<<< Updated upstream
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.graphics.Insets
 import androidx.core.graphics.translationMatrix
+=======
+>>>>>>> Stashed changes
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import dagger.hilt.android.AndroidEntryPoint
+<<<<<<< Updated upstream
+=======
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+>>>>>>> Stashed changes
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -47,17 +67,21 @@ class MemoActivity : AppCompatActivity() {
     @Inject lateinit var colorpickerDialog: showColorpickerDialog
 
 
+<<<<<<< Updated upstream
     private var isOriginLocation = true
 
     private lateinit var onTranslationTouchListener: TranslationTouchListener
 
 
 
+=======
+>>>>>>> Stashed changes
     private val fontList = List(61){it+4}
     private val pencilList = List(10){it+1}
 
     private var isPickerLaunched =false
 
+<<<<<<< Updated upstream
     var scaleRatio = 1f
 
 
@@ -129,11 +153,14 @@ class MemoActivity : AppCompatActivity() {
 
     private lateinit var systemBars: Insets
 
+=======
+>>>>>>> Stashed changes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+<<<<<<< Updated upstream
             systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -284,6 +311,31 @@ class MemoActivity : AppCompatActivity() {
         val layoutParams = binding.memoLlToolContainer.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.bottomMargin = 0
         binding.memoLlToolContainer.layoutParams = layoutParams
+=======
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+        initView()
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+
+        if(ev.action == MotionEvent.ACTION_DOWN){
+            val x = ev.x
+            val y = ev.y
+
+            val location = IntArray(2)
+            binding.memoMv.getLocationOnScreen(location)
+            val rect = Rect(location[0],location[1],location[0]+binding.memoMv.width,location[1]+binding.memoMv.height)
+            if(!rect.contains(x.toInt(),y.toInt())&&!binding.memoMv.modifyTextActivate){
+                binding.memoMv.removeActivate()
+            }
+        }
+
+
+        return super.dispatchTouchEvent(ev)
+>>>>>>> Stashed changes
     }
 
 
@@ -304,6 +356,7 @@ class MemoActivity : AppCompatActivity() {
             false
         }
 
+<<<<<<< Updated upstream
         root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener{
             override fun onGlobalLayout() {
                 val rect = Rect()
@@ -329,6 +382,8 @@ class MemoActivity : AppCompatActivity() {
 
         memoLlContainer.isScrollable =false
 
+=======
+>>>>>>> Stashed changes
 
 
         val photoPicker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()){uri ->
@@ -382,9 +437,12 @@ class MemoActivity : AppCompatActivity() {
                 if(memoEtAddTextBox.keyListener==null){
                     memoEtAddTextBox.keyListener=inputType
                 }
+<<<<<<< Updated upstream
                 memoMv.activateTextBox?.let{
                     memoEtAddTextBox.setText(memoMv.textList.getOrNull(it)?:"")
                 }
+=======
+>>>>>>> Stashed changes
                 memoMv.outerFocusTextBox = true
             }
         }
@@ -393,7 +451,10 @@ class MemoActivity : AppCompatActivity() {
             val fontAdapter= ArrayAdapter(this@MemoActivity, R.layout.spinner_item,fontList).apply {
                 setDropDownViewResource(R.layout.spinner_dropdown_item)
             }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
             adapter = fontAdapter
             setSelection(4)
             onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
@@ -403,11 +464,14 @@ class MemoActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
+<<<<<<< Updated upstream
                     if(init) {
                         init = false
                         return
                     }
                     Log.d("텍스트 크기 설정",fontList[position].toString())
+=======
+>>>>>>> Stashed changes
                     memoMv.setTextSize(dpToPx(this@MemoActivity,fontList[position].toFloat()))
                 }
 
@@ -441,6 +505,7 @@ class MemoActivity : AppCompatActivity() {
             }
         }
 
+<<<<<<< Updated upstream
 
 
         memoMv.let{ memo->
@@ -478,6 +543,10 @@ class MemoActivity : AppCompatActivity() {
 
             }
 
+=======
+        memoMv.let{ memo->
+
+>>>>>>> Stashed changes
             memoIvGoback.apply{
                 imageTintList = getColorStateList(R.color.light_gray)
                 isClickable = false
@@ -487,6 +556,7 @@ class MemoActivity : AppCompatActivity() {
                 isClickable = false
             }
 
+<<<<<<< Updated upstream
 //            memo.setOnStyleButtonNotifyListener(object : MemoView.OnStyleButtonNotifyListener{
 //                override fun onStyleButtonNotify(style: MemoView.StringStyle) {
 //                    memoIvBold.apply {
@@ -526,6 +596,29 @@ class MemoActivity : AppCompatActivity() {
                 }
 
             })
+=======
+            lifecycleScope.launch {
+                memo.activateHistoryBtnFlow.collectLatest {
+                    val (max, cur) = it
+                    withContext(Dispatchers.Main){
+                        memoIvGoback.imageTintList= if(cur>=0) {
+                            memoIvGoback.isClickable = true
+                            getColorStateList(R.color.black)
+                        } else {
+                            memoIvGoback.isClickable = false
+                            getColorStateList(R.color.light_gray)
+                        }
+                        memoIvGoafter.imageTintList = if(cur<max) {
+                            memoIvGoafter.isClickable = true
+                            getColorStateList(R.color.black)
+                        } else {
+                            memoIvGoafter.isClickable = false
+                            getColorStateList(R.color.light_gray)
+                        }
+                    }
+                }
+            }
+>>>>>>> Stashed changes
 
             memoIvGoback.setOnClickListener {
                 memo.historyGoBack()
@@ -610,6 +703,7 @@ class MemoActivity : AppCompatActivity() {
         }
     }
 
+<<<<<<< Updated upstream
     private fun smoothMove(view:View,targetX:Float = view.translationX,targetY:Float = view.translationY, scale:Float = view.scaleX, duration:Long = 500L, isOrigin:Boolean){
         animatorSet?.cancel()
 
@@ -654,5 +748,7 @@ class MemoActivity : AppCompatActivity() {
 
     }
 
+=======
+>>>>>>> Stashed changes
 
 }
