@@ -66,10 +66,21 @@ class LocalMemoDataSource @Inject constructor(
     }
 
     fun saveTitle(title:String, uniqueId:String){
-        titleSharedPreferences.edit().putString(uniqueId,title)
+        titleSharedPreferences.edit().putString(uniqueId,title).apply()
     }
 
     fun getTitle(uniqueId: String):String{
         return titleSharedPreferences.getString(uniqueId,null)?:""
+    }
+    fun getAllAlarms():Pair<List<AlarmSetting>,List<String>>{
+        val map = alarmSettingSharedPreferences.all
+        val result1 : MutableList<AlarmSetting> = mutableListOf()
+        val result2 : MutableList<String> = mutableListOf()
+        for((k,v) in map){
+            val alarmSetting = gson.fromJson(v as String?,AlarmSetting::class.java)
+            result1+=alarmSetting
+            result2+=k as String
+        }
+        return Pair(result1 as List<AlarmSetting>,result2 as List<String>)
     }
 }
