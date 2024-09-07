@@ -1,64 +1,64 @@
 package com.team5.alarmmemo.presentation.memo
 
-<<<<<<< Updated upstream
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.res.ColorStateList
-=======
->>>>>>> Stashed changes
 import android.graphics.Rect
+import android.icu.util.Calendar
 import android.os.Bundle
+import android.text.Editable
+import android.text.SpannableStringBuilder
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
-<<<<<<< Updated upstream
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.View.OnTouchListener
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.DecelerateInterpolator
-=======
-import android.view.View
->>>>>>> Stashed changes
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
-<<<<<<< Updated upstream
-import android.widget.LinearLayout
-=======
->>>>>>> Stashed changes
+import android.widget.TextView
+import android.widget.TimePicker
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-<<<<<<< Updated upstream
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.graphics.Insets
-import androidx.core.graphics.translationMatrix
-=======
->>>>>>> Stashed changes
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.example.alarmmemo.presentation.memoLogin.UiState
+import com.google.android.material.navigation.NavigationView
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
 import com.team5.alarmmemo.R
+import com.team5.alarmmemo.data.model.AlarmSetting
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
+import com.team5.alarmmemo.util.DpPxUtil.pxToDp
 import dagger.hilt.android.AndroidEntryPoint
-<<<<<<< Updated upstream
-=======
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
->>>>>>> Stashed changes
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MemoActivity : AppCompatActivity() {
+class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
     val binding by lazy {
         ActivityMemoBinding.inflate(layoutInflater)
@@ -66,25 +66,27 @@ class MemoActivity : AppCompatActivity() {
 
     @Inject lateinit var colorpickerDialog: showColorpickerDialog
 
+    private val searchViewModel:SearchAddressViewModel by viewModels()
+    private val viewModel:MemoViewModel by viewModels()
 
-<<<<<<< Updated upstream
+    private lateinit var uniqueId:String
+    private lateinit var userId:String
+
     private var isOriginLocation = true
 
     private lateinit var onTranslationTouchListener: TranslationTouchListener
 
 
-
-=======
->>>>>>> Stashed changes
     private val fontList = List(61){it+4}
     private val pencilList = List(10){it+1}
 
+    private lateinit var weeks:List<TextView>
+
     private var isPickerLaunched =false
 
-<<<<<<< Updated upstream
     var scaleRatio = 1f
 
-
+    private var isInit:Boolean? =null
 
 
 
@@ -151,29 +153,41 @@ class MemoActivity : AppCompatActivity() {
 
 
 
-    private lateinit var systemBars: Insets
 
-=======
->>>>>>> Stashed changes
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-<<<<<<< Updated upstream
-            systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+
+    //툴 컨테이너가 아닌 영역에서 시작해야 모션 이벤트 감지가능
+    private var innerFlag = false
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if(!checkToolContainer(ev?.x,ev?.y)&&ev?.action==MotionEvent.ACTION_DOWN){
+            innerFlag = true
+        }
+        if(checkToolContainer(ev?.x,ev?.y)&&ev?.action==MotionEvent.ACTION_DOWN){
+            innerFlag = false
+        }
+        if(!innerFlag){
+            onTranslationTouchListener.onTouch(binding.memoLlContainer,ev)
         }
 
-        onTranslationTouchListener = TranslationTouchListener()
-        initView()
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        onTranslationTouchListener.onTouch(binding.memoLlContainer,ev)
         return super.dispatchTouchEvent(ev)
     }
+
+    //툴 컨테이너가 포함중이면 false반환
+    private fun checkToolContainer(x:Float?,y:Float?):Boolean{
+        if(x==null||y==null) return false
+        val region1 = Rect()
+        val region2 = Rect()
+        val region3 = Rect()
+
+        binding.memoLlToolContainer.getGlobalVisibleRect(region1)
+        binding.memoLlTitleContainer.getGlobalVisibleRect(region2)
+        binding.memoLlAlarmContainer.getGlobalVisibleRect(region3)
+
+
+
+        return if(region1.contains(x.toInt(),y.toInt())||region2.contains(x.toInt(),y.toInt())||region3.contains(x.toInt(),y.toInt())) false else true
+    }
+
 
     private var lastTouchX = 0f
     private var lastTouchY = 0f
@@ -192,6 +206,7 @@ class MemoActivity : AppCompatActivity() {
     private inner class TranslationTouchListener: OnTouchListener{
 
         override fun onTouch(v: View, event: MotionEvent?): Boolean {
+
             event?.let {
                 if(event.action ==MotionEvent.ACTION_DOWN&&!isAnimationOrigin) animatorSet?.cancel()
 
@@ -311,33 +326,108 @@ class MemoActivity : AppCompatActivity() {
         val layoutParams = binding.memoLlToolContainer.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.bottomMargin = 0
         binding.memoLlToolContainer.layoutParams = layoutParams
-=======
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+    }
+
+
+
+
+    private lateinit var naverMap: NaverMap
+    private var cur = LatLng(0.0,0.0)
+    private var marker = Marker()
+    private var isSearchAddress = false
+
+    override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
+
+        cur = naverMap.cameraPosition.target
+        marker.position = cur
+        marker.map = naverMap
+        
+        naverMap.addOnCameraChangeListener { i, b ->
+            cur = naverMap.cameraPosition.target
+            marker.position = cur
+        }
+
+        naverMap.addOnCameraIdleListener {
+            if(isSearchAddress){
+                isSearchAddress=false
+                return@addOnCameraIdleListener
+            }
+            searchViewModel.searchByLatLng(cur)
+        }
+        
+    }
+
+
+    private lateinit var mapFragment: MapFragment
+    private lateinit var systemBars: Insets
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        isInit =intent.getBooleanExtra("isInit",true)
+        userId = intent.getStringExtra("userId")?:"default"
+        uniqueId = intent.getStringExtra("uniqueId")?:"default"
+
+        mapFragment = supportFragmentManager.findFragmentById(binding.memoFcvMap.id) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                supportFragmentManager.beginTransaction().add(binding.memoFcvMap.id,it).commit()
+            }
+        mapFragment.getMapAsync(this)
+        getSearchAddress()
+        onTranslationTouchListener = TranslationTouchListener()
         initView()
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
 
-        if(ev.action == MotionEvent.ACTION_DOWN){
-            val x = ev.x
-            val y = ev.y
 
-            val location = IntArray(2)
-            binding.memoMv.getLocationOnScreen(location)
-            val rect = Rect(location[0],location[1],location[0]+binding.memoMv.width,location[1]+binding.memoMv.height)
-            if(!rect.contains(x.toInt(),y.toInt())&&!binding.memoMv.modifyTextActivate){
-                binding.memoMv.removeActivate()
+
+
+    fun getSearchAddress(){
+        lifecycleScope.launch {
+            searchViewModel.uiState.collectLatest {
+                when(it){
+                    is UiState.Success -> {
+                        withContext(Dispatchers.Main){
+                            cur = it.data.first
+                            val cameraZoom = naverMap.cameraPosition.zoom
+                            naverMap.cameraPosition = CameraPosition(cur,cameraZoom)
+                            binding.memoEtSelectLocation.setText(it.data.second)
+                        }
+
+                    }
+                    else ->{}
+                }
             }
         }
-
-
-        return super.dispatchTouchEvent(ev)
->>>>>>> Stashed changes
     }
 
+    private fun setAlarm(alarmSetting: AlarmSetting) = with(binding){
+        val times = alarmSetting.time.split("_")
+
+        memoCbAlarmOn.isChecked = alarmSetting.isAlarmOn
+        memoSpSettingCategory.setSelection(alarmSetting.alarmType)
+        memoCbReminderTime.isChecked = alarmSetting.isTimeRepeat
+        memoEtTimesetting.setText(alarmSetting.term.toString())
+        memoEtNumsetting.setText(alarmSetting.num.toString())
+        memoCbReminderOnNoti.isChecked = alarmSetting.isOnRepeat
+        memoCbReminderOn.isChecked = alarmSetting.isOnMemoRepeat
+        memoEtTimeHour.setText(times[0])
+        memoEtTimeMinute.setText(times[1])
+        memoCbTimeWeekly.isChecked = alarmSetting.isWeeklyOn
+        weeks.forEachIndexed {idx,v -> v.isSelected = alarmSetting.week[idx] }
+        memoCbTimeDate.isChecked = alarmSetting.isDateOn
+        memoTvDate.setText(alarmSetting.date)
+        cur = alarmSetting.latLng
+        memoEtSelectLocation.setText(alarmSetting.address)
+    }
 
     fun initView() = with(binding){
         root.setOnTouchListener{ view, motionEvent ->
@@ -356,7 +446,6 @@ class MemoActivity : AppCompatActivity() {
             false
         }
 
-<<<<<<< Updated upstream
         root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener{
             override fun onGlobalLayout() {
                 val rect = Rect()
@@ -373,6 +462,185 @@ class MemoActivity : AppCompatActivity() {
 
         })
 
+        weeks = listOf(memoTvWeekMon,memoTvWeekTue,memoTvWeekWed,memoTvWeekThu,memoTvWeekFri,memoTvWeekSat,memoTvWeekSun)
+        if(isInit?:true){
+            memoProgressbar.visibility = View.GONE
+        }else{
+
+        }
+        viewModel.getMemoDatas(uniqueId)
+        lifecycleScope.launch {
+            viewModel.uiState.collectLatest { state ->
+                when(state){
+                    is UiState.Success ->{
+                        memoProgressbar.visibility = View.GONE
+                        with(state.data){
+                            val title = get("title") as String
+                            val alarmSetting = get("settings") as AlarmSetting
+                            val memo = get("memo") as SpannableStringBuilder
+                            val draw = get("draw") as List<CheckItem>
+
+                            memoEtTitle.setText(title)
+                            memoMv.apply {
+                                Log.d("드로우리스트",draw.toString())
+                                fixedString = memo
+                                fixedDrawList = draw
+                                invalidate()
+                            }
+                            setAlarm(alarmSetting)
+
+                        }
+                    }
+                    is UiState.Init -> memoProgressbar.visibility = View.GONE
+
+                    else -> null
+                }
+            }
+        }
+
+
+
+        weeks.forEach {
+            it.setOnClickListener {
+                it.isSelected = !it.isSelected
+            }
+        }
+
+
+        var isUpdateH= false
+        var isUpdateM = false
+
+        val calendar = Calendar.getInstance()
+        val cyear = calendar.get(Calendar.YEAR)
+        val cmonth = calendar.get(Calendar.MONTH)+1
+        val cday = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val min = calendar.get(Calendar.MINUTE)
+
+
+        if(isInit?:true){
+            memoEtTimeHour.setHint(String.format("%02d",hour))
+            memoEtTimeHour.setText(String.format("%02d",hour))
+            memoEtTimeMinute.setHint(String.format("%02d",min))
+            memoEtTimeMinute.setText(String.format("%02d",min))
+            memoTvDate.setText(String.format("%04d. %02d. %02d",cyear,cmonth,cday))
+        }
+
+
+        memoEtTimeHour.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                return
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                return
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(!isUpdateH){
+                    isUpdateH = true
+                    s?.let{
+                        if(it.toString().isNotEmpty()&&it.toString().toInt() !in 0..23){
+                            it.replace(0,it.length,it.toString().toInt().coerceIn(0..23).let { String.format("%02d",it) })
+                        }
+                    }
+                    isUpdateH = false
+                }
+            }
+        })
+
+        memoEtTimeMinute.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                return
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                return
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(!isUpdateM){
+                    isUpdateM = true
+                    s?.let{
+                        if(it.toString().isNotEmpty()&&it.toString().toInt() !in 0..59){
+                            it.replace(0,it.length,(it.toString().toInt().coerceIn(0..59)).let { String.format("%02d",it) })
+                        }
+                    }
+                    isUpdateM = false
+                }
+            }
+
+        })
+
+        memoTvSelectTime.setOnClickListener {
+            val nhour = memoEtTimeHour.let{
+                if(it.text.toString().isEmpty()) hour else it.text.toString().toInt()
+            }
+            val nmin = memoEtTimeMinute.let{
+                if(it.text.toString().isEmpty()) min else it.text.toString().toInt()
+            }
+
+
+            val dialog = CustomTimePickerFragment.newInstance(nhour,nmin)
+            dialog.setOnTimeSetListener(object :CustomTimePickerFragment.OnTimeSetListener{
+                override fun onTimeSet(hour: Int, min: Int) {
+                    memoEtTimeHour.setText(hour.let { String.format("%02d",it) })
+                    memoEtTimeMinute.setText(min.let { String.format("%02d",it) })
+                }
+
+            })
+            dialog.show(supportFragmentManager,null)
+        }
+
+        memoLlDateContainer.setOnClickListener{
+            val date = memoTvDate.text.toString().split(". ").map{it.toInt()}
+            val dialog = CustomDatePickerFragment.newInstance(date[0],date[1],date[2])
+            dialog.setOnDateSetListener(object :CustomDatePickerFragment.OnDateSetListener{
+                override fun onDateSet(year: Int, month: Int, day: Int) {
+                    memoTvDate.setText(String.format("%04d. %02d. %02d",year,month,day))
+                }
+
+            })
+            dialog.show(supportFragmentManager,null)
+        }
+
+
+        memoTvSettingSave.setOnClickListener {
+
+            val shour = memoEtTimeHour.text.toString().let{
+                if(it.isEmpty()) hour.toString() else it
+            }
+
+            val smin = memoEtTimeMinute.text.toString().let{
+                if(it.isEmpty()) min.toString() else it
+            }
+
+            val alarmSetting = AlarmSetting(
+                memoCbAlarmOn.isChecked,
+                memoSpSettingCategory.selectedItemPosition,
+                memoCbReminderTime.isChecked,
+                memoEtTimesetting.text.toString().let{
+                    if(it.isEmpty()) 0 else it.toInt()
+                },
+                memoEtNumsetting.text.toString().let{
+                    if(it.isEmpty()) 0 else it.toInt()
+                },
+                memoCbReminderOnNoti.isChecked,
+                memoCbReminderOn.isChecked,
+                "${shour.toInt().coerceIn(0..23)}_${smin.toInt().coerceIn(0..59)}",
+                memoCbTimeWeekly.isChecked,
+                weeks.map{it.isSelected}.toBooleanArray(),
+                memoCbTimeDate.isChecked,
+                memoTvDate.text.toString(),
+                cur,
+                memoEtSelectLocation.text.toString()
+            )
+
+            viewModel.saveAlarmSetting(alarmSetting, uniqueId, userId)
+
+        }
+
+
         memoEtAddTextBox.keyListener = null
         memoEtAddTextBox.visibility = View.GONE
 
@@ -382,8 +650,6 @@ class MemoActivity : AppCompatActivity() {
 
         memoLlContainer.isScrollable =false
 
-=======
->>>>>>> Stashed changes
 
 
         val photoPicker = registerForActivityResult(ActivityResultContracts.PickVisualMedia()){uri ->
@@ -392,6 +658,53 @@ class MemoActivity : AppCompatActivity() {
             }
             isPickerLaunched = false
         }
+
+        val settingCls = listOf(memoClAdditionalAlarmSettingReminder,memoClAdditionalAlarmSettingTime,memoClAdditionalAlarmSettingLocation)
+        memoSpSettingCategory.adapter = ArrayAdapter(this@MemoActivity, android.R.layout.simple_spinner_item,
+            arrayOf("리마인더", "시간 알림", "위치 알림")
+        ).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+
+        memoSpSettingCategory.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if(memoIvAddtionalAlarmSettingSpread.isSelected){
+                    settingCls.forEach { it.visibility = View.GONE }
+                    settingCls[position].visibility = View.VISIBLE
+                    if(position==1){
+                        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(this@MemoActivity.currentFocus?.windowToken,0)
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                return
+            }
+
+        }
+
+
+        memoIvAddtionalAlarmSettingSpread.apply {
+            setOnClickListener {
+                isSelected = !isSelected
+                if(isSelected){
+                    settingCls.forEach { it.visibility = View.GONE }
+                    settingCls[memoSpSettingCategory.selectedItemPosition].visibility = View.VISIBLE
+                    memoMlAlarmContainer.transitionToEnd()
+                }else{
+
+                    memoMlAlarmContainer.transitionToStart()
+
+                }
+            }
+        }
+
 
         memoIvAddBitmap.setOnClickListener {
             if(!isPickerLaunched){
@@ -422,6 +735,24 @@ class MemoActivity : AppCompatActivity() {
             }
         }
 
+        memoEtTitle.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                return
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                return
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(::uniqueId.isInitialized&&::userId.isInitialized){
+                    viewModel.saveTitle(s.toString(),uniqueId, userId)
+                }
+
+            }
+
+        })
+
         memoEtAddTextBox.onFocusChangeListener = View.OnFocusChangeListener{ v, hasFocus ->
             if(!hasFocus){
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -437,12 +768,9 @@ class MemoActivity : AppCompatActivity() {
                 if(memoEtAddTextBox.keyListener==null){
                     memoEtAddTextBox.keyListener=inputType
                 }
-<<<<<<< Updated upstream
                 memoMv.activateTextBox?.let{
                     memoEtAddTextBox.setText(memoMv.textList.getOrNull(it)?:"")
                 }
-=======
->>>>>>> Stashed changes
                 memoMv.outerFocusTextBox = true
             }
         }
@@ -451,12 +779,9 @@ class MemoActivity : AppCompatActivity() {
             val fontAdapter= ArrayAdapter(this@MemoActivity, R.layout.spinner_item,fontList).apply {
                 setDropDownViewResource(R.layout.spinner_dropdown_item)
             }
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
             adapter = fontAdapter
-            setSelection(4)
+            setSelection(20)
             onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -464,15 +789,12 @@ class MemoActivity : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-<<<<<<< Updated upstream
                     if(init) {
                         init = false
                         return
                     }
                     Log.d("텍스트 크기 설정",fontList[position].toString())
-=======
->>>>>>> Stashed changes
-                    memoMv.setTextSize(dpToPx(this@MemoActivity,fontList[position].toFloat()))
+                    memoMv.setTextSize(fontList[position].toFloat())
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -505,10 +827,31 @@ class MemoActivity : AppCompatActivity() {
             }
         }
 
-<<<<<<< Updated upstream
 
 
         memoMv.let{ memo->
+
+            memo.setOnMemoChangeListener(object :MemoView.OnMemoChangeListener{
+                override suspend fun onMemoChange(
+                    str: SpannableStringBuilder?
+                ) {
+
+                    if(::uniqueId.isInitialized&&::userId.isInitialized){
+                        viewModel.saveMemo(str,uniqueId, userId)
+                    }
+                }
+
+            })
+
+            memo.setOnDrawChangeListener(object :MemoView.OnDrawChangeListener{
+                override suspend fun onDrawChange(draw: List<CheckItem>) {
+                    if(::uniqueId.isInitialized&&::userId.isInitialized){
+                        viewModel.saveDraw(draw, uniqueId, userId)
+                    }
+
+                }
+
+            })
 
             memo.setOnModifyTextBoxListener(object :MemoView.OnModifyTextBoxListener{
                 override fun onModifyTextBox() {
@@ -543,10 +886,6 @@ class MemoActivity : AppCompatActivity() {
 
             }
 
-=======
-        memoMv.let{ memo->
-
->>>>>>> Stashed changes
             memoIvGoback.apply{
                 imageTintList = getColorStateList(R.color.light_gray)
                 isClickable = false
@@ -556,24 +895,21 @@ class MemoActivity : AppCompatActivity() {
                 isClickable = false
             }
 
-<<<<<<< Updated upstream
-//            memo.setOnStyleButtonNotifyListener(object : MemoView.OnStyleButtonNotifyListener{
-//                override fun onStyleButtonNotify(style: MemoView.StringStyle) {
-//                    memoIvBold.apply {
-//                        isSelected = style.isBold
-//                        if(isSelected){
-//                            imageTintList = getColorStateList(R.color.orange)
-//                        }else{
-//                            imageTintList = getColorStateList(R.color.black)
-//                        }
-//                    }
-//                    memoIvTextcolor.imageTintList = ColorStateList.valueOf(style.color)
-//                    Log.d("텍스트 크기",(pxToDp(this@MemoActivity,style.size).toInt()+4).toString())
-//                    init = true
-//                    memoSpTextsize.setSelection(pxToDp(this@MemoActivity,style.size).toInt())
-//                }
-//
-//            })
+            memo.setOnStyleButtonNotifyListener(object : MemoView.OnStyleButtonNotifyListener{
+                override fun onStyleButtonNotify(style: MemoView.StringStyle) {
+                    memoIvBold.apply {
+                        isSelected = style.isBold
+                        if(isSelected){
+                            imageTintList = getColorStateList(R.color.orange)
+                        }else{
+                            imageTintList = getColorStateList(R.color.black)
+                        }
+                    }
+                    memoIvTextcolor.imageTintList = ColorStateList.valueOf(style.color)
+                    memoSpTextsize.setSelection(pxToDp(style.size).toInt() - 4)
+                }
+
+            })
 
 
             memo.setOnActivateHistoryBtnListener(object :MemoView.OnActivateHistoryBtnListener{
@@ -596,29 +932,6 @@ class MemoActivity : AppCompatActivity() {
                 }
 
             })
-=======
-            lifecycleScope.launch {
-                memo.activateHistoryBtnFlow.collectLatest {
-                    val (max, cur) = it
-                    withContext(Dispatchers.Main){
-                        memoIvGoback.imageTintList= if(cur>=0) {
-                            memoIvGoback.isClickable = true
-                            getColorStateList(R.color.black)
-                        } else {
-                            memoIvGoback.isClickable = false
-                            getColorStateList(R.color.light_gray)
-                        }
-                        memoIvGoafter.imageTintList = if(cur<max) {
-                            memoIvGoafter.isClickable = true
-                            getColorStateList(R.color.black)
-                        } else {
-                            memoIvGoafter.isClickable = false
-                            getColorStateList(R.color.light_gray)
-                        }
-                    }
-                }
-            }
->>>>>>> Stashed changes
 
             memoIvGoback.setOnClickListener {
                 memo.historyGoBack()
@@ -703,7 +1016,6 @@ class MemoActivity : AppCompatActivity() {
         }
     }
 
-<<<<<<< Updated upstream
     private fun smoothMove(view:View,targetX:Float = view.translationX,targetY:Float = view.translationY, scale:Float = view.scaleX, duration:Long = 500L, isOrigin:Boolean){
         animatorSet?.cancel()
 
@@ -748,7 +1060,7 @@ class MemoActivity : AppCompatActivity() {
 
     }
 
-=======
->>>>>>> Stashed changes
+
+
 
 }
