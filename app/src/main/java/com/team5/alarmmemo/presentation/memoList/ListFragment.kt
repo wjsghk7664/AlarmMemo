@@ -23,6 +23,12 @@ class ListFragment : Fragment() {
     private lateinit var adapter: MemoListAdapter
     private var check = false
     private val listViewModel: ListViewModel by activityViewModels()
+    private var sort: String = SORT_BY_TIME
+
+    companion object {
+        const val SORT_BY_TIME = "시간순"
+        const val SORT_BY_TITLE = "제목순"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,7 +80,15 @@ class ListFragment : Fragment() {
 
         // 아이템 데이터 업데이트
         listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
-            adapter.submitList(sampleData)
+            val sortList = when (sort) {
+                SORT_BY_TIME -> sampleData.sortedByDescending { item ->
+                    SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(item.date)
+                }
+                SORT_BY_TITLE -> sampleData.sortedBy { it.title }
+                else -> sampleData
+            }
+
+            adapter.submitList(sortList)
         }
 
         with(binding) {
@@ -84,12 +98,13 @@ class ListFragment : Fragment() {
             memoListBtnAddButton.setOnClickListener {
                 listViewModel.addSampleItem()
                 val addList = listViewModel.sampleData.value ?: listOf()
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-
-                val sortedList = addList.sortedByDescending { item ->
-                    dateFormat.parse(item.date)
+                val sortedList = when (sort) {
+                    SORT_BY_TIME -> addList.sortedByDescending { item ->
+                        SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(item.date)
+                    }
+                    SORT_BY_TITLE -> addList.sortedBy { it.title }
+                    else -> addList
                 }
-
                 adapter.submitList(sortedList)
 
                 Toast.makeText(requireContext(), R.string.memoList_add_message, Toast.LENGTH_SHORT).show()
@@ -107,6 +122,7 @@ class ListFragment : Fragment() {
 
             // Spinner에서 시간 순 텍스트 클릭 시 시간(최신 -> 과거) 순으로 리스트 아이템 정렬
             memoListTvSortTime.setOnClickListener {
+                sort = SORT_BY_TIME
                 "시간순".also { binding.memoListTvSpinner.text = it }
                 val currentList = listViewModel.sampleData.value ?: listOf()
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
@@ -119,6 +135,7 @@ class ListFragment : Fragment() {
 
             // Spinner에서 제목 순 텍스트 클릭 시 제목(ㄱ -> ㅎ) 순으로 리스트 아이템 정렬
             memoListTvSortTitle.setOnClickListener {
+                sort = SORT_BY_TITLE
                 "제목순".also { binding.memoListTvSpinner.text = it }
                 val currentList = listViewModel.sampleData.value ?: listOf()
                 val sortedList = currentList.sortedBy { it.title }
