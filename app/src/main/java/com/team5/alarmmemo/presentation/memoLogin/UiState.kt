@@ -1,4 +1,4 @@
-package com.example.alarmmemo.presentation.memoLogin
+package com.team5.alarmmemo.presentation.memoLogin
 
 sealed interface UiState<out T> {
     data class Success<T>(val data:T) :UiState<T>
