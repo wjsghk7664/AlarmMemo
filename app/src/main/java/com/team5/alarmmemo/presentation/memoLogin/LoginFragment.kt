@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.ListFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -29,6 +28,7 @@ import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.FragmentLoginBinding
+import com.team5.alarmmemo.presentation.memoList.MemoListFragment
 import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -168,7 +168,7 @@ class LoginFragment : Fragment() {
         }
 
         loginNonLogin.setOnClickListener {
-//            parentFragmentManager.beginTransaction().replace(R.id.main, ListFragment.newInstance()).addToBackStack(null).commit()
+//            parentFragmentManager.beginTransaction().replace(R.id.main, MemoListFragment.newInstance()).addToBackStack(null).commit()
         }
 
         loginSignUpBtn.setOnClickListener {
@@ -231,7 +231,7 @@ class LoginFragment : Fragment() {
 
                 Log.d(TAG,"이메일 $email\n 이름정보 $familyName $givenName $displayName\n 포토url $photoUrl\n id $id\n idToken $idToken\n")
 
-                val intent = Intent(requireContext(),ListFragment::class.java)
+                val intent = Intent(requireContext(),MemoListFragment::class.java)
                     .putExtra("google","google")
                 startActivity(intent)
             }
