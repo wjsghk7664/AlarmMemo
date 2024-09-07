@@ -1,23 +1,59 @@
 <resources>
     <string name="app_name">AlarmMemo</string>
 
-    <!--activity_memo_list.xml 의 strings.xml 입니다.-->
-    <string name="menuList_tv_title">목록</string>
-    <string name="menuList_tv_sample_title">메모 타이틀</string>
-    <string name="menuList_tv_sample_date">메모 날짜 시간</string>
-    <string name="menuList_toggle_list">메모 리스트</string>
-    <string name="menuList_toggle_setting">설정</string>
-    <string name="memoList_drop_down_sample_text">시간순</string>
-    <string name="memoList_drop_down_sample_text_2">제목순</string>
+    <!-- activity_memo_list.xml의 문자열 리소스 -->
     <string name="memoList_tv_title">목록</string>
     <string name="memoList_toggle_list">메모 리스트</string>
     <string name="memoList_toggle_setting">설정</string>
-    <string name="memoList_toggle_list_2">2줄 격자</string>
-    <string name="memoList_toggle_list_3">3줄 격자</string>
+
+    <!--fragment_list.xml 의 문자열 리소스-->
+    <string name="memoList_drop_down_sample_text">시간순</string>
+    <string name="memoList_drop_down_sample_text_2">제목순</string>
+
+    <!--list_sample.xml 의 문자열 리소스-->
     <string name="memoList_tv_sample_title">메모 제목</string>
     <string name="memoList_tv_sample_date">메모 날짜</string>
 
-    <!--activity_login.xml 의 strings.xml 입니다 -->
+    <!--change_name_dialog.xml 의 문자열 리소스-->
+    <string name="dialog_et_dialog_change_name">변경할 이름을 입력하세요</string>
+
+    <!--navigation_header.xml 의 문자열 리소스-->
+    <string name="drawer_tv_drawer_profile_name">이름</string>
+
+    <!--fragment_profile.xml의 문자열 리소스-->
+    <string name="profile_tv_name_title">이름</string>
+    <string name="profile_tv_name_text">테스트</string>
+    <string name="profile_tv_id_title">아이디</string>
+    <string name="profile_tv_id_text">test ID</string>
+    <string name="profile_tv_password_change_text">비밀번호 변경</string>
+    <string name="profile_tv_logout_text">로그아웃</string>
+    <string name="profile_tv_delete_profile_text">회원 탈퇴</string>
+
+    <!---drawer_menu.xml 의 문자열 리소스-->
+    <string name="drawer_item_license">라이센스</string>
+    <string name="drawer_item_profile">프로필</string>
+
+    <!--fragment_filter_bottom_sheet.xml 의 문자열 리소스-->
+    <string name="bottom_sheet_tv_title">필터</string>
+    <string name="memoList_toggle_list_2">2개씩 보기</string>
+    <string name="memoList_toggle_list_3">3개씩 보기</string>
+
+    <!-- ListFragment의 문자열 리소스 -->
+    <string name="memoList_add_message">메모가 추가되었습니다.</string>
+    <string name="memoList_delete_message">메모가 삭제되었습니다.</string>
+    <string name="memoList_dialog_title">메모 삭제</string>
+    <string name="memoList_dialog_message">정말로 이 메모를 삭제하시겠습니까?</string>
+
+    <!-- MemoListActivity의 문자열 리소스 -->
+    <string name="memoList_back_pressed_message">한 번 더 누르면 종료됩니다.</string>
+
+    <!-- ProfileFragment의 문자열 리소스 -->
+    <string name="profile_logout_message">로그 아웃을 완료했습니다.</string>
+    <string name="profile_delete_message">회원 탈퇴를 완료했습니다.</string>
+    <string name="profile_name_message">이름이 변경되었습니다.</string>
+    <string name="profile_password_message">비밀번호가 변경되었습니다.</string>
+
+    <!-- activity_login.xml의 문자열 리소스 -->
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">id</string>
     <string name="prompt_password">Password</string>
