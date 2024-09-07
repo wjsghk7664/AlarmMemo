@@ -8,7 +8,7 @@
         app:duration="500">
         <OnClick
             app:clickAction="transitionToEnd"
-            app:targetId="@+id/tvSpinner" />
+            app:targetId="@+id/memoList_tv_Spinner" />
     </Transition>
 
     <Transition
@@ -17,7 +17,7 @@
         app:duration="500">
         <OnClick
             app:clickAction="transitionToEnd"
-            app:targetId="@+id/tvSpinner"/>
+            app:targetId="@+id/memoList_tv_Spinner" />
     </Transition>
 
     <ConstraintSet android:id="@+id/firstAnimation">
@@ -25,7 +25,8 @@
             android:id="@+id/memoList_cl_spinner"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </ConstraintSet>
@@ -35,7 +36,8 @@
             android:id="@+id/memoList_cl_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </ConstraintSet>

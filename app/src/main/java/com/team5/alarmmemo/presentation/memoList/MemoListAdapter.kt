@@ -9,6 +9,7 @@ import com.team5.alarmmemo.databinding.ListSampleBinding
 
 class MemoListAdapter(
     private val onItemClicked: (ListItem) -> Unit,
+    private val onItemLongClicked: (ListItem) -> Unit,
 ) : ListAdapter<ListItem, ListItemViewHolder>(object : DiffUtil.ItemCallback<ListItem>() {
     override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
         return oldItem.number == newItem.number
@@ -21,7 +22,7 @@ class MemoListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = ListSampleBinding.inflate(layoutInflater, parent, false)
-        return ListItemViewHolder(binding, onItemClicked)
+        return ListItemViewHolder(binding, onItemClicked, onItemLongClicked)
     }
 
     override fun onBindViewHolder(holder: ListItemViewHolder, position: Int) {
@@ -32,16 +33,22 @@ class MemoListAdapter(
 class ListItemViewHolder(
     private val binding: ListSampleBinding,
     private val onItemClicked: (ListItem) -> Unit,
+    private val onItemLongClicked: (ListItem) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(item: ListItem) {
         with(binding) {
-            SampleTvMemoTitle.text = item.title
-            SampleTvMemoDate.text = item.date
-            SampleIvMemoThumbnail.setImageResource(item.image)
+            sampleTvMemoTitle.text = item.title
+            sampleTvMemoDate.text = item.date
+            sampleIvMemoThumbnail.setImageResource(item.image)
 
-            SampleIvMemoThumbnail.setOnClickListener {
+            sampleIvMemoThumbnail.setOnClickListener {
                 onItemClicked(item)
+            }
+
+            sampleIvMemoThumbnail.setOnLongClickListener {
+                onItemLongClicked(item)
+                true
             }
         }
     }

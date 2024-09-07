@@ -5,24 +5,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
-import android.graphics.Color
-import android.util.Log
 import androidx.fragment.app.activityViewModels
 import com.team5.alarmmemo.databinding.FragmentListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class ListFragment : Fragment() {
 
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: MemoListAdapter
-//    private var sampleData = listOf<ListItem>()
-//    private var number = 0
     private var check = false
     private val listViewModel: ListViewModel by activityViewModels()
+    private var sort: String = SORT_BY_TIME
+
+    companion object {
+        const val SORT_BY_TIME = "시간순"
+        const val SORT_BY_TITLE = "제목순"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,92 +42,125 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 저장된 리스트를 불러옴
+        listViewModel.loadList()
+
+        // Adapter랑 연결
         adapter = MemoListAdapter(
+            // 아이템 (썸네일) 클릭 시 메모 Activity로 이동
             onItemClicked = { _ ->
                 val intent = Intent(requireContext(), MemoActivity::class.java)
                 startActivity(intent)
+            },
+
+            // 길게 클릭 시 아이템 삭제 다이얼로그 실행
+            onItemLongClicked = { item ->
+                val builder = AlertDialog.Builder(requireContext()).apply {
+                    setTitle(getString(R.string.memoList_dialog_title))
+                    setMessage(getString(R.string.memoList_dialog_message))
+
+                    setPositiveButton("삭제") { _, _ ->
+                        listViewModel.deleteItem(item)
+                        Toast.makeText(requireContext(), R.string.memoList_delete_message, Toast.LENGTH_SHORT).show()
+                    }
+
+                    setNegativeButton("취소") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                }
+
+                builder.show()
             }
         )
 
-        val spanCount = arguments?.getInt("spanCount") ?: 2
-        Log.d("ListFragment", spanCount.toString())
-        with(binding) {
-            MemoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
-            MemoListRvMemoList.adapter = adapter
+        // SpanCount 관련 LiveData로 업데이트
+        listViewModel.spanCount.observe(viewLifecycleOwner) { spanCount ->
+            binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
         }
 
-        listViewModel.sampleData.observe(viewLifecycleOwner){ sampleData ->
-            adapter.submitList(sampleData)
-        }
-
-        with(binding) {
-            button.setOnClickListener {
-                listViewModel.addSampleItem()
-            }
-
-            tvSpinner.setOnClickListener {
-//                showDropDownMenu()
-            }
-
-            sortLatest.setOnClickListener {
-//            adapter.submitList(sampleData)
-                "시간순".also { binding.tvSpinner.text = it }
-                tvSpinner.callOnClick()
-            }
-
-            sortOldest.setOnClickListener {
-//            adapter.submitList(sampleData)
-                "제목순".also { binding.tvSpinner.text = it }
-                tvSpinner.callOnClick()
-            }
-
-            dropDownButton.setOnClickListener {
-                val currentList = listViewModel.sampleData.value ?: listOf()
-                if (!check) {
-                    val sortedList = currentList.sortedByDescending { it.number }
-                    adapter.submitList(sortedList)
-                    binding.dropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
-                    check = true
-                } else {
-                    val sortedList = currentList.sortedBy { it.number }
-                    adapter.submitList(sortedList)
-                    binding.dropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
-                    check = false
+        // 아이템 데이터 업데이트
+        listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
+            val sortList = when (sort) {
+                SORT_BY_TIME -> sampleData.sortedByDescending { item ->
+                    SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(item.date)
                 }
+                SORT_BY_TITLE -> sampleData.sortedBy { it.title }
+                else -> sampleData
+            }
+
+            adapter.submitList(sortList)
+        }
+
+        with(binding) {
+            memoListRvMemoList.adapter = adapter
+
+            // 아이템 추가 버튼 클릭 시 아이템 추가
+            memoListBtnAddButton.setOnClickListener {
+                listViewModel.addSampleItem()
+                val addList = listViewModel.sampleData.value ?: listOf()
+                val sortedList = when (sort) {
+                    SORT_BY_TIME -> addList.sortedByDescending { item ->
+                        SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(item.date)
+                    }
+                    SORT_BY_TITLE -> addList.sortedBy { it.title }
+                    else -> addList
+                }
+                adapter.submitList(sortedList)
+
+                Toast.makeText(requireContext(), R.string.memoList_add_message, Toast.LENGTH_SHORT).show()
+            }
+
+            // Spinner 클릭시 Motion Layout 적용
+            memoListTvSpinner.setOnClickListener {
+                if (check) {
+                    binding.motionLayout.transitionToStart()
+                } else {
+                    binding.motionLayout.transitionToEnd()
+                }
+                check = !check
+            }
+
+            // Spinner에서 시간 순 텍스트 클릭 시 시간(최신 -> 과거) 순으로 리스트 아이템 정렬
+            memoListTvSortTime.setOnClickListener {
+                sort = SORT_BY_TIME
+                "시간순".also { binding.memoListTvSpinner.text = it }
+                val currentList = listViewModel.sampleData.value ?: listOf()
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                val sortedList = currentList.sortedByDescending { item ->
+                    dateFormat.parse(item.date)
+                }
+                adapter.submitList(sortedList)
+                memoListTvSpinner.callOnClick()
+            }
+
+            // Spinner에서 제목 순 텍스트 클릭 시 제목(ㄱ -> ㅎ) 순으로 리스트 아이템 정렬
+            memoListTvSortTitle.setOnClickListener {
+                sort = SORT_BY_TITLE
+                "제목순".also { binding.memoListTvSpinner.text = it }
+                val currentList = listViewModel.sampleData.value ?: listOf()
+                val sortedList = currentList.sortedBy { it.title }
+                adapter.submitList(sortedList)
+                memoListTvSpinner.callOnClick()
+            }
+
+//            memoListIvDropDownButton.setOnClickListener {
+//                if (!check) {
+//                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
+//                } else {
+//                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
+//                }
+//                check = !check
+//            }
+
+            // filter 버튼 클릭 시 2줄 격자, 3줄 격자 선택하는 bottom sheet 나오게 하고 거기서 SpanCount 꺼내서 가져 오기(?)
+            memoListIvFilterButton.setOnClickListener {
+                val bottomSheet = BottomSheetFragment { newSpanCount ->
+                    listViewModel.setSpanCount(newSpanCount)
+                }
+                bottomSheet.show(childFragmentManager, bottomSheet.tag)
             }
         }
     }
-
-//    private fun showDropDownMenu() {
-//        if (check) {
-//            with(binding) {
-//                sortLatest.visibility = View.GONE
-//                sortOldest.visibility = View.GONE
-//                motionLayout.transitionToEnd()
-//                tvSpinner.setBackgroundColor(Color.TRANSPARENT)
-//            }
-//            check = false
-//        } else {
-//            with(binding) {
-//                sortLatest.visibility = View.VISIBLE
-//                sortOldest.visibility = View.VISIBLE
-//                motionLayout.transitionToEnd()
-//                tvSpinner.setBackgroundColor(Color.WHITE)
-//            }
-//            check = true
-//        }
-//    }
-
-//    private fun addSampleItem() {
-//        val item = ListItem(
-//            number = number++,
-//            title = "새 메모",
-//            date = "2024-08-28",
-//            image = R.mipmap.ic_launcher
-//        )
-//        sampleData += item
-//        adapter.submitList(sampleData.toMutableList())
-//    }
 
     override fun onDestroyView() {
         super.onDestroyView()
