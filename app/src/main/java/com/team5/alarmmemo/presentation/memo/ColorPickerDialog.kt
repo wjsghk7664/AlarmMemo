@@ -4,15 +4,14 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.RectF
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.graphics.drawable.shapes.RoundRectShape
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
+<<<<<<< Updated upstream
 import androidx.viewbinding.ViewBinding
+=======
+>>>>>>> Stashed changes
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import com.team5.alarmmemo.databinding.DialogColorPickerBinding
 import com.skydoves.colorpickerview.ColorEnvelope

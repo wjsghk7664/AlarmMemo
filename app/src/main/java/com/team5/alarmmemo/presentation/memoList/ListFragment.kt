@@ -19,7 +19,7 @@ class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: MemoListAdapter
-//    private var sampleData = listOf<ListItem>()
+    //    private var sampleData = listOf<ListItem>()
 //    private var number = 0
     private var check = false
     private val listViewModel: ListViewModel by activityViewModels()
