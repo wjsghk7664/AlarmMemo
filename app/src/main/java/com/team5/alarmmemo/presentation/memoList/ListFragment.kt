@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -54,6 +55,7 @@ class ListFragment : Fragment() {
 
                     setPositiveButton("삭제") { _, _ ->
                         listViewModel.deleteItem(item)
+                        Toast.makeText(requireContext(), R.string.memoList_delete_message, Toast.LENGTH_SHORT).show()
                     }
 
                     setNegativeButton("취소") { dialog, _ ->
@@ -89,6 +91,8 @@ class ListFragment : Fragment() {
                 }
 
                 adapter.submitList(sortedList)
+
+                Toast.makeText(requireContext(), R.string.memoList_add_message, Toast.LENGTH_SHORT).show()
             }
 
             // Spinner 클릭시 Motion Layout 적용

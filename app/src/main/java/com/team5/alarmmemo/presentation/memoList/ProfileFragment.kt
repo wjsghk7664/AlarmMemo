@@ -35,12 +35,15 @@ class ProfileFragment : Fragment() {
                 val intent = Intent(requireContext(), LoginActivity::class.java)
                 startActivity(intent)
 
-                Toast.makeText(requireContext(), getString(R.string.profile_logout_message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.profile_logout_message, Toast.LENGTH_SHORT).show()
             }
 
             // 회원 탈퇴 버튼 클릭 시
             profileDeleteButton.setOnClickListener {
-                Toast.makeText(requireContext(), getString(R.string.profile_delete_message), Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireContext(), LoginActivity::class.java)
+                startActivity(intent)
+
+                Toast.makeText(requireContext(), R.string.profile_delete_message, Toast.LENGTH_SHORT).show()
             }
 
             // 이름 변경 버튼 클릭 시
@@ -50,8 +53,7 @@ class ProfileFragment : Fragment() {
 
             // 비밀번호 변경 버튼 클릭 시
             profileIvPasswordChangeButton.setOnClickListener {
-                Toast.makeText(requireContext(), getString(R.string.profile_password_message), Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+                Toast.makeText(requireContext(), R.string.profile_password_message, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -67,7 +69,7 @@ class ProfileFragment : Fragment() {
             setPositiveButton("변경") { dialog, _ ->
                 val newName = dialogBinding.nameChangeEtDialog.text.toString()
                 binding.profileTvNameText.text = newName
-                Toast.makeText(requireContext(), getString(R.string.profile_name_message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), R.string.profile_name_message, Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
 

@@ -32,7 +32,7 @@ class MemoListActivity : AppCompatActivity() {
                 finish()
             } else {
                 backPressedTime = System.currentTimeMillis()
-                Toast.makeText(this@MemoListActivity, getString(R.string.memoList_back_pressed_message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MemoListActivity, R.string.memoList_back_pressed_message, Toast.LENGTH_SHORT).show()
             }
         }
     }
