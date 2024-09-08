@@ -25,6 +25,9 @@ annotation class AlarmSettings
 @Qualifier
 annotation class ActiveAlarms
 
+@Qualifier
+annotation class SpanCount
+
 @Module
 @InstallIn(SingletonComponent::class)
 object SharedPreferencesModule {
@@ -57,5 +60,11 @@ object SharedPreferencesModule {
     @Provides
     fun provideActiveAlarmsSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
         return context.getSharedPreferences("active_alarm_pref",0)
+    }
+
+    @SpanCount
+    @Provides
+    fun provideSpanCountSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
+        return context.getSharedPreferences("span_count_pref",0)
     }
 }

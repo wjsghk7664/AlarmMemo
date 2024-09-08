@@ -17,7 +17,7 @@ class LocalMemoDataSource @Inject constructor(
     fun getList():ArrayList<Triple<String,String,SpannableStringBuilder>>{
         val result = ArrayList<Triple<String,String,SpannableStringBuilder>>()
 
-        val all = titleSharedPreferences.all.keys
+        val all = alarmSettingSharedPreferences.all.keys
         for(i in all){
             val memo =memoSharedPreferences.getString(i, null)
                 ?.let { gson.fromJson(it, SpannableStringBuilder::class.java) }
