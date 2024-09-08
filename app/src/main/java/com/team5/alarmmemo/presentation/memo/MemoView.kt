@@ -16,6 +16,7 @@ import android.net.Uri
 import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
@@ -66,7 +67,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
     var latestList:List<CheckItem> = listOf()
 
 
-    var fixedDrawList : List<CheckItem> = listOf()
+    var fixedDrawList : MutableList<CheckItem> = mutableListOf()
     var fixedString = SpannableStringBuilder("")
 
     private var isSettingAutoChagned = false
@@ -280,7 +281,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     Log.d("히스토리",drawHistory.toString())
 
                     if(selEnd==selStart&&text!=null&&prevText==text.toString()){
-                        val spans = text!!.getSpans(selEnd,selEnd, Any::class.java)
+                        val spans = text!!.getSpans(selEnd,selEnd, Any::class.java).filter{ text!!.getSpanStart(it)!=selEnd}
                         var style:Boolean? =null
                         var size:Int? =null
                         var color:Int? =null
@@ -353,7 +354,23 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     lastTextHistoryItem?.data = deepCopyOfSpannableStringBuilder(s as SpannableStringBuilder)
 
                     CoroutineScope(Dispatchers.IO).launch{
-                        onMemoChangeListener?.onMemoChange(lastTextHistoryItem?.data as SpannableStringBuilder)
+                        (lastTextHistoryItem?.data as SpannableStringBuilder?)?.let { spans ->
+                            spans.getSpans(0,spans.length,Any::class.java).forEach {
+                                Log.d("저장시점 스팬 체크",it.toString()+": ${spans.getSpanStart(it)}, ${spans.getSpanEnd(it)} / ${when(spans.getSpanFlags(it)){
+                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE -> "ExEx"
+                                    Spanned.SPAN_EXCLUSIVE_INCLUSIVE -> "ExIn"
+                                    Spanned.SPAN_INCLUSIVE_EXCLUSIVE -> "InEX"
+                                    Spanned.SPAN_INCLUSIVE_INCLUSIVE -> "InIn"
+                                    else -> spans.getSpanFlags(it)
+
+                                }                                }")
+                            }
+                        }
+                        if(initalEdit){
+                            initalEdit=false
+                        }else{
+                            onMemoChangeListener?.onMemoChange(lastTextHistoryItem?.data as SpannableStringBuilder? ?:SpannableStringBuilder(""))
+                        }
                     }
 
 
@@ -380,6 +397,70 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
     var isScaling = false
 
+    private var initalEdit = false
+
+    fun initialMemo(memo:SpannableStringBuilder,draw:List<CheckItem>){
+        var tzidx = 0
+        val textZIdx = HashMap<Int,Int>()
+
+        var dzidx = 0
+        val drawZIdx = HashMap<Int,Int>()
+
+        var bzidx = 0
+        val bitmapZIdx = HashMap<Int,Int>()
+
+
+
+        changedCurEditable = true
+        initalEdit = true
+        fixedString = memo
+        fixedDrawList = draw.toMutableList()
+        fixedDrawList.forEach {
+            when(it.type){
+                MemoType.TextBox -> {
+                    val (text,rectf,paint) = it.data as Triple<String,RectF,Paint>
+                    textList+=text
+                    textRectFList+=rectf
+                    textPaintList+=paint
+                    textboxHistory[tzidx] = ArrayList()
+                    textboxHistory[tzidx]!!.add(Triple(String(textList[tzidx].toCharArray()),RectF(textRectFList[tzidx]),Paint(textPaintList[tzidx])))
+                    textZIdx.put(it.zidx,tzidx++)
+
+                }
+                MemoType.Draw -> {
+                    val (path,paint) = it.data as Pair<Path,Paint>
+                    drawList+=path
+                    drawPaintList+=paint
+                    drawZIdx.put(it.zidx,dzidx++)
+                }
+                MemoType.Bitmap -> {
+                    val (bitmap,rectf) = it.data as Pair<Bitmap,RectF>
+                    bitmaps+=bitmap
+                    bitmapRectFs+=rectf
+                    bitmapHistory[bzidx] = ArrayList()
+                    bitmapHistory[bzidx]!!.add(bitmapRectFs[bzidx])
+                    bitmapZIdx.put(it.zidx,bzidx++)
+
+                }
+                MemoType.Text -> null
+                MemoType.Default -> null
+            }
+        }
+        for(i in 0..fixedDrawList.size-1){
+            fixedDrawList[i] = fixedDrawList[i].let{
+                val newZidx = when(it.type){
+                    MemoType.TextBox -> textZIdx[it.zidx]
+                    MemoType.Draw -> drawZIdx[it.zidx]
+                    MemoType.Bitmap -> bitmapZIdx[it.zidx]
+                    MemoType.Text -> null
+                    MemoType.Default -> null
+                }
+                it.copy(zidx = newZidx?:0)
+            }
+        }
+        invalidate()
+    }
+
 
 
     private var isKeypadOn = false
@@ -389,7 +470,9 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         addView(textboxMenu.root)
         addView(textMain)
 
-        settingEditable()
+
+        //TODO("새 메모 추가시 이부분이 없어도 되는지 체크")
+        //settingEditable()
 
         rootView.viewTreeObserver.addOnGlobalLayoutListener {
             val rect = Rect()
@@ -445,11 +528,13 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
 
     fun modifyEditableStyle(s:Int, e:Int, editable: Editable?, modifiedStyle:StringStyle){
+        if(s<0 || e<0) return
         Log.d("수정 진입",editable.toString()+": ${s},${e} / "+modifiedStyle.toString())
         editable?.run {
             Log.d("스타일 px값",modifiedStyle.size.toString())
             getSpans(s, e, Any::class.java).forEach {
                 if(it is AbsoluteSizeSpan||it is StyleSpan||it is ForegroundColorSpan){
+
 
 
                     val start = getSpanStart(it)
@@ -459,16 +544,16 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                     Log.d("수정 스팬범위","${start},${end}")
                     if(start<s){
                         when(it){
-                            is AbsoluteSizeSpan -> setSpan(AbsoluteSizeSpan(it.size, it.dip), start, s,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            is StyleSpan -> setSpan(StyleSpan(it.style), start,s,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            is ForegroundColorSpan -> setSpan(ForegroundColorSpan(it.foregroundColor), start,s,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            is AbsoluteSizeSpan -> setSpan(AbsoluteSizeSpan(it.size, it.dip), start, s,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                            is StyleSpan -> setSpan(StyleSpan(it.style), start,s,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                            is ForegroundColorSpan -> setSpan(ForegroundColorSpan(it.foregroundColor), start,s,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                         }
                     }
                     if(end>e){
                         when(it){
-                            is AbsoluteSizeSpan -> setSpan(AbsoluteSizeSpan(it.size, it.dip), e,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            is StyleSpan -> setSpan(StyleSpan(it.style), e,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            is ForegroundColorSpan -> setSpan(ForegroundColorSpan(it.foregroundColor), e,end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            is AbsoluteSizeSpan -> setSpan(AbsoluteSizeSpan(it.size, it.dip), e,end,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                            is StyleSpan -> setSpan(StyleSpan(it.style), e,end,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+                            is ForegroundColorSpan -> setSpan(ForegroundColorSpan(it.foregroundColor), e,end,Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
                         }
                     }
                 }
@@ -1097,7 +1182,9 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         secondLastTextHistoryItem = stringPrev
         if(changedCurEditable){
             post{
-                Log.d("히스토리 현재 텍스트 변경","11ㅁㅁㅁㅁ")
+                fixedString.getSpans(0,fixedString.length,Any::class.java).forEach {
+                    Log.d("스팬들",it.toString()+":${fixedString.getSpanStart(it)}, ${fixedString.getSpanEnd(it)}")
+                }
                 textMain.text = (lastTextHistoryItem?.data as SpannableStringBuilder?)?:fixedString
                 changedCurEditable = false
             }

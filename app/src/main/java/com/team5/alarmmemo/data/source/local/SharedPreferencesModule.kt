@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 
 @Qualifier
@@ -21,8 +22,14 @@ annotation class Title
 @Qualifier
 annotation class AlarmSettings
 
+@Qualifier
+annotation class ActiveAlarms
+
+@Qualifier
+annotation class SpanCount
+
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object SharedPreferencesModule {
 
     @Memo
@@ -47,5 +54,17 @@ object SharedPreferencesModule {
     @Provides
     fun provideAlarmSettingSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
         return context.getSharedPreferences("alarm_setting_pref",0)
+    }
+
+    @ActiveAlarms
+    @Provides
+    fun provideActiveAlarmsSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
+        return context.getSharedPreferences("active_alarm_pref",0)
+    }
+
+    @SpanCount
+    @Provides
+    fun provideSpanCountSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
+        return context.getSharedPreferences("span_count_pref",0)
     }
 }

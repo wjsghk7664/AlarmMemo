@@ -5,8 +5,13 @@ import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.util.Log
 import com.google.gson.JsonArray
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -50,6 +55,9 @@ class PaintAdapter @Inject constructor(): JsonSerializer<Paint>, JsonDeserialize
         val jsonObject = JsonObject()
         jsonObject.addProperty("color", src?.color)
         jsonObject.addProperty("style", src?.style?.toString())
+        jsonObject.addProperty("isbold", src?.typeface?.isBold)
+        jsonObject.addProperty("textsize", src?.textSize)
+        jsonObject.addProperty("stroke", src?.strokeWidth)
         return jsonObject
     }
 
@@ -63,6 +71,9 @@ class PaintAdapter @Inject constructor(): JsonSerializer<Paint>, JsonDeserialize
             Paint.Style.FILL_AND_STROKE.toString() -> Paint.Style.FILL_AND_STROKE
             else -> Paint.Style.FILL
         }
+        paint.typeface = if(jsonObject?.get("isbold")?.asBoolean?:false) Typeface.create(Typeface.DEFAULT,Typeface.BOLD) else Typeface.create(Typeface.DEFAULT,Typeface.NORMAL)
+        paint.textSize = jsonObject?.get("textsize")?.asFloat?: DpPxUtil.dpToPx(24f)
+        paint.strokeWidth = jsonObject?.get("stroke")?.asFloat?: DpPxUtil.dpToPx(1f)
         return paint
     }
 }
@@ -248,6 +259,8 @@ class CheckItemTypeAdapter @Inject constructor(): JsonSerializer<CheckItem>, Jso
     }
 }
 
+
+
 class SpannableStringBuilderTypeAdapter @Inject constructor() : JsonSerializer<SpannableStringBuilder>, JsonDeserializer<SpannableStringBuilder> {
 
     override fun serialize(src: SpannableStringBuilder?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
@@ -260,10 +273,22 @@ class SpannableStringBuilderTypeAdapter @Inject constructor() : JsonSerializer<S
             val spans = it.getSpans(0, it.length, Any::class.java)
             spans.forEach { span ->
                 val spanObject = JsonObject()
+                Log.d("직렬화 span","${span},${it.getSpanStart(span)},${it.getSpanEnd(span)},${it.getSpanFlags(span)}")
                 spanObject.addProperty("start", it.getSpanStart(span))
                 spanObject.addProperty("end", it.getSpanEnd(span))
-                spanObject.addProperty("type", span::class.java.name) // Use class name for type identification
-                spanObject.add("data", context?.serialize(span, span::class.java))
+                spanObject.addProperty("flag", Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                spanObject.addProperty("type", when(span){
+                    is AbsoluteSizeSpan -> "abs"
+                    is ForegroundColorSpan -> "fore"
+                    is StyleSpan -> "style"
+                    else -> "default"
+                }) // Use class name for type identification
+                spanObject.addProperty("data", when(span){
+                    is AbsoluteSizeSpan -> span.size.toString()
+                    is ForegroundColorSpan -> span.foregroundColor.toString()
+                    is StyleSpan -> span.style.toString()
+                    else -> "default"
+                })
                 spanArray.add(spanObject)
             }
         }
@@ -282,13 +307,22 @@ class SpannableStringBuilderTypeAdapter @Inject constructor() : JsonSerializer<S
             val spanObject = element.asJsonObject
             val start = spanObject.get("start")?.asInt ?: 0
             val end = spanObject.get("end")?.asInt ?: 0
-            val type = spanObject.get("type")?.asString ?: ""
-
+            val flag = spanObject.get("flag")?.asInt?:Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            val type = spanObject.get("type")?.asString ?: "default"
+            val data = spanObject.get("data")?.asString ?: "default"
             try {
-                val spanClass = Class.forName(type)
-                val span = context?.deserialize<Any>(spanObject.get("data"), spanClass)
+                var span = if(data =="default") null else{
+                    when(type){
+                        "abs" ->AbsoluteSizeSpan(data.toInt(),false)
+                        "fore" -> ForegroundColorSpan(data.toInt())
+                        "style" -> StyleSpan(data.toInt())
+                        else-> null
+                    }
+                }
+                if(start<0||end<0) span = null
                 if (span != null) {
-                    spannableStringBuilder.setSpan(span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    spannableStringBuilder.setSpan(span, start, end, flag)
+                    Log.d("역직렬화 스팬","${span},${start},${end},${flag}")
                 }
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()
@@ -299,6 +333,7 @@ class SpannableStringBuilderTypeAdapter @Inject constructor() : JsonSerializer<S
 
         return spannableStringBuilder
     }
+
 }
 
 class LatLngTypeAdapter @Inject constructor(): JsonSerializer<LatLng>, JsonDeserializer<LatLng> {

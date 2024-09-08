@@ -8,10 +8,6 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-<<<<<<< Updated upstream
-import androidx.viewbinding.ViewBinding
-=======
->>>>>>> Stashed changes
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import com.team5.alarmmemo.databinding.DialogColorPickerBinding
 import com.skydoves.colorpickerview.ColorEnvelope
