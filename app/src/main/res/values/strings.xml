@@ -69,8 +69,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="naver_client_id">ks9WHc4qM9k1nF1SDZNM</string>
-    <string name="naver_client_secret">Z1TCQ7ALT9</string>
+    <string name="naver_client_id">3wUidjwnTrPwqpBogXOV</string>
+    <string name="naver_client_secret">qtgdKyoFy7</string>
     <string name="naver_client_name">AlarmMemo</string>
 
     <!-- activity_sign_up.xml의 문자열 리소스 -->

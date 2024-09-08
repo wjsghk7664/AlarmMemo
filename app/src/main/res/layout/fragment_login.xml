@@ -44,7 +44,7 @@
         android:background="@drawable/edit_text"
         android:ems="10"
         android:hint="비밀번호 입력"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:paddingLeft="12dp"
         android:textColor="@color/dark_gray"
         android:textColorHint="@color/dark_gray"
@@ -149,27 +149,27 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/login_kakao_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/btn_kakao_login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_naver_login" />
+<!--    <ImageView-->
+<!--        android:id="@+id/login_kakao_login"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:src="@drawable/btn_kakao_login"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.502"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/login_naver_login" />-->
 
-    <ImageView
-        android:id="@+id/login_google_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/btn_google_login"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+<!--    <ImageView-->
+<!--        android:id="@+id/login_google_login"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:src="@drawable/btn_google_login"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.502"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />-->
 
     <com.navercorp.nid.oauth.view.NidOAuthLoginButton
         android:id="@+id/login_naver_login"
@@ -178,9 +178,9 @@
         android:layout_marginTop="8dp"
         android:src="@drawable/btn_naver_login"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_google_login" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
 <!--    <CheckBox-->
 <!--        android:id="@+id/login_cb_autologin"-->

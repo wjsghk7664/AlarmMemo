@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-05T03:23:36.822702700Z">
+        <DropdownSelection timestamp="2024-09-08T12:44:52.640038100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\USER\.android\avd\Pixel_2_API_34.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=R3CT50TKEZH" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -23,6 +23,9 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="MemoListActivity">
+        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>
