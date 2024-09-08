@@ -15,7 +15,9 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoListBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MemoListActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMemoListBinding.inflate(layoutInflater) }
