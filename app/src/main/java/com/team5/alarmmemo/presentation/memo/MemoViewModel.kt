@@ -4,7 +4,7 @@ import android.text.SpannableStringBuilder
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.alarmmemo.presentation.memoLogin.UiState
+import com.team5.alarmmemo.presentation.memoLogin.UiState
 import com.team5.alarmmemo.data.model.AlarmSetting
 import com.team5.alarmmemo.data.repository.memo.LocalRepository
 import com.team5.alarmmemo.data.repository.memo.MemoDataRepository
@@ -29,7 +29,7 @@ class MemoViewModel @Inject constructor(@LocalRepository private val localMemoDa
         (remoteMemoDataRepository as RemoteMemoDataRepositoryImpl).setUserid(userId)
     }
 
-    //여기서 알람추가 작업
+
     fun saveAlarmSetting(alarmSetting: AlarmSetting,uniqueId:String){
         localMemoDataRepository.saveAlarmSetting(alarmSetting, uniqueId)
         remoteMemoDataRepository.saveAlarmSetting(alarmSetting, uniqueId)

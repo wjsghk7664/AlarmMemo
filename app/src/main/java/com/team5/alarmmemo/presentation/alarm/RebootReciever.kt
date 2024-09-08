@@ -6,14 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.content.ContextCompat.startForegroundService
-import com.team5.alarmmemo.data.LocationService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import javax.inject.Inject
-import javax.inject.Singleton
 
 class RebootReciever: BroadcastReceiver() {
 
@@ -21,7 +15,7 @@ class RebootReciever: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if(checkPermission(context)&&intent.action.equals("android.intent.action.BOOT_COMPLETED")){
-            startForegroundService(context,Intent(context,LocationService::class.java))
+            startForegroundService(context,Intent(context, LocationService::class.java).apply { putExtra("isReboot",true) })
         }
     }
 

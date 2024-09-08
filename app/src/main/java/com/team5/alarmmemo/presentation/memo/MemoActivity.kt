@@ -4,14 +4,17 @@ import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.AlarmManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.icu.util.Calendar
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
@@ -26,24 +29,21 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.alarmmemo.presentation.memoLogin.UiState
-import com.google.android.material.navigation.NavigationView
+import com.team5.alarmmemo.presentation.memoLogin.UiState
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
@@ -51,10 +51,12 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.team5.alarmmemo.R
+import com.team5.alarmmemo.presentation.alarm.LocationService
 import com.team5.alarmmemo.data.model.AlarmSetting
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import com.team5.alarmmemo.util.DpPxUtil.pxToDp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -93,6 +95,8 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
     private var isLocal:Boolean? = null
     private var isInit:Boolean? =null
+
+
 
 
 
@@ -144,10 +148,6 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
 
             Log.d("트랜슬레이션 포커스", detector.focusY.toString())
-
-
-
-
             return true
         }
 
@@ -382,11 +382,15 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
         backgroundPermission = checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_GRANTED
         checkPermission()
+        if(Build.VERSION.SDK_INT>=31&&!(getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms())
+            startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                data = Uri.parse("package:"+this@MemoActivity.packageName)
+            })
 
 
         isLocal = intent.getBooleanExtra("isLocal",false)
         isInit =intent.getBooleanExtra("isInit",false)
-        userId = intent.getStringExtra("userId")?:"testid"
+        userId = intent.getStringExtra("userId")?:"def"
         uniqueId = intent.getStringExtra("uniqueId")?:"default"
 
         viewModel.setInitalSetting(userId)
@@ -591,6 +595,10 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
         })
 
+        memoTvSelectAddress.setOnClickListener {
+            SearchAddressFragment.newInstance().show(supportFragmentManager,null)
+        }
+
         memoTvSelectTime.setOnClickListener {
             val nhour = memoEtTimeHour.let{
                 if(it.text.toString().isEmpty()) hour else it.text.toString().toInt()
@@ -653,11 +661,22 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
                 cur,
                 memoEtSelectLocation.text.toString()
             )
+            Log.d("알람세팅",alarmSetting.toString())
+            CoroutineScope(Dispatchers.IO).launch {
+                viewModel.saveAlarmSetting(alarmSetting, uniqueId)
+            }.invokeOnCompletion {
+                startForegroundService()
+            }
 
-            viewModel.saveAlarmSetting(alarmSetting, uniqueId)
         }
 
-        saveSetting()
+        isInit?.let{
+            if(it){
+                saveSetting()
+            }
+        }
+
+
 
 
         memoTvSettingSave.setOnClickListener {
@@ -1139,11 +1158,32 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
                 finish()
             }else{
                 backgroundPermission=true
+                if(Build.VERSION.SDK_INT>=31&&!(getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms())
+                    startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                        data = Uri.parse("package:"+this@MemoActivity.packageName)
+                    })
             }
         }
     }
 
-
-
+    fun startForegroundService(){
+        if(checkPermission(true)&&checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)!= PackageManager.PERMISSION_DENIED){
+            if (Build.VERSION.SDK_INT >= 31 && (getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms()) {
+                Log.d("서비스 실행","성공")
+                ContextCompat.startForegroundService(
+                    this,
+                    Intent(this, LocationService::class.java))
+            }else if(Build.VERSION.SDK_INT <31){
+                Log.d("서비스 실행","성공")
+                ContextCompat.startForegroundService(
+                    this,
+                    Intent(this, LocationService::class.java))
+            }else{
+                Log.d("서비스 실행","실패")
+            }
+        }else{
+            Log.d("서비스 실행","실패2")
+        }
+    }
 
 }

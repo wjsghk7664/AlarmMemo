@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFirestore,private val gson:Gson):MemoDataRepository {
 
-    private var userId = ""
+    private var userId = "default"
 
     fun setUserid(userId: String){
         this.userId = userId
@@ -24,7 +24,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     //한번에 가져오게 하기 위해서 각 컬렉션 외에도 메모와 타이틀은 uniq와 함께 관리한다.
     //json형태로 관리
     override fun getList(callback: (ArrayList<Triple<String, String, SpannableStringBuilder>>) -> Unit) {
-        if(userId.isEmpty()){
+        if(userId=="default"){
             callback(ArrayList())
             return
         }
@@ -47,7 +47,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
 
     //0: 성공, 1:문서가 없음 => createList로가기, 2: 실패
     fun addList(list:MemoUnitData, callback:(Int)->Unit){
-        if(userId.isEmpty()){
+        if(userId=="default"){
             callback(0)
             return
         }
@@ -71,7 +71,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun saveAlarmSetting(alarmSetting: AlarmSetting, uniqueId: String) {
-        if(userId.isEmpty()) return
+        if(userId=="default") return
 
         val data = mapOf(uniqueId to gson.toJson(alarmSetting,AlarmSetting::class.java))
 
@@ -79,7 +79,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun getAlarmSetting(uniqueId: String, callback: (AlarmSetting) -> Unit) {
-        if(userId.isEmpty()){
+        if(userId=="default"){
             callback(AlarmSetting())
             return
         }
@@ -96,7 +96,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun saveMemo(str: SpannableStringBuilder?, uniqueId: String) {
-        if(userId.isEmpty()) return
+        if(userId=="default") return
 
         val data = mapOf(uniqueId to gson.toJson(str,SpannableStringBuilder::class.java))
 
@@ -104,7 +104,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun getMemo(uniqueId: String, callback: (SpannableStringBuilder) -> Unit) {
-        if(userId.isEmpty()){
+        if(userId=="default"){
             callback(SpannableStringBuilder(""))
             return
         }
@@ -121,7 +121,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun saveDraw(drawList: List<CheckItem>, uniqueId: String) {
-        if(userId.isEmpty()) return
+        if(userId=="default") return
 
         val data = mapOf(uniqueId to gson.toJson(drawList))
 
@@ -129,7 +129,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun getDraw(uniqueId: String, callback: (List<CheckItem>) -> Unit) {
-        if(userId.isEmpty()) return
+        if(userId=="default") return
 
         db.collection("draw").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
@@ -144,7 +144,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun saveTitle(title: String, uniqueId: String) {
-        if(userId.isEmpty()) return
+        if(userId=="default") return
 
         val data = mapOf(uniqueId to title)
 
@@ -152,7 +152,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun getTitle(uniqueId: String, callback: (String) -> Unit) {
-        if(userId.isEmpty()){
+        if(userId=="default"){
             callback("")
             return
         }
@@ -169,6 +169,10 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun getAllAlarms(callback: (List<AlarmSetting>,List<String>) -> Unit) {
+        if(userId=="default"){
+            callback(listOf(), listOf())
+            return
+        }
         db.collection("AlarmSetting").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
                 val data = it.data?:HashMap<String,AlarmSetting>()
