@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
+import com.team5.alarmmemo.data.model.MemoUnitData
 import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 import java.text.SimpleDateFormat
@@ -41,6 +42,9 @@ class MemoListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val id = (requireContext() as MemoListActivity).intent.getStringExtra("userId")?:"default"
+
 
         // 저장된 리스트를 불러옴
         listViewModel.loadList()
@@ -82,9 +86,9 @@ class MemoListFragment : Fragment() {
         listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
             val sortList = when (sort) {
                 SORT_BY_TIME -> sampleData.sortedByDescending { item ->
-                    SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(item.date)
+                    item.first
                 }
-                SORT_BY_TITLE -> sampleData.sortedBy { it.title }
+                SORT_BY_TITLE -> sampleData.sortedBy { it.second }
                 else -> sampleData
             }
 
@@ -96,13 +100,14 @@ class MemoListFragment : Fragment() {
 
             // 아이템 추가 버튼 클릭 시 아이템 추가
             memoListBtnAddButton.setOnClickListener {
-                listViewModel.addSampleItem()
+                listViewModel.additem(MemoUnitData(uniqId = System.currentTimeMillis().toString()))
                 val addList = listViewModel.sampleData.value ?: listOf()
                 val sortedList = when (sort) {
                     SORT_BY_TIME -> addList.sortedByDescending { item ->
-                        SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(item.date)
+                    item.first
+                    //SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).parse(item.date)
                     }
-                    SORT_BY_TITLE -> addList.sortedBy { it.title }
+                    SORT_BY_TITLE -> addList.sortedBy { it.second }
                     else -> addList
                 }
                 adapter.submitList(sortedList)
@@ -125,9 +130,8 @@ class MemoListFragment : Fragment() {
                 sort = SORT_BY_TIME
                 "시간순".also { binding.memoListTvSpinner.text = it }
                 val currentList = listViewModel.sampleData.value ?: listOf()
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 val sortedList = currentList.sortedByDescending { item ->
-                    dateFormat.parse(item.date)
+                    item.first
                 }
                 adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
@@ -138,7 +142,7 @@ class MemoListFragment : Fragment() {
                 sort = SORT_BY_TITLE
                 "제목순".also { binding.memoListTvSpinner.text = it }
                 val currentList = listViewModel.sampleData.value ?: listOf()
-                val sortedList = currentList.sortedBy { it.title }
+                val sortedList = currentList.sortedBy { it.second }
                 adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
             }

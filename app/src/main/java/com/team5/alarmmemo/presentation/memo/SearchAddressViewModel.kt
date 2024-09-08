@@ -3,7 +3,7 @@ package com.team5.alarmmemo.presentation.memo
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.alarmmemo.presentation.memoLogin.UiState
+import com.team5.alarmmemo.presentation.memoLogin.UiState
 import com.naver.maps.geometry.LatLng
 import com.team5.alarmmemo.data.repository.LocationConvertingRepository
 import com.team5.alarmmemo.data.repository.LocationConvertingRepositoryImpl

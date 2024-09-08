@@ -17,7 +17,7 @@ class LocalMemoDataSource @Inject constructor(
     fun getList():ArrayList<Triple<String,String,SpannableStringBuilder>>{
         val result = ArrayList<Triple<String,String,SpannableStringBuilder>>()
 
-        val all = titleSharedPreferences.all.keys
+        val all = alarmSettingSharedPreferences.all.keys
         for(i in all){
             val memo =memoSharedPreferences.getString(i, null)
                 ?.let { gson.fromJson(it, SpannableStringBuilder::class.java) }
@@ -66,10 +66,21 @@ class LocalMemoDataSource @Inject constructor(
     }
 
     fun saveTitle(title:String, uniqueId:String){
-        titleSharedPreferences.edit().putString(uniqueId,title)
+        titleSharedPreferences.edit().putString(uniqueId,title).apply()
     }
 
     fun getTitle(uniqueId: String):String{
         return titleSharedPreferences.getString(uniqueId,null)?:""
+    }
+    fun getAllAlarms():Pair<List<AlarmSetting>,List<String>>{
+        val map = alarmSettingSharedPreferences.all
+        val result1 : MutableList<AlarmSetting> = mutableListOf()
+        val result2 : MutableList<String> = mutableListOf()
+        for((k,v) in map){
+            val alarmSetting = gson.fromJson(v as String?,AlarmSetting::class.java)
+            result1+=alarmSetting
+            result2+=k as String
+        }
+        return Pair(result1 as List<AlarmSetting>,result2 as List<String>)
     }
 }

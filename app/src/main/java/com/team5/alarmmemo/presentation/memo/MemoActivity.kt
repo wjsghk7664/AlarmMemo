@@ -1,14 +1,20 @@
 package com.team5.alarmmemo.presentation.memo
 
+import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.AlarmManager
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.icu.util.Calendar
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
@@ -23,23 +29,21 @@ import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.TimePicker
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.alarmmemo.presentation.memoLogin.UiState
-import com.google.android.material.navigation.NavigationView
+import com.team5.alarmmemo.presentation.memoLogin.UiState
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
@@ -47,10 +51,12 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.team5.alarmmemo.R
+import com.team5.alarmmemo.presentation.alarm.LocationService
 import com.team5.alarmmemo.data.model.AlarmSetting
 import com.team5.alarmmemo.databinding.ActivityMemoBinding
 import com.team5.alarmmemo.util.DpPxUtil.pxToDp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -76,6 +82,7 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
     private lateinit var onTranslationTouchListener: TranslationTouchListener
 
+    private var isLoading = true
 
     private val fontList = List(61){it+4}
     private val pencilList = List(10){it+1}
@@ -86,7 +93,10 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
     var scaleRatio = 1f
 
+    private var isLocal:Boolean? = null
     private var isInit:Boolean? =null
+
+
 
 
 
@@ -138,10 +148,6 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
 
             Log.d("트랜슬레이션 포커스", detector.focusY.toString())
-
-
-
-
             return true
         }
 
@@ -362,6 +368,8 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
     private lateinit var mapFragment: MapFragment
     private lateinit var systemBars: Insets
 
+    private var isFirstCheckPass = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -372,9 +380,20 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
             insets
         }
 
-        isInit =intent.getBooleanExtra("isInit",true)
-        userId = intent.getStringExtra("userId")?:"default"
+        backgroundPermission = checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)==PackageManager.PERMISSION_GRANTED
+        checkPermission()
+        if(Build.VERSION.SDK_INT>=31&&!(getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms())
+            startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                data = Uri.parse("package:"+this@MemoActivity.packageName)
+            })
+
+
+        isLocal = intent.getBooleanExtra("isLocal",false)
+        isInit =intent.getBooleanExtra("isInit",false)
+        userId = intent.getStringExtra("userId")?:"def"
         uniqueId = intent.getStringExtra("uniqueId")?:"default"
+
+        viewModel.setInitalSetting(userId)
 
         mapFragment = supportFragmentManager.findFragmentById(binding.memoFcvMap.id) as MapFragment?
             ?: MapFragment.newInstance().also {
@@ -463,12 +482,11 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
         })
 
         weeks = listOf(memoTvWeekMon,memoTvWeekTue,memoTvWeekWed,memoTvWeekThu,memoTvWeekFri,memoTvWeekSat,memoTvWeekSun)
-        if(isInit?:true){
+        if(isInit!!){
             memoProgressbar.visibility = View.GONE
         }else{
-
+            viewModel.getMemoDatas(uniqueId, isLocal!!)
         }
-        viewModel.getMemoDatas(uniqueId)
         lifecycleScope.launch {
             viewModel.uiState.collectLatest { state ->
                 when(state){
@@ -480,19 +498,24 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
                             val memo = get("memo") as SpannableStringBuilder
                             val draw = get("draw") as List<CheckItem>
 
+                            Log.d("타이틀 세팅",title)
                             memoEtTitle.setText(title)
                             memoMv.apply {
                                 Log.d("드로우리스트",draw.toString())
-                                fixedString = memo
-                                fixedDrawList = draw
-                                invalidate()
+                                initialMemo(memo,draw)
                             }
                             setAlarm(alarmSetting)
+                            viewModel.saveAlarmSetting(alarmSetting,uniqueId)
+                            isLoading = false
 
                         }
                     }
                     is UiState.Init -> memoProgressbar.visibility = View.GONE
-
+                    is UiState.Failure -> {
+                        memoProgressbar.visibility = View.GONE
+                        isLoading = false
+                        Toast.makeText(this@MemoActivity, state.e, Toast.LENGTH_SHORT).show()
+                    }
                     else -> null
                 }
             }
@@ -572,6 +595,10 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
         })
 
+        memoTvSelectAddress.setOnClickListener {
+            SearchAddressFragment.newInstance().show(supportFragmentManager,null)
+        }
+
         memoTvSelectTime.setOnClickListener {
             val nhour = memoEtTimeHour.let{
                 if(it.text.toString().isEmpty()) hour else it.text.toString().toInt()
@@ -604,9 +631,7 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
             dialog.show(supportFragmentManager,null)
         }
 
-
-        memoTvSettingSave.setOnClickListener {
-
+        fun saveSetting(){
             val shour = memoEtTimeHour.text.toString().let{
                 if(it.isEmpty()) hour.toString() else it
             }
@@ -619,6 +644,7 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
                 memoCbAlarmOn.isChecked,
                 memoSpSettingCategory.selectedItemPosition,
                 memoCbReminderTime.isChecked,
+                System.currentTimeMillis(),
                 memoEtTimesetting.text.toString().let{
                     if(it.isEmpty()) 0 else it.toInt()
                 },
@@ -635,9 +661,27 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
                 cur,
                 memoEtSelectLocation.text.toString()
             )
+            Log.d("알람세팅",alarmSetting.toString())
+            CoroutineScope(Dispatchers.IO).launch {
+                viewModel.saveAlarmSetting(alarmSetting, uniqueId)
+            }.invokeOnCompletion {
+                startForegroundService()
+            }
 
-            viewModel.saveAlarmSetting(alarmSetting, uniqueId, userId)
+        }
 
+        isInit?.let{
+            if(it){
+                saveSetting()
+            }
+        }
+
+
+
+
+        memoTvSettingSave.setOnClickListener {
+            saveSetting()
+            Toast.makeText(this@MemoActivity, "알림 설정이 저장되었습니다.", Toast.LENGTH_SHORT).show()
         }
 
 
@@ -746,7 +790,9 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
             override fun afterTextChanged(s: Editable?) {
                 if(::uniqueId.isInitialized&&::userId.isInitialized){
-                    viewModel.saveTitle(s.toString(),uniqueId, userId)
+                    viewModel.saveTitle(s.toString(),uniqueId)
+                }else{
+                    Log.d("타이틀","uninitial")
                 }
 
             }
@@ -837,7 +883,7 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
                 ) {
 
                     if(::uniqueId.isInitialized&&::userId.isInitialized){
-                        viewModel.saveMemo(str,uniqueId, userId)
+                        viewModel.saveMemo(str,uniqueId)
                     }
                 }
 
@@ -845,8 +891,8 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
             memo.setOnDrawChangeListener(object :MemoView.OnDrawChangeListener{
                 override suspend fun onDrawChange(draw: List<CheckItem>) {
-                    if(::uniqueId.isInitialized&&::userId.isInitialized){
-                        viewModel.saveDraw(draw, uniqueId, userId)
+                    if(::uniqueId.isInitialized&&::userId.isInitialized&&!isLoading){
+                        viewModel.saveDraw(draw, uniqueId)
                     }
 
                 }
@@ -1062,5 +1108,82 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
 
 
+    private var backgroundPermission = false
+
+    private fun checkPermission(isJustCheck:Boolean = false):Boolean{
+        var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) permissions+= Manifest.permission.ACTIVITY_RECOGNITION
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) permissions += Manifest.permission.POST_NOTIFICATIONS
+        var checkFlag = false
+
+        permissions.forEach { if(checkSelfPermission(it) == PackageManager.PERMISSION_DENIED) checkFlag=true }
+
+        if(!isJustCheck){
+            requestPermissions(permissions,0)
+        }
+
+        if(checkFlag) {
+            return false
+        }else{
+            return true
+        }
+    }
+
+    private fun checkBackgroundPermission(){
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
+        var permission = arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        if(checkSelfPermission(permission[0]) == PackageManager.PERMISSION_DENIED) {
+            Log.d("권한체크", "백그라운드")
+            requestPermissions(permission, 1)
+        }
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 0){
+            if(!checkPermission(true)) finish()
+            if(checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)== PackageManager.PERMISSION_DENIED){
+                backgroundPermission=false
+                checkBackgroundPermission()
+            }
+
+        }else if(requestCode == 1){
+            if(checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)== PackageManager.PERMISSION_DENIED){
+                backgroundPermission=false
+                finish()
+            }else{
+                backgroundPermission=true
+                if(Build.VERSION.SDK_INT>=31&&!(getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms())
+                    startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                        data = Uri.parse("package:"+this@MemoActivity.packageName)
+                    })
+            }
+        }
+    }
+
+    fun startForegroundService(){
+        if(checkPermission(true)&&checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)!= PackageManager.PERMISSION_DENIED){
+            if (Build.VERSION.SDK_INT >= 31 && (getSystemService(Context.ALARM_SERVICE) as AlarmManager).canScheduleExactAlarms()) {
+                Log.d("서비스 실행","성공")
+                ContextCompat.startForegroundService(
+                    this,
+                    Intent(this, LocationService::class.java))
+            }else if(Build.VERSION.SDK_INT <31){
+                Log.d("서비스 실행","성공")
+                ContextCompat.startForegroundService(
+                    this,
+                    Intent(this, LocationService::class.java))
+            }else{
+                Log.d("서비스 실행","실패")
+            }
+        }else{
+            Log.d("서비스 실행","실패2")
+        }
+    }
 
 }
