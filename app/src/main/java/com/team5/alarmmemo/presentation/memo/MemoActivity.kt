@@ -390,7 +390,7 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
         isLocal = intent.getBooleanExtra("isLocal",false)
         isInit =intent.getBooleanExtra("isInit",false)
-        userId = intent.getStringExtra("userId")?:"def"
+        userId = intent.getStringExtra("userId")?:"default"
         uniqueId = intent.getStringExtra("uniqueId")?:"default"
 
         viewModel.setInitalSetting(userId)
