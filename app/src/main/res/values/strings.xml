@@ -38,7 +38,7 @@
     <string name="memoList_toggle_list_2">2개씩 보기</string>
     <string name="memoList_toggle_list_3">3개씩 보기</string>
 
-    <!-- ListFragment의 문자열 리소스 -->
+    <!-- MemoListFragment의 문자열 리소스 -->
     <string name="memoList_add_message">메모가 추가되었습니다.</string>
     <string name="memoList_delete_message">메모가 삭제되었습니다.</string>
     <string name="memoList_dialog_title">메모 삭제</string>

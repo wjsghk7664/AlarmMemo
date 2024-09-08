@@ -11,14 +11,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
-import com.team5.alarmmemo.databinding.FragmentListBinding
+import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class ListFragment : Fragment() {
+class MemoListFragment : Fragment() {
 
-    private var _binding: FragmentListBinding? = null
+    private var _binding: FragmentMemoListBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: MemoListAdapter
     private var check = false
@@ -35,7 +35,7 @@ class ListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentListBinding.inflate(inflater, container, false)
+        _binding = FragmentMemoListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
