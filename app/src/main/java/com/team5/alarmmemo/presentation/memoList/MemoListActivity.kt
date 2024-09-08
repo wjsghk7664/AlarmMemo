@@ -26,7 +26,7 @@ class MemoListActivity : AppCompatActivity() {
             "목록".also { binding.memoListTvTitle.text = it }
             supportFragmentManager.popBackStack("setting", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             binding.memoListBtnBackButton.visibility = View.GONE
-            showFragment(ListFragment())
+            showFragment(MemoListFragment())
 
             if (System.currentTimeMillis() - backPressedTime <= 2000) {
                 finish()
@@ -52,7 +52,7 @@ class MemoListActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         // 기본 화면은 리스트 화면
-        showFragment(ListFragment())
+        showFragment(MemoListFragment())
 
         initView()
     }
