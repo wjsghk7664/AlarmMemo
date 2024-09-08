@@ -8,11 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.Constants.TAG
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityLoginBinding
 import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
@@ -26,17 +29,20 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-//        setContentView(R.layout.fragment_login)
-//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-//            insets
-//        }
-
-
-        binding.tvSignUp.setOnClickListener{
-            startActivity(Intent(this, SignUpActivity::class.java))
+        enableEdgeToEdge()
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
+        Log.d("아이디", "keyhash : ${Utility.getKeyHash(this)}")
+
+        supportFragmentManager.beginTransaction().replace(binding.main.id,LoginFragment.newInstance()).commit()
+
+
+//        binding.tvSignUp.setOnClickListener{
+//            startActivity(Intent(this, SignUpActivity::class.java))
+//        }
     }
 }

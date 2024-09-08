@@ -27,12 +27,20 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.team5.alarmmemo.R
+import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentLoginBinding
+import com.team5.alarmmemo.presentation.memoList.MemoListActivity
 import com.team5.alarmmemo.presentation.memoList.MemoListFragment
 import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -42,178 +50,10 @@ class LoginFragment : Fragment() {
 
     private val viewmodel:LoginViewModel by activityViewModels()
 
-    private lateinit var resultLauncher : ActivityResultLauncher<Intent>
-    private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentLoginBinding.inflate(inflater,container,false)
-        return binding.root
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // 구글 로그인 클라이언트 초기화
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestProfile()
-            .requestEmail()
-            .build()
-
-        googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-
-        setResultSignUp()
-        initView()
-        observeViewModel()
-    }
-
-    fun initView() = with(binding){
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewmodel.uiState.collectLatest {
-                when(it){
-                    is UiState.Failure -> {
-                        if(it.e=="fail"){
-                            Toast.makeText(requireContext(),"아이디나 비밀번호를 다시 입력해주세요.",Toast.LENGTH_SHORT).show()
-                        }else if(it.e=="cachefail"){
-                            Toast.makeText(requireContext(),"로그인 정보 저장에 실패하였습니다. 다시 시도해주세요.",Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    is UiState.Init -> null
-                    is UiState.Loading -> null
-                    is UiState.Success -> null //액티비티에서 처리
-                    else -> {}
-                }
-            }
-        }
-
-        loginBtn.setOnClickListener {
-            val id = loginUsernameEt.text.toString()
-            val password = loginPasswordEt.text.toString()
-//            val isCache = loginCbAutologin.isChecked
-//            viewmodel.loginCheck(id,password,isCache)
-        }
-
-        loginKakaoLogin.setOnClickListener {
-            val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-                if (error != null) {
-                    Log.e(TAG, "카카오계정으로 로그인 실패", error)
-                } else if (token != null) {
-                    Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-                }
-            }
-            // 카카오톡 설치 확인
-            if (UserApiClient.instance.isKakaoTalkLoginAvailable(requireActivity())) {
-                // 카카오톡 로그인
-                UserApiClient.instance.loginWithKakaoTalk(requireActivity()) { token, error ->
-                    // 로그인 실패 부분
-                    if (error != null) {
-                        Log.e(TAG, "로그인 실패 $error")
-                        // 사용자가 취소
-                        if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                            return@loginWithKakaoTalk
-                        }
-                        // 다른 오류
-                        else {
-                            UserApiClient.instance.loginWithKakaoAccount(
-                                requireActivity(),
-                                callback = callback
-                            ) // 카카오 이메일 로그인
-                        }
-                    }
-                    // 로그인 성공 부분
-                    else if (token != null) {
-                        Log.e(TAG, "로그인 성공 ${token.accessToken}")
-                    }
-                }
-            } else {
-                UserApiClient.instance.loginWithKakaoAccount(requireActivity(), callback = callback) // 카카오 이메일 로그인
-            }
-        }
-
-        loginNaverLogin.setOnClickListener {
-            val oauthLoginCallback = object : OAuthLoginCallback {
-                override fun onSuccess() {
-                    Log.d("test", "AccessToken : " + NaverIdLoginSDK.getAccessToken())
-                    Log.d("test", "client id : " + getString(R.string.naver_client_id))
-                    Log.d("test", "ReFreshToken : " + NaverIdLoginSDK.getRefreshToken())
-                    Log.d("test", "Expires : " + NaverIdLoginSDK.getExpiresAt().toString())
-                    Log.d("test", "TokenType : " + NaverIdLoginSDK.getTokenType())
-                    Log.d("test", "State : " + NaverIdLoginSDK.getState().toString())
-                }
-
-
-                override fun onFailure(httpStatus: Int, message: String) {
-                    val errorCode = NaverIdLoginSDK.getLastErrorCode().code
-                    val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
-                    Log.e("test", "$errorCode $errorDescription")
-                }
-                override fun onError(errorCode: Int, message: String) {
-                    onFailure(errorCode, message)
-                }
-
-//            NaverIdLoginSDK.authenticate(this, oauthLoginCallback)
-            }
-        }
-
-        loginGoogleLogin.setOnClickListener {
-//            val signInIntent = googleSignInClient.signInIntent
-//            startActivityForResult(signInIntent, RC_SIGN_IN)
-
-            val signInIntent = googleSignInClient.signInIntent
-            resultLauncher.launch(signInIntent)
-
-        }
-
-        loginNonLogin.setOnClickListener {
-//            parentFragmentManager.beginTransaction().replace(R.id.main, MemoListFragment.newInstance()).addToBackStack(null).commit()
-        }
-
-        loginSignUpBtn.setOnClickListener {
-//            parentFragmentManager.beginTransaction().replace(R.id.main, SignUpFragment.newInstance()).addToBackStack(null).commit()
-        }
-
-
-    }
-
-    private fun observeViewModel() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewmodel.uiState.collectLatest { state ->
-                when (state) {
-                    is UiState.Loading -> {
-                        // 로딩 중인 경우 처리
-                        Toast.makeText(requireContext(), "로그인 중...", Toast.LENGTH_SHORT).show()
-                    }
-                    is UiState.Success -> {
-                        // 로그인 성공 시 처리
-                        Toast.makeText(requireContext(), "로그인 성공", Toast.LENGTH_SHORT).show()
-                        // 예: 다음 화면으로 이동
-                        // findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
-                    }
-                    is UiState.Failure -> {
-                        // 로그인 실패 시 처리
-                        when (state.e) {
-                            "wrong id" -> Toast.makeText(requireContext(), "아이디가 잘못되었습니다.", Toast.LENGTH_SHORT).show()
-                            "wrong password" -> Toast.makeText(requireContext(), "비밀번호가 잘못되었습니다.", Toast.LENGTH_SHORT).show()
-                            "Social Login Init" -> {
-                                Toast.makeText(requireContext(), "소셜 로그인 첫 시도입니다. 계정을 생성하세요.", Toast.LENGTH_SHORT).show()
-                                // 소셜 로그인 초기화 시 추가 작업 필요
-                            }
-                            else -> Toast.makeText(requireContext(), "로그인 실패: ${state.e}", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                    is UiState.Init -> {
-                        // 초기 상태일 때 처리
-                    }
-                }
-            }
-        }
-    }
-
-    // 구글로그인 콜백
-    private fun setResultSignUp(){
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
 
             if(result.resultCode == Activity.RESULT_OK){
@@ -231,11 +71,209 @@ class LoginFragment : Fragment() {
 
                 Log.d(TAG,"이메일 $email\n 이름정보 $familyName $givenName $displayName\n 포토url $photoUrl\n id $id\n idToken $idToken\n")
 
-                val intent = Intent(requireContext(),MemoListFragment::class.java)
-                    .putExtra("google","google")
-                startActivity(intent)
+                viewmodel.login(email,displayName)
+            }else{
+                Log.d("구글 결과코드",result.resultCode.toString())
             }
         }
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentLoginBinding.inflate(inflater,container,false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        initView()
+        observeViewModel()
+    }
+
+    fun initView() = with(binding){
+
+        loginBtn.setOnClickListener {
+            val id = loginUsernameEt.text.toString()
+            val password = loginPasswordEt.text.toString()
+            viewmodel.login(id,name="",password)
+        }
+
+//        loginKakaoLogin.setOnClickListener {
+//            kakaoLogin()
+//        }
+
+        loginNaverLogin.setOnClickListener {
+            naverLogin()
+        }
+
+//        loginGoogleLogin.setOnClickListener {
+//            googleLogin()
+//        }
+
+        loginNonLogin.setOnClickListener {
+            startActivity(Intent(requireActivity(), MemoListActivity::class.java))
+        }
+
+        loginSignUpBtn.setOnClickListener {
+            startActivity(Intent(requireActivity(),SignUpActivity::class.java))
+        }
+
+
+    }
+
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewmodel.uiState.collectLatest { state ->
+                when (state) {
+                    is UiState.Loading -> {
+                    }
+                    is UiState.Success -> {
+                        Toast.makeText(requireContext(), "로그인 성공", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(requireActivity(), MemoListActivity::class.java).apply { putExtra("user",state.data) })
+                        requireActivity().finish()
+                    }
+                    is UiState.Failure -> {
+                        // 로그인 실패 시 처리
+                        when (state.e) {
+                            "wrong id" -> Toast.makeText(requireContext(), "아이디가 잘못되었습니다.", Toast.LENGTH_SHORT).show()
+                            "wrong password" -> Toast.makeText(requireContext(), "비밀번호가 잘못되었습니다.", Toast.LENGTH_SHORT).show()
+                            else -> Toast.makeText(requireContext(), "로그인 실패: ${state.e}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    is UiState.Init -> {
+                        // 초기 상태일 때 처리
+                    }
+                }
+            }
+        }
+    }
+
+    private fun googleLogin(){
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestProfile()
+            .requestEmail()
+            .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
+        val signInIntent = googleSignInClient.signInIntent
+        resultLauncher.launch(signInIntent)
+    }
+
+
+    private fun kakaoLogin(){
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            if (error != null) {
+                Log.e(TAG, "카카오계정으로 로그인 실패", error)
+            } else if (token != null) {
+                Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
+                requestUserInfo(token.accessToken)
+            }
+        }
+        // 카카오톡 설치 확인
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(requireActivity())) {
+            // 카카오톡 로그인
+            UserApiClient.instance.loginWithKakaoTalk(requireActivity()) { token, error ->
+                // 로그인 실패 부분
+                if (error != null) {
+                    Log.e(TAG, "로그인 실패 $error")
+                    // 사용자가 취소
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        return@loginWithKakaoTalk
+                    }
+                    // 다른 오류
+                    else {
+                        UserApiClient.instance.loginWithKakaoAccount(
+                            requireActivity(),
+                            callback = callback
+                        ) // 카카오 이메일 로그인
+                    }
+                }
+                // 로그인 성공 부분
+                else if (token != null) {
+                    requestUserInfo(token.accessToken)
+                }
+            }
+        } else {
+            UserApiClient.instance.loginWithKakaoAccount(requireActivity(), callback = callback) // 카카오 이메일 로그인
+        }
+    }
+
+    fun requestUserInfo(accessToken:String){
+        UserApiClient.instance.me { user, error ->
+            if(error!=null){
+                Log.d("카카오","정보요청 실패")
+            }else if(user!= null){
+                val email = user.kakaoAccount?.email
+                val name = user.kakaoAccount?.legalName
+                if(email!=null){
+                    viewmodel.login(email,name?:"")
+                }else{
+                    Log.d("카카오","이메일 존재x")
+                }
+
+            }
+        }
+    }
+
+    private fun naverLogin(){
+        val oauthLoginCallback = object : OAuthLoginCallback {
+            override fun onSuccess() {
+                Log.d("test", "AccessToken : " + NaverIdLoginSDK.getAccessToken())
+                Log.d("test", "client id : " + getString(R.string.naver_client_id))
+                Log.d("test", "ReFreshToken : " + NaverIdLoginSDK.getRefreshToken())
+                Log.d("test", "Expires : " + NaverIdLoginSDK.getExpiresAt().toString())
+                Log.d("test", "TokenType : " + NaverIdLoginSDK.getTokenType())
+                Log.d("test", "State : " + NaverIdLoginSDK.getState().toString())
+
+                NaverIdLoginSDK.getAccessToken()?.let {
+                    requestNaverUserData(it)
+                }
+
+            }
+
+
+            override fun onFailure(httpStatus: Int, message: String) {
+                val errorCode = NaverIdLoginSDK.getLastErrorCode().code
+                val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
+                Log.e("test", "$errorCode $errorDescription")
+                Toast.makeText(requireContext(), "로그인 실패", Toast.LENGTH_SHORT).show()
+            }
+            override fun onError(errorCode: Int, message: String) {
+                onFailure(errorCode, message)
+                Toast.makeText(requireContext(), "로그인 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+        NaverIdLoginSDK.authenticate(requireContext(), oauthLoginCallback)
+    }
+
+    private fun requestNaverUserData(accessToken: String){
+        val client = OkHttpClient()
+
+        val request = Request.Builder()
+            .url("https://openapi.naver.com/v1/nid/me")
+            .addHeader("Authorization", "Bearer $accessToken")
+            .build()
+        client.newCall(request).enqueue(object : okhttp3.Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                Toast.makeText(requireContext(), "로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.body?.string()?.let{
+                    Log.d("네이버",it)
+                    val json = JSONObject(it).getJSONObject("response")
+                    val name = json.getString("name")
+                    val email = json.getString("email")
+                    viewmodel.login(email,name)
+                }
+            }
+
+        })
     }
 
     override fun onDestroyView() {
