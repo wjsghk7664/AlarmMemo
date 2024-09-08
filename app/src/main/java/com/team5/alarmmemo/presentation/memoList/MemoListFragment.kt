@@ -3,6 +3,7 @@ package com.team5.alarmmemo.presentation.memoList
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
 import com.team5.alarmmemo.data.model.MemoUnitData
+import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +48,9 @@ class MemoListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val id = requireActivity().intent.getStringExtra("userId")?:"default"
+        val user = requireActivity().intent.getParcelableExtra<User>("user")?:User("default")
+        val id = user.email
+        listViewModel.setId(id)
 
 
         // 저장된 리스트를 불러옴
@@ -55,8 +59,13 @@ class MemoListFragment : Fragment() {
         // Adapter랑 연결
         adapter = MemoListAdapter(
             // 아이템 (썸네일) 클릭 시 메모 Activity로 이동
-            onItemClicked = { _ ->
-                val intent = Intent(requireContext(), MemoActivity::class.java)
+            onItemClicked = { item ->
+                val intent = Intent(requireContext(), MemoActivity::class.java).apply {
+                    putExtra("isLocal",true)
+                    putExtra("isInit", false)
+                    putExtra("userId",id)
+                    putExtra("uniqueId",item.first)
+                }
                 startActivity(intent)
             },
 
@@ -103,7 +112,8 @@ class MemoListFragment : Fragment() {
 
             // 아이템 추가 버튼 클릭 시 아이템 추가
             memoListBtnAddButton.setOnClickListener {
-                listViewModel.additem(MemoUnitData(uniqId = System.currentTimeMillis().toString()))
+                val uniqId =System.currentTimeMillis().toString()
+                listViewModel.additem(MemoUnitData(uniqId = uniqId))
                 val addList = listViewModel.sampleData.value ?: listOf()
                 val sortedList = when (sort) {
                     SORT_BY_TIME -> addList.sortedByDescending { item ->
@@ -113,9 +123,16 @@ class MemoListFragment : Fragment() {
                     SORT_BY_TITLE -> addList.sortedBy { it.second }
                     else -> addList
                 }
-                adapter.submitList(sortedList)
+                adapter.submitList(sortedList.toMutableList())
+                Log.d("리스트",sortedList.toString())
 
-                Toast.makeText(requireContext(), R.string.memoList_add_message, Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireContext(), MemoActivity::class.java).apply {
+                    putExtra("isLocal",true)
+                    putExtra("isInit", true)
+                    putExtra("userId",id)
+                    putExtra("uniqueId",uniqId)
+                }
+                startActivity(intent)
             }
 
             // Spinner 클릭시 Motion Layout 적용
