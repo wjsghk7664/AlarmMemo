@@ -1,5 +1,6 @@
 package com.team5.alarmmemo.presentation.memoList
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,9 +15,11 @@ import androidx.fragment.app.activityViewModels
 import com.team5.alarmmemo.data.model.MemoUnitData
 import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@AndroidEntryPoint
 class MemoListFragment : Fragment() {
 
     private var _binding: FragmentMemoListBinding? = null
@@ -43,7 +46,7 @@ class MemoListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val id = (requireContext() as MemoListActivity).intent.getStringExtra("userId")?:"default"
+        val id = requireActivity().intent.getStringExtra("userId")?:"default"
 
 
         // 저장된 리스트를 불러옴

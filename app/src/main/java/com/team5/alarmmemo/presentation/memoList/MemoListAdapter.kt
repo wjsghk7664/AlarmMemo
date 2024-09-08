@@ -43,7 +43,7 @@ class ListItemViewHolder(
     fun bind(item: Triple<String,String, SpannableStringBuilder>) {
         with(binding) {
             sampleTvMemoTitle.text = item.second
-            sampleTvMemoDate.text = LocalDateTime.ofInstant(Instant.ofEpochMilli(item.first.toLong()), ZoneId.systemDefault()).toString()
+            sampleTvMemoDate.text = LocalDateTime.ofInstant(Instant.ofEpochMilli((if(item.first=="default") "0" else item.first).toLong()), ZoneId.systemDefault()).toString()
             sampleIvMemoThumbnail.text = item.third
 
             sampleIvMemoThumbnail.setOnClickListener {
