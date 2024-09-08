@@ -54,13 +54,25 @@ class ListViewModel @Inject constructor(
     //UIState추가하면 에러핸들링 코드 넣기
    fun additem(memoUnitData: MemoUnitData){
         (remoteMemoDataRepository as RemoteMemoDataRepositoryImpl).addList(memoUnitData){
+            Log.d("리스트 케이스0",it.toString())
             if(it==1){
                 remoteMemoDataRepository.createList { isSuccess->
                     if(isSuccess){
-                        remoteMemoDataRepository.addList(memoUnitData){
-                            Log.d("아이템 추가","성공")
+                        remoteMemoDataRepository.addList(memoUnitData){ case ->
+                            Log.d("리스트 케이스",case.toString())
+                            if(case==0){
+                                remoteMemoDataRepository.getList { list ->
+                                    _sampleData.value = list
+                                }
+                            }
+
                         }
                     }
+                }
+            }else if(it==0){
+                remoteMemoDataRepository.getList { list ->
+                    Log.d("리스트 prev",list.toString())
+                    _sampleData.value = list
                 }
             }
         }
