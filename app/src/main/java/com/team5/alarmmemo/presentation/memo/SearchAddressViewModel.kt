@@ -3,10 +3,9 @@ package com.team5.alarmmemo.presentation.memo
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.team5.alarmmemo.presentation.memoLogin.UiState
+import com.team5.alarmmemo.UiState
 import com.naver.maps.geometry.LatLng
 import com.team5.alarmmemo.data.repository.LocationConvertingRepository
-import com.team5.alarmmemo.data.repository.LocationConvertingRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchAddressViewModel @Inject constructor(private val locationConvertingRepository:LocationConvertingRepository):ViewModel() {
-    private val _uiState = MutableStateFlow<UiState<Pair<LatLng,String>>>(UiState.Init)
+    private val _uiState = MutableStateFlow<UiState<Pair<LatLng, String>>>(UiState.Init)
     val uiState = _uiState.asStateFlow()
 
     fun searchByAddress(address: String?){
