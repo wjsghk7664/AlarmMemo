@@ -6,6 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.team5.alarmmemo.presentation.memoLogin.UiState
 import com.team5.alarmmemo.data.model.AlarmSetting
+import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
+import com.team5.alarmmemo.data.repository.lastmodify.LocalLastModify
+import com.team5.alarmmemo.data.repository.lastmodify.ReMoteLastModify
+import com.team5.alarmmemo.data.repository.lastmodify.RemoteLastModifyRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.LocalRepository
 import com.team5.alarmmemo.data.repository.memo.MemoDataRepository
 import com.team5.alarmmemo.data.repository.memo.RemoteMemoDataRepositoryImpl
@@ -21,31 +25,47 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
-class MemoViewModel @Inject constructor(@LocalRepository private val localMemoDataRepository: MemoDataRepository, @RemoteRepository private val remoteMemoDataRepository:MemoDataRepository ): ViewModel() {
+class MemoViewModel @Inject constructor(
+    @LocalRepository private val localMemoDataRepository: MemoDataRepository,
+    @RemoteRepository private val remoteMemoDataRepository: MemoDataRepository,
+    @LocalLastModify private val localLastModifyRepository: LastModifyRepository,
+    @ReMoteLastModify private val remoteLastModifyRepository: LastModifyRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState<HashMap<String,Any>>>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     fun setInitalSetting(userId: String){
         (remoteMemoDataRepository as RemoteMemoDataRepositoryImpl).setUserid(userId)
+        (remoteLastModifyRepository as RemoteLastModifyRepositoryImpl).setUserId(userId)
+    }
+
+    fun saveLastModifyTime(uniqueId: String){
+        val time = System.currentTimeMillis()
+        localLastModifyRepository.saveLastModifyTime(time,uniqueId)
+        remoteLastModifyRepository.saveLastModifyTime(time,uniqueId)
     }
 
 
     fun saveAlarmSetting(alarmSetting: AlarmSetting,uniqueId:String){
+        saveLastModifyTime(uniqueId)
         localMemoDataRepository.saveAlarmSetting(alarmSetting, uniqueId)
         remoteMemoDataRepository.saveAlarmSetting(alarmSetting, uniqueId)
     }
 
     fun saveMemo(str: SpannableStringBuilder?,uniqueId:String){
+        saveLastModifyTime(uniqueId)
         localMemoDataRepository.saveMemo(str, uniqueId)
         remoteMemoDataRepository.saveMemo(str, uniqueId)
     }
 
     fun saveDraw(draw:List<CheckItem>, uniqueId: String){
+        saveLastModifyTime(uniqueId)
         localMemoDataRepository.saveDraw(draw,uniqueId)
         remoteMemoDataRepository.saveDraw(draw,uniqueId)
     }
 
     fun saveTitle(title:String, uniqueId:String){
+        saveLastModifyTime(uniqueId)
         localMemoDataRepository.saveTitle(title, uniqueId)
         remoteMemoDataRepository.saveTitle(title, uniqueId)
     }
@@ -98,6 +118,8 @@ class MemoViewModel @Inject constructor(@LocalRepository private val localMemoDa
             }
         }
     }
+
+
 
     fun getMemoDatas(uniqueId: String, isLocal:Boolean){
         val datas = HashMap<String,Any>()

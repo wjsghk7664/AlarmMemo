@@ -117,6 +117,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile_cl_id">
@@ -150,6 +151,7 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="24dp"
+        android:visibility="invisible"
         app:dividerColor="@color/light_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -160,14 +162,13 @@
         style="@style/subtitle_700"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
         android:layout_marginEnd="15dp"
         android:text="@string/profile_tv_logout_text"
         app:layout_constraintEnd_toStartOf="@id/profile_delete_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_cl_password" />
+        app:layout_constraintTop_toTopOf="@+id/profile_cl_password" />
 
     <TextView
         android:id="@+id/profile_delete_button"
@@ -175,12 +176,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="60dp"
         android:text="@string/profile_tv_delete_profile_text"
         android:textColor="#B1ADAE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/profile_logout_button"
-        app:layout_constraintTop_toBottomOf="@+id/profile_cl_password" />
+        app:layout_constraintTop_toTopOf="@+id/profile_cl_password" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,15 +8,27 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.team5.alarmmemo.R
+import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.ChangeNameDialogBinding
 import com.team5.alarmmemo.databinding.FragmentProfileBinding
 import com.team5.alarmmemo.presentation.memoLogin.LoginActivity
+import com.team5.alarmmemo.presentation.memoLogin.UiState
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
+
+    private val viewModel:ProfileViewModel by viewModels()
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var user: User
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,31 +41,56 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        user  = requireActivity().intent.getParcelableExtra<User>("user")?:User()
+
+        viewModel.setId(user)
+        getState()
+
         with(binding) {
+
+            profileTvIdText.setText(user.email)
+            profileTvNameText.setText(user.name)
+
             // 로그 아웃 버튼 클릭 시
             profileLogoutButton.setOnClickListener {
                 val intent = Intent(requireContext(), LoginActivity::class.java)
                 startActivity(intent)
+                requireActivity().finish()
 
-                Toast.makeText(requireContext(), R.string.profile_logout_message, Toast.LENGTH_SHORT).show()
             }
 
             // 회원 탈퇴 버튼 클릭 시
             profileDeleteButton.setOnClickListener {
-                val intent = Intent(requireContext(), LoginActivity::class.java)
-                startActivity(intent)
+                viewModel.deleteId(user.email)
 
-                Toast.makeText(requireContext(), R.string.profile_delete_message, Toast.LENGTH_SHORT).show()
             }
 
             // 이름 변경 버튼 클릭 시
             profileIvNameChangeButton.setOnClickListener {
                 changeName()
             }
+        }
+    }
 
-            // 비밀번호 변경 버튼 클릭 시
-            profileIvPasswordChangeButton.setOnClickListener {
-                Toast.makeText(requireContext(), R.string.profile_password_message, Toast.LENGTH_SHORT).show()
+    fun getState() = lifecycleScope.launch {
+        viewModel.uiState.collectLatest {
+            when(it){
+                is UiState.Failure -> Toast.makeText(requireContext(), it.e, Toast.LENGTH_SHORT).show()
+                UiState.Init -> {}
+                UiState.Loading -> {}
+                is UiState.Success -> {
+                    val name = it.data
+                    if(name != null){
+                        binding.profileTvNameText.setText(name)
+                        Toast.makeText(requireContext(), "이름 변경 성공", Toast.LENGTH_SHORT).show()
+                        user = user.copy(name = name)
+                    }else{
+                        Toast.makeText(requireContext(), "회원 탈퇴 성공", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
+                    }
+                }
             }
         }
     }
@@ -68,8 +105,7 @@ class ProfileFragment : Fragment() {
 
             setPositiveButton("변경") { dialog, _ ->
                 val newName = dialogBinding.nameChangeEtDialog.text.toString()
-                binding.profileTvNameText.text = newName
-                Toast.makeText(requireContext(), R.string.profile_name_message, Toast.LENGTH_SHORT).show()
+                viewModel.modifyUserData(user.copy(name = newName))
                 dialog.dismiss()
             }
 
