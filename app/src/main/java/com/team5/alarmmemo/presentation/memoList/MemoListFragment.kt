@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
-import com.team5.alarmmemo.data.model.MemoUnitData
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
@@ -113,7 +112,6 @@ class MemoListFragment : Fragment() {
             // 아이템 추가 버튼 클릭 시 아이템 추가
             memoListBtnAddButton.setOnClickListener {
                 val uniqId =System.currentTimeMillis().toString()
-                listViewModel.additem(MemoUnitData(uniqId = uniqId))
                 val addList = listViewModel.sampleData.value ?: listOf()
                 val sortedList = when (sort) {
                     SORT_BY_TIME -> addList.sortedByDescending { item ->
@@ -184,6 +182,11 @@ class MemoListFragment : Fragment() {
                 bottomSheet.show(childFragmentManager, bottomSheet.tag)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        listViewModel.loadList()
     }
 
     override fun onDestroyView() {

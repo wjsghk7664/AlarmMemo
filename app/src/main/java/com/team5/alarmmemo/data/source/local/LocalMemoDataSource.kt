@@ -83,4 +83,20 @@ class LocalMemoDataSource @Inject constructor(
         }
         return Pair(result1 as List<AlarmSetting>,result2 as List<String>)
     }
+
+    fun removeAlarmSetting(uniqueId: String) {
+        alarmSettingSharedPreferences.edit().remove(uniqueId).apply()
+    }
+
+    fun removeMemo(uniqueId: String) {
+        memoSharedPreferences.edit().remove(uniqueId).apply()
+    }
+
+    fun removeDraw(uniqueId: String) {
+        drawSharedPreferences.edit().remove(uniqueId).apply()
+    }
+
+    fun removeTitle(uniqueId: String) {
+        titleSharedPreferences.edit().remove(uniqueId).apply()
+    }
 }

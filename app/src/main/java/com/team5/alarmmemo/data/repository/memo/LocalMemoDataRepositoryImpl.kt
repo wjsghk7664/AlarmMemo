@@ -4,6 +4,7 @@ import android.text.SpannableStringBuilder
 import com.team5.alarmmemo.data.model.AlarmSetting
 import com.team5.alarmmemo.data.source.local.LocalMemoDataSource
 import com.team5.alarmmemo.presentation.memo.CheckItem
+import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 class LocalMemoDataRepositoryImpl @Inject constructor(private val localMemoDataSource: LocalMemoDataSource):
@@ -47,5 +48,25 @@ class LocalMemoDataRepositoryImpl @Inject constructor(private val localMemoDataS
     override fun getAllAlarms(callback: (List<AlarmSetting>,List<String>) -> Unit) {
         val results = localMemoDataSource.getAllAlarms()
         callback(results.first,results.second)
+    }
+
+    override fun removeAlarmSetting(uniqueId: String) {
+        localMemoDataSource.removeAlarmSetting(uniqueId)
+    }
+
+    override fun removeMemo(uniqueId: String) {
+        localMemoDataSource.removeMemo(uniqueId)
+    }
+
+    override fun removeDraw(uniqueId: String) {
+        localMemoDataSource.removeDraw(uniqueId)
+    }
+
+    override fun removeTitle(uniqueId: String) {
+        localMemoDataSource.removeTitle(uniqueId)
+    }
+
+    override fun removeIdContent(callback:(Boolean) -> Unit): Job {
+        return Job()
     }
 }

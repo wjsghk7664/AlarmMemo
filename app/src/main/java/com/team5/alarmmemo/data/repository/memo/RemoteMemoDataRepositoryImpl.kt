@@ -1,6 +1,7 @@
 package com.team5.alarmmemo.data.repository.memo
 
 import android.text.SpannableStringBuilder
+import android.util.Log
 import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -8,9 +9,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
 import com.google.gson.Gson
 import com.team5.alarmmemo.data.model.AlarmSetting
-import com.team5.alarmmemo.data.model.MemoList
-import com.team5.alarmmemo.data.model.MemoUnitData
 import com.team5.alarmmemo.presentation.memo.CheckItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFirestore,private val gson:Gson):MemoDataRepository {
@@ -19,56 +24,31 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
 
     fun setUserid(userId: String){
         this.userId = userId
+        Log.d("아이디",userId)
     }
 
-    //한번에 가져오게 하기 위해서 각 컬렉션 외에도 메모와 타이틀은 uniq와 함께 관리한다.
-    //json형태로 관리
+
     override fun getList(callback: (ArrayList<Triple<String, String, SpannableStringBuilder>>) -> Unit) {
-        if(userId=="default"){
-            callback(ArrayList())
-            return
-        }
-        db.collection("UniqueIdList").document(userId).get().addOnSuccessListener {
+        db.collection("title").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
-                val data = it.toObject(MemoList::class.java)
-                val result = ArrayList<Triple<String, String, SpannableStringBuilder>>()
-                data?.memoLists?.forEach { list ->
-                    val memo = gson.fromJson(list.memo, SpannableStringBuilder::class.java)
-                    result+=Triple(list.uniqId,list.title,memo)
+                val idTitle= it.data as HashMap<String, String>
+                db.collection("Memo").document(userId).get().addOnSuccessListener {
+                    if(it!=null&&it.exists()){
+                        val idMemo = it.data as HashMap<String,String>
+                        val result =ArrayList<Triple<String, String, SpannableStringBuilder>>()
+                        for((k,v) in idTitle){
+                            val json = idMemo.getOrDefault(k,null)
+                            val span = gson.fromJson(json,SpannableStringBuilder::class.java)?:SpannableStringBuilder("")
+                            result+=Triple(k,v,span)
+                        }
+                        callback(result)
+                    }
                 }
-                callback(result)
-            }else{
-                callback(ArrayList())
             }
-        }.addOnFailureListener {
-            callback(ArrayList())
+
         }
     }
 
-    //0: 성공, 1:문서가 없음 => createList로가기, 2: 실패
-    fun addList(list:MemoUnitData, callback:(Int)->Unit){
-        if(userId=="default"){
-            callback(0)
-            return
-        }
-        db.collection("UniqueIdList").document(userId).update("memoLists", FieldValue.arrayUnion(list)).addOnFailureListener { e ->
-            if(e is FirebaseFirestoreException&&e.code == FirebaseFirestoreException.Code.NOT_FOUND){
-                callback(1)
-            }else{
-                callback(2)
-            }
-        }.addOnSuccessListener {
-            callback(0)
-        }
-    }
-
-    fun createList(callback:(Boolean)->Unit){
-        db.collection("UniqueIdList").document(userId).set(MemoList()).addOnSuccessListener {
-            callback(true)
-        }.addOnFailureListener {
-            callback(false)
-        }
-    }
 
     override fun saveAlarmSetting(alarmSetting: AlarmSetting, uniqueId: String) {
         if(userId=="default") return
@@ -189,6 +169,52 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
             }
         }.addOnFailureListener {
             callback(listOf(), listOf())
+        }
+    }
+
+    override fun removeAlarmSetting(uniqueId: String) {
+        db.collection("AlarmSetting").document(userId).update(uniqueId, FieldValue.delete())
+    }
+
+    override fun removeMemo(uniqueId: String) {
+        db.collection("Memo").document(userId).update(uniqueId,FieldValue.delete())
+    }
+
+    override fun removeDraw(uniqueId: String) {
+        db.collection("draw").document(userId).update(uniqueId,FieldValue.delete())
+    }
+
+    override fun removeTitle(uniqueId: String) {
+        db.collection("title").document(userId).update(uniqueId,FieldValue.delete())
+    }
+
+    override fun removeIdContent(callback:(Boolean) -> Unit) = CoroutineScope(Dispatchers.IO).launch {
+
+        val list = listOf(
+            async { deleteDocument("AlarmSetting") },
+            async { deleteDocument("Memo") },
+            async { deleteDocument("draw") },
+            async { deleteDocument("title") },
+            async { deleteDocument("LastModify") }
+        )
+
+        val result = list.awaitAll()
+
+        if(result.all{it}){
+            callback(true)
+        }else{
+            callback(false)
+        }
+
+    }
+
+    suspend fun deleteDocument(collection: String): Boolean {
+        return try {
+            db.collection(collection).document(userId).delete().await()
+            true // 성공 시 true 반환
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false // 실패 시 false 반환
         }
     }
 

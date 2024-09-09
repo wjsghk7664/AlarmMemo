@@ -370,6 +370,7 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
     private var isFirstCheckPass = false
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -393,7 +394,14 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
         userId = intent.getStringExtra("userId")?:"default"
         uniqueId = intent.getStringExtra("uniqueId")?:"default"
 
+
         viewModel.setInitalSetting(userId)
+
+        if(isInit?:true){
+            viewModel.saveTitle("",uniqueId)
+        }
+
+
 
         mapFragment = supportFragmentManager.findFragmentById(binding.memoFcvMap.id) as MapFragment?
             ?: MapFragment.newInstance().also {
@@ -480,6 +488,10 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
             }
 
         })
+
+        memoIvBack.setOnClickListener {
+            finish()
+        }
 
         weeks = listOf(memoTvWeekMon,memoTvWeekTue,memoTvWeekWed,memoTvWeekThu,memoTvWeekFri,memoTvWeekSat,memoTvWeekSun)
         if(isInit!!){

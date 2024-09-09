@@ -11,6 +11,9 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Qualifier
 
 @Qualifier
+annotation class LastModify
+
+@Qualifier
 annotation class Memo
 
 @Qualifier
@@ -31,6 +34,12 @@ annotation class SpanCount
 @Module
 @InstallIn(SingletonComponent::class)
 object SharedPreferencesModule {
+
+    @LastModify
+    @Provides
+    fun provideLastModifySharedPreferences(@ApplicationContext context: Context): SharedPreferences{
+        return context.getSharedPreferences("last_modify_pref",0)
+    }
 
     @Memo
     @Provides
