@@ -5,40 +5,50 @@ import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.Constants.USER
 import javax.inject.Inject
 
-class RemoteUserDataRepositoryImpl @Inject constructor(private val store:FirebaseFirestore):RemoteUserDataRepository {
+class RemoteUserDataRepositoryImpl @Inject constructor(private val store: FirebaseFirestore) :
+    RemoteUserDataRepository {
 
-    // 이메일 중복 체크
-    override fun getByUserEmail(email: String, callback: (Boolean, String?) -> Unit) {
-//        if(email.isEmpty()){
-//            callback(false,"Empty email")
-//            return
-//        }
-        store.collection(USER).document(email).get().addOnSuccessListener {
-            if(!it.exists()){
-                callback(true,null)
-            }else{
-                callback(false,"already exist")
+    // 이메일 중복확인
+    override fun checkEmailDuplicate(email: String, callback: (Boolean, String?) -> Unit) {
+        val query = store.collection(USER)
+            .whereEqualTo("email", email).limit(1).get()
+
+        query.addOnSuccessListener {
+            if (!it.isEmpty) {
+                callback(true, null)
+            } else {
+                callback(false, null)
             }
         }.addOnFailureListener {
-            callback(false,it.message)
+            callback(false, it.message)
+        }
+    }
+
+    // 파이어스토어에 유저 정보 추가
+    override fun addUserToStore(email: String, user: User, callback: (String?) -> Unit) {
+        store.collection(USER).document(email).set(user).addOnSuccessListener {
+            callback(null)
+        }.addOnFailureListener {
+            callback(it.message)
         }
     }
 
     // 유저 데이터 추가 및 수정
     override fun addOrModifyUserData(user: User, callback: (Boolean, String?) -> Unit) {
         store.collection(USER).document(user.email).set(user).addOnSuccessListener {
-            callback(true,null)
+            callback(true, null)
         }.addOnFailureListener {
-            callback(false,it.message)
+            callback(false, it.message)
         }
     }
+
 
     // 유저 데이터 삭제
     override fun deleteUserData(email: String, callback: (Boolean, String?) -> Unit) {
         store.collection(USER).document(email).delete().addOnSuccessListener {
-            callback(true,null)
+            callback(true, null)
         }.addOnFailureListener {
-            callback(false,it.message)
+            callback(false, it.message)
         }
     }
 
