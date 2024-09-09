@@ -1,5 +1,6 @@
 package com.team5.alarmmemo.data.source.remote
 
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -18,12 +19,12 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirestore(): FirebaseFirestore {
-        return Firebase.firestore
+        return FirebaseFirestore.getInstance()
     }
 
     @Provides
     @Singleton
-    fun provideFireStorage(): FirebaseStorage {
-        return Firebase.storage
+    fun provideFireStorage(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
     }
 }

@@ -4,7 +4,7 @@ import android.text.SpannableStringBuilder
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.team5.alarmmemo.presentation.memoLogin.UiState
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.AlarmSetting
 import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
 import com.team5.alarmmemo.data.repository.lastmodify.LocalLastModify

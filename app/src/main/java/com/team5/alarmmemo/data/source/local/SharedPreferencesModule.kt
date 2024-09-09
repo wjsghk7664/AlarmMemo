@@ -14,6 +14,9 @@ import javax.inject.Qualifier
 annotation class LastModify
 
 @Qualifier
+annotation class SignUp
+
+@Qualifier
 annotation class Memo
 
 @Qualifier
@@ -39,6 +42,11 @@ object SharedPreferencesModule {
     @Provides
     fun provideLastModifySharedPreferences(@ApplicationContext context: Context): SharedPreferences{
         return context.getSharedPreferences("last_modify_pref",0)
+
+    @SignUp
+    @Provides
+    fun provideSignUpSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
+        return context.getSharedPreferences("sign_up_pref",0)
     }
 
     @Memo

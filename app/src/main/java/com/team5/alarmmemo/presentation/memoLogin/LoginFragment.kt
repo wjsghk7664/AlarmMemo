@@ -27,6 +27,7 @@ import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.team5.alarmmemo.R
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentLoginBinding
 import com.team5.alarmmemo.presentation.memoList.MemoListActivity
@@ -106,7 +107,7 @@ class LoginFragment : Fragment() {
 //            kakaoLogin()
 //        }
 
-        loginNaverLogin.setOnClickListener {
+        loginNaverLoginIv.setOnClickListener {
             naverLogin()
         }
 
