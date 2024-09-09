@@ -164,6 +164,9 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
 
 
+
+
+
     private val bitmapMenuWidth = dpToPx(196f)
     private val textMenuWidth = dpToPx(364f)
 
@@ -296,7 +299,7 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
                                 }
                             }
                         }
-                        val stringStyle=StringStyle(size?.toFloat()?: dpToPx(8f),style?:false,color?:Color.BLACK)
+                        val stringStyle=StringStyle(size?.toFloat()?: dpToPx(24f),style?:false,color?:Color.BLACK)
                         textColor = stringStyle.color
                         isBold = stringStyle.isBold
                         isSettingAutoChagned = true
@@ -876,7 +879,13 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
         val radius = 20f
 
         val erased = drawHistory.filterIndexed { idx,it -> idx<=curDrawHistory&&it.action==ActionType.EraseDraw }
-        val draw = drawHistory.filterIndexed{idx,it -> idx<=curDrawHistory&&it.action==ActionType.AddDraw}
+        val draw = drawHistory.filterIndexed{idx,it -> idx<=curDrawHistory&&it.action==ActionType.AddDraw}.toMutableList()
+
+        fixedDrawList.forEach {
+            if(it.type==MemoType.Draw){
+                draw+=HistoryItem(ActionType.AddDraw,it.zidx,it.data)
+            }
+        }
 
         drawList.forEachIndexed { idx, it ->
 
