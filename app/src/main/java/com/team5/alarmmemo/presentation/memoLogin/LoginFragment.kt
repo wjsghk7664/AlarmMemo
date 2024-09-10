@@ -33,6 +33,7 @@ import com.team5.alarmmemo.databinding.FragmentLoginBinding
 import com.team5.alarmmemo.presentation.memoList.MemoListActivity
 import com.team5.alarmmemo.presentation.memoList.MemoListFragment
 import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
+import com.team5.alarmmemo.util.AccountUtil.hashPassword
 import com.team5.alarmmemo.util.AccountUtil.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -105,7 +106,7 @@ class LoginFragment : Fragment() {
             val password = loginPasswordEt.text.toString()
 
             if(id.isNotBlank() && password.isNotBlank()){
-                viewmodel.login(id,name="",password)
+                viewmodel.login(id,name="", hashPassword(password))
             }else{
                 showToast(requireContext(), "회원정보를 입력해주세요.")
             }

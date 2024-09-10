@@ -52,65 +52,65 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_username_et" />
 
-    <CheckBox
-        android:id="@+id/login_auto_login_cb"
-        style="@style/body_400"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:button="@drawable/check_box"
-        android:buttonTint="@color/light_gray"
-        android:paddingLeft="8dp"
-        android:text="자동 로그인"
-        android:textColor="@color/dark_gray"
-        app:layout_constraintStart_toStartOf="@+id/login_password_et"
-        app:layout_constraintTop_toBottomOf="@+id/login_password_et" />
+<!--    <CheckBox-->
+<!--        android:id="@+id/login_auto_login_cb"-->
+<!--        style="@style/body_400"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:button="@drawable/check_box"-->
+<!--        android:buttonTint="@color/light_gray"-->
+<!--        android:paddingLeft="8dp"-->
+<!--        android:text="자동 로그인"-->
+<!--        android:textColor="@color/dark_gray"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/login_password_et"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/login_password_et" />-->
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/login_password_et"
-        app:layout_constraintTop_toBottomOf="@+id/login_password_et">
+<!--    <LinearLayout-->
+<!--        android:id="@+id/linearLayout3"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/login_password_et"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/login_password_et">-->
 
-        <TextView
-            android:id="@+id/login_email_find"
-            style="@style/body_400"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="아이디 찾기" />
+<!--        <TextView-->
+<!--            android:id="@+id/login_email_find"-->
+<!--            style="@style/body_400"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="아이디 찾기" />-->
 
-        <TextView
-            style="@style/body_400"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:text="/" />
+<!--        <TextView-->
+<!--            style="@style/body_400"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:paddingLeft="4dp"-->
+<!--            android:paddingRight="4dp"-->
+<!--            android:text="/" />-->
 
-        <TextView
-            android:id="@+id/login_password_find"
-            style="@style/body_400"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="비밀번호 재설정" />
+<!--        <TextView-->
+<!--            android:id="@+id/login_password_find"-->
+<!--            style="@style/body_400"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="비밀번호 재설정" />-->
 
 
-    </LinearLayout>
+<!--    </LinearLayout>-->
 
     <Button
         android:id="@+id/login_btn"
         style="@style/subtitle_400"
         android:layout_width="291dp"
         android:layout_height="48dp"
-        android:layout_marginTop="28dp"
         android:background="@drawable/btn_filled_sky_blue"
         android:text="로그인"
+        android:layout_marginTop="28dp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login_auto_login_cb" />
+        app:layout_constraintTop_toBottomOf="@+id/login_password_et" />
 
 
     <LinearLayout
