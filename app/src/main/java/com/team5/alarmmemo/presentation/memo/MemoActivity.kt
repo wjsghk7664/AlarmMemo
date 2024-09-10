@@ -446,8 +446,9 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
         memoCbReminderTime.isChecked = alarmSetting.isTimeRepeat
         memoEtTimesetting.setText(alarmSetting.term.toString())
         memoEtNumsetting.setText(alarmSetting.num.toString())
-        memoCbReminderOnNoti.isChecked = alarmSetting.isOnRepeat
-        memoCbReminderOn.isChecked = alarmSetting.isOnMemoRepeat
+        //TODO("추후에 추가하기")
+        //memoCbReminderOnNoti.isChecked = alarmSetting.isOnRepeat
+        //memoCbReminderOn.isChecked = alarmSetting.isOnMemoRepeat
         memoEtTimeHour.setText(times[0])
         memoEtTimeMinute.setText(times[1])
         memoCbTimeWeekly.isChecked = alarmSetting.isWeeklyOn
@@ -684,8 +685,9 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
                 memoEtNumsetting.text.toString().let{
                     if(it.isEmpty()) 0 else it.toInt()
                 },
-                memoCbReminderOnNoti.isChecked,
-                memoCbReminderOn.isChecked,
+                //TODO("추후에 추가하기")
+                false, //memoCbReminderOnNoti.isChecked,
+                false, //memoCbReminderOn.isChecked,
                 "${shour.toInt().coerceIn(0..23)}_${smin.toInt().coerceIn(0..59)}",
                 memoCbTimeWeekly.isChecked,
                 weeks.map{it.isSelected}.toBooleanArray(),
