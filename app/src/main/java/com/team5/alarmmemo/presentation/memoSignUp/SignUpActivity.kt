@@ -82,7 +82,7 @@ class SignUpActivity : AppCompatActivity() {
             }
             signUpTvCheckDoc.setOnClickListener {
                 AlertDialog.Builder(this@SignUpActivity)
-                    .setView(WebView(this@SignUpActivity).apply { loadUrl("file:///android_asset/privacy_policy.html") })
+                    .setView(WebView(this@SignUpActivity).apply { loadUrl("https://sites.google.com/view/alarmmemo-privacypolicy?usp=sharing") })
                     .setNegativeButton("나가기"){ dialog, _ ->
                         dialog.dismiss()
                     }.show()

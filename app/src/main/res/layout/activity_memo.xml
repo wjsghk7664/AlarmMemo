@@ -250,51 +250,51 @@
                     app:layout_constraintBottom_toBottomOf="@+id/memo_et_numsetting"
                     app:layout_constraintStart_toEndOf="@+id/memo_et_numsetting" />
 
-                <CheckBox
-                    android:id="@+id/memo_cb_reminder_on_noti"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/checkbox_selector"
-                    android:button="@null"
-                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_on_setting_noti"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/memo_vertical_divider1" />
+<!--                <CheckBox-->
+<!--                    android:id="@+id/memo_cb_reminder_on_noti"-->
+<!--                    android:layout_width="20dp"-->
+<!--                    android:layout_height="20dp"-->
+<!--                    android:layout_marginTop="24dp"-->
+<!--                    android:background="@drawable/checkbox_selector"-->
+<!--                    android:button="@null"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_on_setting_noti"-->
+<!--                    app:layout_constraintHorizontal_chainStyle="packed"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/memo_vertical_divider1" />-->
 
-                <TextView
-                    android:id="@+id/memo_tv_on_setting_noti"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="24dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="8dp"
-                    android:text="화면 켤 때마다 알림"
-                    app:layout_constraintStart_toEndOf="@+id/memo_cb_reminder_on_noti"
-                    app:layout_constraintTop_toBottomOf="@id/memo_vertical_divider1" />
+<!--                <TextView-->
+<!--                    android:id="@+id/memo_tv_on_setting_noti"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="20dp"-->
+<!--                    android:layout_marginTop="24dp"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:paddingLeft="8dp"-->
+<!--                    android:text="화면 켤 때마다 알림"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/memo_cb_reminder_on_noti"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/memo_vertical_divider1" />-->
 
-                <CheckBox
-                    android:id="@+id/memo_cb_reminder_on"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/checkbox_selector"
-                    android:button="@null"
-                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_on_setting"
-                    app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/memo_tv_on_setting_noti" />
+<!--                <CheckBox-->
+<!--                    android:id="@+id/memo_cb_reminder_on"-->
+<!--                    android:layout_width="20dp"-->
+<!--                    android:layout_height="20dp"-->
+<!--                    android:layout_marginTop="24dp"-->
+<!--                    android:background="@drawable/checkbox_selector"-->
+<!--                    android:button="@null"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/memo_tv_on_setting"-->
+<!--                    app:layout_constraintHorizontal_chainStyle="packed"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/memo_tv_on_setting_noti" />-->
 
-                <TextView
-                    android:id="@+id/memo_tv_on_setting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="24dp"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="8dp"
-                    android:text="화면 켤 때마다 메모 띄우기"
-                    app:layout_constraintStart_toEndOf="@+id/memo_cb_reminder_on"
-                    app:layout_constraintTop_toBottomOf="@+id/memo_tv_on_setting_noti" />
+<!--                <TextView-->
+<!--                    android:id="@+id/memo_tv_on_setting"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="20dp"-->
+<!--                    android:layout_marginTop="24dp"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:paddingLeft="8dp"-->
+<!--                    android:text="화면 켤 때마다 메모 띄우기"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/memo_cb_reminder_on"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/memo_tv_on_setting_noti" />-->
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
