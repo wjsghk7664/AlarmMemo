@@ -197,15 +197,9 @@ class SignUpViewModel @Inject constructor(
                 val hashPassword = hashPassword(password)
                 val user = User(email, hashPassword, name)
 
-                authRepository.createAccount(email, password) { error ->
-                    if (error == null) {
-                        userDataRepository.addOrModifyUserData(user) { error ->
-                            if (error != null) {
-                                _uiState.value = UiState.Failure("FireStore | 파이어 스토어 유저 정보 저장 에러: $error")
-                            }
-                        }
-                    } else {
-                        _uiState.value = UiState.Failure("Auth | 계정 생성 에러: $error")
+                userDataRepository.addOrModifyUserData(user) { error ->
+                    if (error != null) {
+                        _uiState.value = UiState.Failure("FireStore | 파이어 스토어 유저 정보 저장 에러: $error")
                     }
                 }
             }

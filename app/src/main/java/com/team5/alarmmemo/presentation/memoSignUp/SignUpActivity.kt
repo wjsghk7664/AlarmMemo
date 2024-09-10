@@ -8,10 +8,12 @@ import android.os.Bundle
 import android.text.Layout
 import android.util.Log
 import android.view.View
+import android.webkit.WebView
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -31,6 +33,7 @@ import com.team5.alarmmemo.databinding.ActivitySignUpBinding
 import com.team5.alarmmemo.Constants.USER
 import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.presentation.memoList.MemoListActivity
+import com.team5.alarmmemo.presentation.memoLogin.LoginActivity
 import com.team5.alarmmemo.util.AccountUtil.formatTime
 import com.team5.alarmmemo.util.AccountUtil.isValidEmail
 import com.team5.alarmmemo.util.AccountUtil.isValidPassword
@@ -73,6 +76,17 @@ class SignUpActivity : AppCompatActivity() {
         setKeyboardScorllAciton(binding.root)
 
         binding.apply {
+
+            signUpCbPrivacy.setOnCheckedChangeListener { buttonView, isChecked ->
+                signUpBtnSubmit.isEnabled = isChecked
+            }
+            signUpTvCheckDoc.setOnClickListener {
+                AlertDialog.Builder(this@SignUpActivity)
+                    .setView(WebView(this@SignUpActivity).apply { loadUrl("https://sites.google.com/view/alarmmemo-privacypolicy?usp=sharing") })
+                    .setNegativeButton("나가기"){ dialog, _ ->
+                        dialog.dismiss()
+                    }.show()
+            }
 
             signUpBtnEmailVerification.setOnClickListener {
                 val email = signUpEtEmail.text.toString()
@@ -117,7 +131,7 @@ class SignUpActivity : AppCompatActivity() {
                                     } else if (event == SignUpSuccessEvent.SIGN_UP_SUCCESS) {
                                         signUpBtnSubmit.isEnabled = false
                                         showToast(context, getString(R.string.sign_up_submit))
-                                        startActivity(Intent(context, MemoListActivity::class.java))
+                                        startActivity(Intent(context, LoginActivity::class.java))
                                     }
                                 }
                                 is UiState.Failure -> {
