@@ -12,6 +12,7 @@ import com.team5.alarmmemo.data.repository.RemoteUserDataRepository
 import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.presentation.memoList.MemoListActivity
 import com.team5.alarmmemo.util.AccountUtil.formatTime
+import com.team5.alarmmemo.util.AccountUtil.hashPassword
 import com.team5.alarmmemo.util.AccountUtil.isValidEmail
 import com.team5.alarmmemo.util.AccountUtil.isValidPassword
 import com.team5.alarmmemo.util.AccountUtil.showToast
@@ -41,6 +42,9 @@ class SignUpViewModel @Inject constructor(
     private val _emailValidation = MutableSharedFlow<String>(1)
     val emailValidation: SharedFlow<String> = _emailValidation.asSharedFlow()
 
+    private val _nameValidation = MutableSharedFlow<String>(1)
+    val nameValidation: SharedFlow<String> = _nameValidation.asSharedFlow()
+
     private val _passwordValidation = MutableSharedFlow<String>(1)
     val passwordValidation: SharedFlow<String> = _passwordValidation.asSharedFlow()
 
@@ -50,8 +54,9 @@ class SignUpViewModel @Inject constructor(
     private var isEmailVerified = false
     private val maxTime = 180
 
-    private var isPwValid = false
-    private var isPwCheckValid = false
+    private var isNameValid = false
+    private var isPasswordValid = false
+    private var isPasswordCheckValid = false
 
     fun emailVerificationAction(email: String) {
         viewModelScope.launch {
@@ -151,38 +156,50 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun signUpSubmitBtnAction(email: String, password: String, passwordCheck:String){
+    fun signUpSubmitBtnAction(email: String, name:String, password: String, passwordCheck:String){
         viewModelScope.launch {
             if (!isEmailVerified) {
                 _emailValidation.emit(getString(R.string.sign_up_email_validation_request))
             }
 
             if (isEmailVerified) {
+                if (name.isBlank()) {
+                    _nameValidation.emit(getString(R.string.sign_up_name_empty))
+                } else {
+                    _nameValidation.emit("")
+                    isNameValid = true
+                }
+            }
+
+            if(isEmailVerified && isNameValid){
                 if (password.isBlank()) {
                     _passwordValidation.emit(getString(R.string.sign_up_password_empty))
                 } else if (!isValidPassword(password)) {
                     _passwordValidation.emit(getString(R.string.sign_up_password_invalid_format))
                 } else {
                     _passwordValidation.emit("")
-                    isPwValid = true
+                    isPasswordValid = true
                 }
             }
 
-            if (isEmailVerified && isPwValid) {
+            if (isEmailVerified && isNameValid && isPasswordValid) {
                 if (password != passwordCheck) {
                     _passwordCheckValidation.emit(getString(R.string.sign_up_password_check_error))
                 } else {
                     _passwordCheckValidation.emit("")
-                    isPwCheckValid = true
+                    isPasswordCheckValid = true
                 }
             }
 
-            if (isEmailVerified && isPwValid && isPwCheckValid) {
-                val user = User(email, password)
+            if (isEmailVerified && isNameValid && isPasswordValid && isPasswordCheckValid) {
                 _uiState.value = UiState.Success(SignUpSuccessEvent.SIGN_UP_SUCCESS)
+
+                val hashPassword = hashPassword(password)
+                val user = User(email, hashPassword, name)
+
                 authRepository.createAccount(email, password) { error ->
                     if (error == null) {
-                        userDataRepository.addUserToStore(email, user) { error ->
+                        userDataRepository.addOrModifyUserData(user) { error ->
                             if (error != null) {
                                 _uiState.value = UiState.Failure("FireStore | 파이어 스토어 유저 정보 저장 에러: $error")
                             }
@@ -194,25 +211,6 @@ class SignUpViewModel @Inject constructor(
             }
 
         }
-    }
-
-    private fun createAccountAndStoreUser(email: String, password: String, user: User) {
-        authRepository.createAccount(email, password) { authError ->
-            if (authError == null) {
-                userDataRepository.addUserToStore(email, user) { storeError ->
-                    if (storeError != null) {
-                        _uiState.value = UiState.Failure("FireStore | 파이어 스토어 유저 정보 저장 에러: $storeError")
-                    }
-                }
-            } else {
-                _uiState.value = UiState.Failure("Auth | 계정 생성 에러: $authError")
-            }
-        }
-    }
-
-
-    fun signUp(email:String, password: String, user:User){
-
     }
 
     fun deleteTempAccount() {

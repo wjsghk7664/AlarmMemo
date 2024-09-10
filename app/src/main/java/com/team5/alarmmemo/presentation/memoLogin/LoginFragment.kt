@@ -33,6 +33,7 @@ import com.team5.alarmmemo.databinding.FragmentLoginBinding
 import com.team5.alarmmemo.presentation.memoList.MemoListActivity
 import com.team5.alarmmemo.presentation.memoList.MemoListFragment
 import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
+import com.team5.alarmmemo.util.AccountUtil.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -97,17 +98,24 @@ class LoginFragment : Fragment() {
 
     fun initView() = with(binding){
 
+
+
         loginBtn.setOnClickListener {
             val id = loginUsernameEt.text.toString()
             val password = loginPasswordEt.text.toString()
-            viewmodel.login(id,name="",password)
+
+            if(id.isNotBlank() && password.isNotBlank()){
+                viewmodel.login(id,name="",password)
+            }else{
+                showToast(requireContext(), "회원정보를 입력해주세요.")
+            }
         }
 
 //        loginKakaoLogin.setOnClickListener {
 //            kakaoLogin()
 //        }
 
-        loginNaverLoginIv.setOnClickListener {
+        loginIvNaverLogin.setOnClickListener {
             naverLogin()
         }
 

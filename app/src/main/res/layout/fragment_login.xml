@@ -94,7 +94,7 @@
             style="@style/body_400"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="비밀번호 찾기" />
+            android:text="비밀번호 재설정" />
 
 
     </LinearLayout>
@@ -204,7 +204,7 @@
 
 
     <ImageView
-        android:id="@+id/login_naver_login_iv"
+        android:id="@+id/login_iv_naver_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
