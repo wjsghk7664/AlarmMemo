@@ -229,6 +229,38 @@
                 app:layout_constraintStart_toEndOf="@+id/textView5"
                 app:layout_constraintTop_toTopOf="@+id/textView5" />
 
+
+            <CheckBox
+                android:id="@+id/sign_up_cb_privacy"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/checkbox_selector"
+                android:button="@null"
+                android:layout_marginTop="28dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sign_up_et_password_check" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:paddingHorizontal="4dp"
+                android:text="개인정보처리방침에 동의하십니까?"
+                app:layout_constraintBottom_toBottomOf="@+id/sign_up_cb_privacy"
+                app:layout_constraintStart_toEndOf="@+id/sign_up_cb_privacy"
+                app:layout_constraintTop_toTopOf="@+id/sign_up_cb_privacy" />
+
+            <TextView
+                android:id="@+id/sign_up_tv_check_doc"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:text="확인하기"
+                android:textColor="@color/sky_blue"
+                app:layout_constraintBottom_toBottomOf="@+id/textView6"
+                app:layout_constraintStart_toEndOf="@+id/textView6"
+                app:layout_constraintTop_toTopOf="@+id/textView6"
+                app:layout_constraintVertical_bias="0.0" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -248,7 +280,8 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/btn_filled_sky_blue"
+            android:background="@drawable/signup_selector"
+            android:enabled="false"
             android:text="@string/sign_up_btn_submit"
             android:textSize="16sp"
             android:textColor="@color/white" />
