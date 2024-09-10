@@ -29,6 +29,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
 
 
     override fun getList(callback: (ArrayList<Triple<String, String, SpannableStringBuilder>>) -> Unit) {
+        Log.d("데이터 리모트 시작",userId)
         db.collection("title").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
                 val idTitle= it.data as HashMap<String, String>
@@ -42,10 +43,22 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
                             result+=Triple(k,v,span)
                         }
                         callback(result)
+                        Log.d("데이터 리모트 성공",userId)
+                    }else{
+                        callback(ArrayList())
+                        Log.d("데이터 리모트 실패","1")
                     }
+                }.addOnFailureListener {
+                    callback(ArrayList())
+                    Log.d("데이터 리모트 실패","2")
                 }
+            }else{
+                callback(ArrayList())
+                Log.d("데이터 리모트 실패","3")
             }
-
+        }.addOnFailureListener {
+            callback(ArrayList())
+            Log.d("데이터 리모트 실패","4")
         }
     }
 
@@ -172,20 +185,36 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
         }
     }
 
-    override fun removeAlarmSetting(uniqueId: String) {
-        db.collection("AlarmSetting").document(userId).update(uniqueId, FieldValue.delete())
+    override fun removeAlarmSetting(uniqueId: String, callback: (Boolean) -> Unit) {
+        db.collection("AlarmSetting").document(userId).update(uniqueId, FieldValue.delete()).addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
     }
 
-    override fun removeMemo(uniqueId: String) {
-        db.collection("Memo").document(userId).update(uniqueId,FieldValue.delete())
+    override fun removeMemo(uniqueId: String, callback: (Boolean) -> Unit) {
+        db.collection("Memo").document(userId).update(uniqueId,FieldValue.delete()).addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
     }
 
-    override fun removeDraw(uniqueId: String) {
-        db.collection("draw").document(userId).update(uniqueId,FieldValue.delete())
+    override fun removeDraw(uniqueId: String, callback: (Boolean) -> Unit) {
+        db.collection("draw").document(userId).update(uniqueId,FieldValue.delete()).addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
     }
 
-    override fun removeTitle(uniqueId: String) {
-        db.collection("title").document(userId).update(uniqueId,FieldValue.delete())
+    override fun removeTitle(uniqueId: String, callback: (Boolean) -> Unit) {
+        db.collection("title").document(userId).update(uniqueId,FieldValue.delete()).addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
     }
 
     override fun removeIdContent(callback:(Boolean) -> Unit) = CoroutineScope(Dispatchers.IO).launch {
