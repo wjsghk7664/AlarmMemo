@@ -50,20 +50,31 @@ class LocalMemoDataRepositoryImpl @Inject constructor(private val localMemoDataS
         callback(results.first,results.second)
     }
 
-    override fun removeAlarmSetting(uniqueId: String) {
-        localMemoDataSource.removeAlarmSetting(uniqueId)
+    override fun removeAlarmSetting(uniqueId: String, callback: (Boolean) -> Unit) {
+        callback(runCatching {
+            localMemoDataSource.removeAlarmSetting(uniqueId)
+        }.isSuccess)
+
     }
 
-    override fun removeMemo(uniqueId: String) {
-        localMemoDataSource.removeMemo(uniqueId)
+    override fun removeMemo(uniqueId: String, callback: (Boolean) -> Unit) {
+        callback(runCatching {
+            localMemoDataSource.removeMemo(uniqueId)
+        }.isSuccess)
     }
 
-    override fun removeDraw(uniqueId: String) {
-        localMemoDataSource.removeDraw(uniqueId)
+    override fun removeDraw(uniqueId: String, callback: (Boolean) -> Unit) {
+        callback(runCatching {
+            localMemoDataSource.removeDraw(uniqueId)
+        }.isSuccess)
+
     }
 
-    override fun removeTitle(uniqueId: String) {
-        localMemoDataSource.removeTitle(uniqueId)
+    override fun removeTitle(uniqueId: String, callback: (Boolean) -> Unit) {
+        callback(runCatching {
+            localMemoDataSource.removeTitle(uniqueId)
+        }.isSuccess)
+
     }
 
     override fun removeIdContent(callback:(Boolean) -> Unit): Job {

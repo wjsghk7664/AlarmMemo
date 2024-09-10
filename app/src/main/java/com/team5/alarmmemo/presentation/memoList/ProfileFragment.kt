@@ -47,9 +47,18 @@ class ProfileFragment : Fragment() {
         getState()
 
         with(binding) {
-
             profileTvIdText.setText(user.email)
             profileTvNameText.setText(user.name)
+
+            if(user == User()){
+                profileDeleteButton.visibility = View.GONE
+                profileLogoutButton.text = "로그인"
+                profileIvNameChangeButton.isEnabled = false
+                profileTvIdText.text = "비회원 로그인 상태입니다."
+                profileTvNameText.text = "비회원 로그인 상태입니다."
+            }
+
+
 
             // 로그 아웃 버튼 클릭 시
             profileLogoutButton.setOnClickListener {

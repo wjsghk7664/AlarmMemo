@@ -18,9 +18,9 @@ interface MemoDataRepository {
     fun getAllAlarms(callback:(List<AlarmSetting>,List<String>)->Unit)
 
     //delete추가
-    fun removeAlarmSetting(uniqueId: String)
-    fun removeMemo(uniqueId: String)
-    fun removeDraw(uniqueId: String)
-    fun removeTitle(uniqueId: String)
+    fun removeAlarmSetting(uniqueId: String, callback: (Boolean) -> Unit)
+    fun removeMemo(uniqueId: String, callback: (Boolean) -> Unit)
+    fun removeDraw(uniqueId: String, callback: (Boolean) -> Unit)
+    fun removeTitle(uniqueId: String, callback: (Boolean) -> Unit)
     fun removeIdContent(callback: (Boolean) -> Unit): Job
 }

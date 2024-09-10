@@ -22,6 +22,7 @@ import com.team5.alarmmemo.data.repository.memo.MemoDataRepository
 import com.team5.alarmmemo.data.repository.memo.RemoteMemoDataRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.RemoteRepository
 import com.team5.alarmmemo.data.source.local.SpanCount
+import com.team5.alarmmemo.presentation.memoLogin.UiState
 import dagger.hilt.android.internal.lifecycle.DefaultViewModelFactories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -83,6 +84,7 @@ class ListViewModel @Inject constructor(
 
     // 아이템 리스트 앱 재시작 시 불러오는 메소드
     fun loadData(){
+        Log.d("로드 데이터 시작","")
         var list = ArrayList<Triple<String,String, SpannableStringBuilder>>()
 
         val isLocal = ArrayList<Boolean>()
@@ -92,14 +94,17 @@ class ListViewModel @Inject constructor(
         localMemoDataRepository.getList { localList ->
             list+=localList
             isLocal+=List(localList.size){true}
+            Log.d("데이터 - 로컬",list.toString())
             remoteMemoDataRepository.getList { remoteList ->
                 list+=remoteList
                 isLocal+=List(remoteList.size){false}
+                Log.d("데이터 - 리모트",list.toString())
                 viewModelScope.launch {
                     for(i in isLocal.indices){
                         lastModifyAsync+=async { lastModify+=getLastModify(list[i].first,isLocal[i]) }
                     }
                     lastModifyAsync.awaitAll()
+
                 }.invokeOnCompletion {
                     val ids = HashMap<String,Long>()
                     for(i in isLocal.indices){
@@ -119,14 +124,70 @@ class ListViewModel @Inject constructor(
         }
     }
 
-
+    suspend fun removeDraw(uniqueId: String):Boolean = suspendCoroutine { cont ->
+        localMemoDataRepository.removeDraw(uniqueId){ local ->
+            if(local){
+                remoteMemoDataRepository.removeDraw(uniqueId){
+                    cont.resume(it)
+                }
+            }else{
+                cont.resume(local)
+            }
+        }
+    }
+    suspend fun removeAlarm(uniqueId: String):Boolean = suspendCoroutine { cont ->
+        localMemoDataRepository.removeAlarmSetting(uniqueId){ local ->
+            if(local){
+                remoteMemoDataRepository.removeAlarmSetting(uniqueId){
+                    cont.resume(it)
+                }
+            }else{
+                cont.resume(local)
+            }
+        }
+    }
+    suspend fun removeMemo(uniqueId: String):Boolean = suspendCoroutine { cont ->
+        localMemoDataRepository.removeMemo(uniqueId){ local ->
+            if(local){
+                remoteMemoDataRepository.removeMemo(uniqueId){
+                    cont.resume(it)
+                }
+            }else{
+                cont.resume(local)
+            }
+        }
+    }
+    suspend fun removeTitle(uniqueId: String):Boolean = suspendCoroutine { cont ->
+        localMemoDataRepository.removeTitle(uniqueId){ local ->
+            if(local){
+                remoteMemoDataRepository.removeTitle(uniqueId){
+                    cont.resume(it)
+                }
+            }else{
+                cont.resume(local)
+            }
+        }
+    }
 
     // 아이템 (썸네일) 길게 눌렀을 때 삭제하는 메소드
     fun deleteItem(item: Triple<String,String, SpannableStringBuilder>) {
         val itemList = _sampleData.value?.toMutableList()
+        val uniqueId = item.first
         itemList?.remove(item)
-        _sampleData.value = (itemList ?: ArrayList()) as ArrayList<Triple<String, String, SpannableStringBuilder>>
-        //TODO("삭제 로직 만들고 진행")
+        viewModelScope.launch {
+            val list = listOf(
+                async { removeAlarm(uniqueId) },
+                async { removeMemo(uniqueId) },
+                async { removeTitle(uniqueId) },
+                async { removeDraw(uniqueId) }
+            )
+            val isSuccessAll = list.awaitAll().all { it }
+
+            if(isSuccessAll){
+                _sampleData.value = (itemList ?: ArrayList()) as ArrayList<Triple<String, String, SpannableStringBuilder>>
+            }
+
+        }
     }
 
     // SpanCount 업데이트 하는 메소드

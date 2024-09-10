@@ -49,11 +49,11 @@
             android:src="@drawable/ic_add" />
 
         <ImageView
-            android:id="@+id/memo_iv_memu"
+            android:id="@+id/memo_iv_delete"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_more_vert" />
+            android:src="@drawable/ic_delete" />
     </LinearLayout>
 
     <View
