@@ -1,18 +1,12 @@
 package com.team5.alarmmemo.presentation.memoList
 
-import android.app.Application
-import android.content.Context
 import android.content.SharedPreferences
 import android.text.SpannableStringBuilder
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-import com.team5.alarmmemo.R
 import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
 import com.team5.alarmmemo.data.repository.lastmodify.LocalLastModify
 import com.team5.alarmmemo.data.repository.lastmodify.ReMoteLastModify
@@ -22,18 +16,11 @@ import com.team5.alarmmemo.data.repository.memo.MemoDataRepository
 import com.team5.alarmmemo.data.repository.memo.RemoteMemoDataRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.RemoteRepository
 import com.team5.alarmmemo.data.source.local.SpanCount
-import com.team5.alarmmemo.presentation.memoLogin.UiState
-import dagger.hilt.android.internal.lifecycle.DefaultViewModelFactories
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine

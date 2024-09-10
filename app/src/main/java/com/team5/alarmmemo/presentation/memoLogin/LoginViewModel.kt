@@ -23,23 +23,23 @@ class LoginViewModel @Inject constructor(
 
 
     // 로그인 처리
-    fun login(emailOrToken: String, name:String = "", password: String?=null) {
+    fun login(emailOrToken: String, name: String = "", password: String? = null) {
         _uiState.value = UiState.Loading
         repository.Login(emailOrToken, password) { user, message ->
-            if(user!=null){
+            if (user != null) {
                 _uiState.value = UiState.Success(user)
-            }else{
-                if(message=="Socail Login Init"){
-                    val newUser = User(email =emailOrToken,name=name)
-                    repository.addOrModifyUserData(newUser){ bool, e ->
-                        if(bool){
+            } else {
+                if (message == "Social Login Init") {
+                    val newUser = User(email = emailOrToken, name = name)
+                    repository.addOrModifyUserData(newUser) { e ->
+                        if (e == null) {
                             _uiState.value = UiState.Success(newUser)
-                        }else{
-                            _uiState.value = UiState.Failure(e?:"")
+                        } else {
+                            _uiState.value = UiState.Failure(e ?: "")
                         }
 
                     }
-                }else{
+                } else {
                     _uiState.value = UiState.Failure("fail to login")
                 }
             }

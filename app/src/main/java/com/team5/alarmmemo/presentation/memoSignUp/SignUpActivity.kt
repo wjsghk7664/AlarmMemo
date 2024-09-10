@@ -81,9 +81,11 @@ class SignUpActivity : AppCompatActivity() {
 
             signUpBtnSubmit.setOnClickListener {
                 val email = binding.signUpEtEmail.text.toString()
+                val name = signUpEtName.text.toString()
                 val password = binding.signUpEtPassword.text.toString()
                 val passwordCheck = binding.signUpEtPasswordCheck.text.toString()
-                viewModel.signUpSubmitBtnAction(email, password, passwordCheck)
+
+                viewModel.signUpSubmitBtnAction(email, name, password, passwordCheck)
             }
 
             signUpBtnCancel.setOnClickListener {
@@ -114,14 +116,14 @@ class SignUpActivity : AppCompatActivity() {
                                         )
                                     } else if (event == SignUpSuccessEvent.SIGN_UP_SUCCESS) {
                                         signUpBtnSubmit.isEnabled = false
+                                        showToast(context, getString(R.string.sign_up_submit))
                                         startActivity(Intent(context, MemoListActivity::class.java))
                                     }
                                 }
                                 is UiState.Failure -> {
                                     val msg = state.e
-                                    signUpTvEmailValidation.text =
-                                        getString(R.string.sign_up_email_validation_error)
                                     val splitMsg = msg.split("|").map { it.trim() }
+                                    showToast(context, getString(R.string.sign_up_email_validation_error))
                                     Log.e(splitMsg[0], splitMsg[1])
                                 }
                             }
@@ -131,6 +133,12 @@ class SignUpActivity : AppCompatActivity() {
                     launch {
                         viewModel.emailValidation.collect { msg ->
                             signUpTvEmailValidation.text = msg
+                        }
+                    }
+
+                    launch {
+                        viewModel.nameValidation.collect { msg ->
+                            signUpTvNameValidation.text = msg
                         }
                     }
 

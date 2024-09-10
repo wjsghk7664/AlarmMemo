@@ -15,7 +15,8 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/sign_up_ll_btn_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -53,6 +54,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
 
             <TextView
                 android:id="@+id/sign_up_tv_email_validation"
@@ -105,17 +107,44 @@
 
             </LinearLayout>
 
-
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/textView"
                 style="@style/body_500"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/sign_up_password"
+                android:layout_marginTop="28dp"
+                android:text="@string/sign_up_name"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+            <TextView
+                android:id="@+id/sign_up_tv_name_validation"
+                style="@style/caption_400"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text=""
+                android:textColor="@color/red"
+                app:layout_constraintBottom_toBottomOf="@+id/textView"
+                app:layout_constraintStart_toEndOf="@+id/textView"
+                app:layout_constraintTop_toTopOf="@+id/textView" />
+
+            <EditText
+                android:id="@+id/sign_up_et_name"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:ems="10"
+                android:maxLength="10"
+                android:inputType="text"
+                android:background="@drawable/edit_text"
+                style="@style/body_400"
+                android:hint="@string/sign_up_name_hint"
+                android:paddingLeft="12dp"
+                android:textColorHint="@color/dark_gray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView" />
 
             <TextView
                 android:id="@+id/sign_up_tv_password_validation"
@@ -129,12 +158,24 @@
                 app:layout_constraintStart_toEndOf="@+id/textView4"
                 app:layout_constraintTop_toTopOf="@+id/textView4" />
 
+            <TextView
+                android:id="@+id/textView4"
+                style="@style/body_500"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/sign_up_password"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sign_up_et_name" />
+
             <EditText
                 android:id="@+id/sign_up_et_password"
                 style="@style/body_400"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
+                android:maxLength="20"
                 android:background="@drawable/edit_text"
                 android:ems="10"
                 android:focusableInTouchMode="true"
@@ -145,12 +186,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
+            <EditText
+                android:id="@+id/sign_up_et_password_check"
+                style="@style/body_400"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edit_text"
+                android:maxLength="20"
+                android:ems="10"
+                android:focusableInTouchMode="true"
+                android:hint="@string/sign_up_password_check_hint"
+                android:inputType="textPassword"
+                android:paddingLeft="12dp"
+                android:textColorHint="@color/dark_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+
             <TextView
                 android:id="@+id/textView5"
                 style="@style/body_500"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="28dp"
                 android:text="@string/sign_up_password_check"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
@@ -167,23 +228,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/textView5"
                 app:layout_constraintStart_toEndOf="@+id/textView5"
                 app:layout_constraintTop_toTopOf="@+id/textView5" />
-
-            <EditText
-                android:id="@+id/sign_up_et_password_check"
-                style="@style/body_400"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/edit_text"
-                android:ems="10"
-                android:focusableInTouchMode="true"
-                android:hint="@string/sign_up_password_check_hint"
-                android:inputType="textPassword"
-                android:paddingLeft="12dp"
-                android:textColorHint="@color/dark_gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
