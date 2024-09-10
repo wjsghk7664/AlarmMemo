@@ -36,6 +36,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -399,6 +400,7 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
         if(isInit?:true){
             viewModel.saveTitle("",uniqueId)
+            viewModel.saveMemo(SpannableStringBuilder(""),uniqueId)
         }
 
 
@@ -489,6 +491,19 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
         })
 
+        memoIvDelete.setOnClickListener {
+            AlertDialog.Builder(this@MemoActivity)
+                .setTitle("삭제")
+                .setMessage("정말 이 메모를 삭제하시겠습니까?")
+                .setPositiveButton("삭제"){ dialog, _ ->
+                    viewModel.deleteMemo(uniqueId)
+                    dialog.dismiss()
+                }
+                .setNegativeButton("취소"){ dialog, _ ->
+                    dialog.dismiss()
+                }.show()
+        }
+
         memoIvBack.setOnClickListener {
             finish()
         }
@@ -503,24 +518,30 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
             viewModel.uiState.collectLatest { state ->
                 when(state){
                     is UiState.Success ->{
-                        memoProgressbar.visibility = View.GONE
-                        with(state.data){
-                            val title = get("title") as String
-                            val alarmSetting = get("settings") as AlarmSetting
-                            val memo = get("memo") as SpannableStringBuilder
-                            val draw = get("draw") as List<CheckItem>
+                        if(state.data==null){
+                            Toast.makeText(this@MemoActivity, "삭제 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }else{
+                            memoProgressbar.visibility = View.GONE
+                            with(state.data){
+                                val title = get("title") as String
+                                val alarmSetting = get("settings") as AlarmSetting
+                                val memo = get("memo") as SpannableStringBuilder
+                                val draw = get("draw") as List<CheckItem>
 
-                            Log.d("타이틀 세팅",title)
-                            memoEtTitle.setText(title)
-                            memoMv.apply {
-                                Log.d("드로우리스트",draw.toString())
-                                initialMemo(memo,draw)
+                                Log.d("타이틀 세팅",title)
+                                memoEtTitle.setText(title)
+                                memoMv.apply {
+                                    Log.d("드로우리스트",draw.toString())
+                                    initialMemo(memo,draw)
+                                }
+                                setAlarm(alarmSetting)
+                                viewModel.saveAlarmSetting(alarmSetting,uniqueId)
+                                isLoading = false
+
                             }
-                            setAlarm(alarmSetting)
-                            viewModel.saveAlarmSetting(alarmSetting,uniqueId)
-                            isLoading = false
-
                         }
+
                     }
                     is UiState.Init -> memoProgressbar.visibility = View.GONE
                     is UiState.Failure -> {

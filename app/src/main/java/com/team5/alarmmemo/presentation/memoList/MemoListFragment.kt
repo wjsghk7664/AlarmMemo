@@ -76,7 +76,6 @@ class MemoListFragment : Fragment() {
 
                     setPositiveButton("삭제") { _, _ ->
                         listViewModel.deleteItem(item)
-                        Toast.makeText(requireContext(), R.string.memoList_delete_message, Toast.LENGTH_SHORT).show()
                     }
 
                     setNegativeButton("취소") { dialog, _ ->
@@ -165,16 +164,6 @@ class MemoListFragment : Fragment() {
                 memoListTvSpinner.callOnClick()
             }
 
-//            memoListIvDropDownButton.setOnClickListener {
-//                if (!check) {
-//                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_down)
-//                } else {
-//                    binding.memoListIvDropDownButton.setImageResource(R.drawable.ic_arrow_drop_up)
-//                }
-//                check = !check
-//            }
-
-            // filter 버튼 클릭 시 2줄 격자, 3줄 격자 선택하는 bottom sheet 나오게 하고 거기서 SpanCount 꺼내서 가져 오기(?)
             memoListIvFilterButton.setOnClickListener {
                 val bottomSheet = BottomSheetFragment { newSpanCount ->
                     listViewModel.setSpanCount(newSpanCount)
