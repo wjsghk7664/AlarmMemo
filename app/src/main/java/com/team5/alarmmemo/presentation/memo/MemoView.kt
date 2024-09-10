@@ -348,6 +348,10 @@ class MemoView(private val context: Context, attrs: AttributeSet): FrameLayout(c
 
                     }
 
+                    if(s.toString().isEmpty()){
+                        isUnitSettingChanged=true
+                    }
+
 
                     if(initText){
                         Log.d("히스토리 추가","3")
