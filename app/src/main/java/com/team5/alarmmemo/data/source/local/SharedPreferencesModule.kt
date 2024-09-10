@@ -40,48 +40,49 @@ object SharedPreferencesModule {
 
     @LastModify
     @Provides
-    fun provideLastModifySharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("last_modify_pref",0)
+    fun provideLastModifySharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("last_modify_pref", 0)
+    }
 
     @SignUp
     @Provides
-    fun provideSignUpSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("sign_up_pref",0)
+    fun provideSignUpSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("sign_up_pref", 0)
     }
 
     @Memo
     @Provides
-    fun provideMemoSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("memo_pref",0)
+    fun provideMemoSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("memo_pref", 0)
     }
 
     @Draw
     @Provides
-    fun provideDrawSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("draw_pref",0)
+    fun provideDrawSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("draw_pref", 0)
     }
 
     @Title
     @Provides
-    fun provideTitleSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("title_pref",0)
+    fun provideTitleSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("title_pref", 0)
     }
 
     @AlarmSettings
     @Provides
-    fun provideAlarmSettingSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("alarm_setting_pref",0)
+    fun provideAlarmSettingSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("alarm_setting_pref", 0)
     }
 
     @ActiveAlarms
     @Provides
-    fun provideActiveAlarmsSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("active_alarm_pref",0)
+    fun provideActiveAlarmsSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("active_alarm_pref", 0)
     }
 
     @SpanCount
     @Provides
-    fun provideSpanCountSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
-        return context.getSharedPreferences("span_count_pref",0)
+    fun provideSpanCountSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("span_count_pref", 0)
     }
 }

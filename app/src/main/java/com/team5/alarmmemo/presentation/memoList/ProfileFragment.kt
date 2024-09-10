@@ -10,12 +10,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.team5.alarmmemo.R
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.ChangeNameDialogBinding
 import com.team5.alarmmemo.databinding.FragmentProfileBinding
 import com.team5.alarmmemo.presentation.memoLogin.LoginActivity
-import com.team5.alarmmemo.presentation.memoLogin.UiState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
