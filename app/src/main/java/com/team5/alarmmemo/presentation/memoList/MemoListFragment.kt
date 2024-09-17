@@ -13,10 +13,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -50,7 +52,6 @@ class MemoListFragment : Fragment() {
         val user = requireActivity().intent.getParcelableExtra<User>("user")?:User("default")
         val id = user.email
         listViewModel.setId(id)
-
 
         // 저장된 리스트를 불러옴
         listViewModel.loadList()
@@ -87,22 +88,24 @@ class MemoListFragment : Fragment() {
             }
         )
 
-        // SpanCount 관련 LiveData로 업데이트
-        listViewModel.spanCount.observe(viewLifecycleOwner) { spanCount ->
-            binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+        lifecycleScope.launch {
+            listViewModel.spanCount.collect { spanCount ->
+                binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
+            }
         }
 
         // 아이템 데이터 업데이트
-        listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
-            val sortList = when (sort) {
-                SORT_BY_TIME -> sampleData.sortedByDescending { item ->
-                    item.first
+        lifecycleScope.launch {
+            listViewModel.sampleData.collect { sampleData ->
+                val sortedList = when (sort) {
+                    SORT_BY_TIME -> sampleData.sortedByDescending { item ->
+                        item.first
+                    }
+                    SORT_BY_TITLE -> sampleData.sortedBy { it.second }
+                    else -> sampleData
                 }
-                SORT_BY_TITLE -> sampleData.sortedBy { it.second }
-                else -> sampleData
+                adapter.submitList(sortedList)
             }
-
-            adapter.submitList(sortList)
         }
 
         with(binding) {

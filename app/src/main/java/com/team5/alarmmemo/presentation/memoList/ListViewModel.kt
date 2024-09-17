@@ -3,8 +3,6 @@ package com.team5.alarmmemo.presentation.memoList
 import android.content.SharedPreferences
 import android.text.SpannableStringBuilder
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
@@ -20,6 +18,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -34,11 +34,11 @@ class ListViewModel @Inject constructor(
     @ReMoteLastModify private val remoteLastModifyRepository: LastModifyRepository
 
 ) : ViewModel() {
-    private val _sampleData = MutableLiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>>()
-    val sampleData: LiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>> get() = _sampleData
+    private val _sampleData = MutableStateFlow<List<Triple<String, String, SpannableStringBuilder>>>(emptyList())
+    val sampleData: StateFlow<List<Triple<String, String, SpannableStringBuilder>>> get() = _sampleData
 
-    private val _spanCount = MutableLiveData(2)
-    val spanCount: LiveData<Int> get() = _spanCount
+    private val _spanCount = MutableStateFlow(2)
+    val spanCount: StateFlow<Int> get() = _spanCount
 
     private var number = 0
 

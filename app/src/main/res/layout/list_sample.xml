@@ -24,7 +24,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/calendar"
+        android:src="@drawable/memo_title_icon"
         app:layout_constraintStart_toStartOf="@id/sample_iv_memo_thumbnail"
         app:layout_constraintTop_toBottomOf="@id/sample_iv_memo_thumbnail"
         tools:ignore="ContentDescription" />
