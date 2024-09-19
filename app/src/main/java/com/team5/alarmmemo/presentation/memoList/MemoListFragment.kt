@@ -97,8 +97,12 @@ class MemoListFragment : Fragment() {
         lifecycleScope.launch {
             listViewModel.uiState.collect { state ->
                 when (state) {
-                    is UiState.Loading -> {}
+                    is UiState.Loading -> {
+                        Toast.makeText(requireContext(), "메모 목록 로딩 중...", Toast.LENGTH_SHORT).show()
+                    }
+
                     is UiState.Init -> {}
+
                     is UiState.Success -> {
                         val sortedList = when (sort) {
                             SORT_BY_TIME -> state.data.sortedByDescending { item ->
@@ -109,7 +113,10 @@ class MemoListFragment : Fragment() {
                         }
                         adapter.submitList(sortedList)
                     }
-                    is UiState.Failure -> {}
+
+                    is UiState.Failure -> {
+                        Toast.makeText(requireContext(), state.e, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

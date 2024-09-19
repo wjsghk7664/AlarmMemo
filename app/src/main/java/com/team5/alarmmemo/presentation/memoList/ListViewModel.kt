@@ -56,9 +56,13 @@ class ListViewModel @Inject constructor(
     // 아이템 리스트 불러오기
     fun loadList() {
         viewModelScope.launch {
-            loadData()
-            loadSpanCount()
-            _uiState.value = UiState.Success(_sampleData.value)
+            try {
+                loadData()
+                loadSpanCount()
+                _uiState.value = UiState.Success(_sampleData.value)
+            } catch (e: Exception) {
+                _uiState.value = UiState.Failure("메모 리스트를 불러오는 데 실패했습니다.")
+            }
         }
     }
 
