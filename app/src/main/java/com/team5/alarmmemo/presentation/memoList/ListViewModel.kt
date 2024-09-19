@@ -5,6 +5,7 @@ import android.text.SpannableStringBuilder
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
 import com.team5.alarmmemo.data.repository.lastmodify.LocalLastModify
 import com.team5.alarmmemo.data.repository.lastmodify.ReMoteLastModify
@@ -37,6 +38,9 @@ class ListViewModel @Inject constructor(
     private val _sampleData = MutableStateFlow<List<Triple<String, String, SpannableStringBuilder>>>(emptyList())
     val sampleData: StateFlow<List<Triple<String, String, SpannableStringBuilder>>> get() = _sampleData
 
+    private val _uiState = MutableStateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>>(UiState.Init)
+    val uiState: StateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>> get() = _uiState
+
     private val _spanCount = MutableStateFlow(2)
     val spanCount: StateFlow<Int> get() = _spanCount
 
@@ -51,8 +55,11 @@ class ListViewModel @Inject constructor(
 
     // 아이템 리스트 불러오기
     fun loadList() {
-        loadData()
-        loadSpanCount()
+        viewModelScope.launch {
+            loadData()
+            loadSpanCount()
+            _uiState.value = UiState.Success(_sampleData.value)
+        }
     }
 
 

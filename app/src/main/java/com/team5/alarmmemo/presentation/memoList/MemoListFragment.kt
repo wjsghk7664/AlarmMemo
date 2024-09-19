@@ -6,12 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
@@ -73,6 +75,7 @@ class MemoListFragment : Fragment() {
 
                     setPositiveButton("삭제") { _, _ ->
                         listViewModel.deleteItem(item)
+                        Toast.makeText(requireContext(), "메모 삭제 완료", Toast.LENGTH_SHORT).show()
                     }
 
                     setNegativeButton("취소") { dialog, _ ->
@@ -92,15 +95,22 @@ class MemoListFragment : Fragment() {
 
         // 아이템 데이터 업데이트
         lifecycleScope.launch {
-            listViewModel.sampleData.collect { sampleData ->
-                val sortedList = when (sort) {
-                    SORT_BY_TIME -> sampleData.sortedByDescending { item ->
-                        item.first
+            listViewModel.uiState.collect { state ->
+                when (state) {
+                    is UiState.Loading -> {}
+                    is UiState.Init -> {}
+                    is UiState.Success -> {
+                        val sortedList = when (sort) {
+                            SORT_BY_TIME -> state.data.sortedByDescending { item ->
+                                item.first
+                            }
+                            SORT_BY_TITLE -> state.data.sortedBy { it.second }
+                            else -> state.data
+                        }
+                        adapter.submitList(sortedList)
                     }
-                    SORT_BY_TITLE -> sampleData.sortedBy { it.second }
-                    else -> sampleData
+                    is UiState.Failure -> {}
                 }
-                adapter.submitList(sortedList)
             }
         }
 
@@ -120,6 +130,7 @@ class MemoListFragment : Fragment() {
                     else -> addList
                 }
                 adapter.submitList(sortedList.toMutableList())
+                Toast.makeText(requireContext(), "메모 추가 완료", Toast.LENGTH_SHORT).show()
                 Log.d("리스트",sortedList.toString())
 
                 val intent = Intent(requireContext(), MemoActivity::class.java).apply {
