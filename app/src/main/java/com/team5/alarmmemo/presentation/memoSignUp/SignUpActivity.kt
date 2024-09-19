@@ -1,11 +1,9 @@
 package com.team5.alarmmemo.presentation.memoSignUp
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import androidx.core.graphics.Insets
 import android.os.Bundle
-import android.text.Layout
 import android.util.Log
 import android.view.View
 import android.webkit.WebView
@@ -17,30 +15,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-import com.team5.alarmmemo.Constants.TEMP_PASSWORD
 import com.team5.alarmmemo.R
-import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.ActivitySignUpBinding
-import com.team5.alarmmemo.Constants.USER
 import com.team5.alarmmemo.UiState
-import com.team5.alarmmemo.presentation.memoList.MemoListActivity
 import com.team5.alarmmemo.presentation.memoLogin.LoginActivity
-import com.team5.alarmmemo.util.AccountUtil.formatTime
-import com.team5.alarmmemo.util.AccountUtil.isValidEmail
-import com.team5.alarmmemo.util.AccountUtil.isValidPassword
+import com.team5.alarmmemo.util.AccountUtil.setKeyboardScorllAciton
 import com.team5.alarmmemo.util.AccountUtil.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class SignUpActivity : AppCompatActivity() {
@@ -48,9 +35,6 @@ class SignUpActivity : AppCompatActivity() {
     val binding by lazy { ActivitySignUpBinding.inflate(layoutInflater) }
     private val viewModel: SignUpViewModel by viewModels()
     private val context = this
-
-    private lateinit var btnContainer: LinearLayout
-    private lateinit var systemBars: Insets
 
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -64,25 +48,24 @@ class SignUpActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(v.paddingLeft, systemBars.top, v.paddingRight, systemBars.bottom)
+            setKeyboardScorllAciton(binding.root, binding.signUpLlBtnContainer, systemBars)
             insets
         }
 
         viewModel.loginAndDeleteTempAccount()
         context.onBackPressedDispatcher.addCallback(context, callback)
 
-        btnContainer = binding.signUpLlBtnContainer
-        setKeyboardScorllAciton(binding.root)
-
         binding.apply {
 
-            signUpCbPrivacy.setOnCheckedChangeListener { buttonView, isChecked ->
+            signUpCbPrivacy.setOnCheckedChangeListener { _, isChecked ->
                 signUpBtnSubmit.isEnabled = isChecked
             }
+
             signUpTvCheckDoc.setOnClickListener {
-                AlertDialog.Builder(this@SignUpActivity)
-                    .setView(WebView(this@SignUpActivity).apply { loadUrl("https://sites.google.com/view/alarmmemo-privacypolicy?usp=sharing") })
+                AlertDialog.Builder(context)
+                    .setView(WebView(context).apply { loadUrl("https://sites.google.com/view/alarmmemo-privacypolicy?usp=sharing") })
                     .setNegativeButton("나가기"){ dialog, _ ->
                         dialog.dismiss()
                     }.show()
@@ -171,36 +154,6 @@ class SignUpActivity : AppCompatActivity() {
             }
 
         }
-    }
-
-    private fun setKeyboardScorllAciton(root: View) {
-        root.viewTreeObserver.addOnGlobalLayoutListener {
-            val rect = Rect()
-            root.getWindowVisibleDisplayFrame(rect)
-
-            val height = root.height
-            val keypadHeight = height - rect.bottom
-
-            if (keypadHeight > height * 0.15) {
-                adjustView(keypadHeight)
-            } else {
-                resetView()
-            }
-        }
-    }
-
-    private fun adjustView(keypadHeight: Int) {
-        val layoutParams = btnContainer.layoutParams as ConstraintLayout.LayoutParams
-        btnContainer.setPadding(0, 80, 0, 0)
-        layoutParams.bottomMargin = 80 + keypadHeight - systemBars.bottom
-        btnContainer.layoutParams = layoutParams
-    }
-
-    private fun resetView() {
-        val layoutParams = btnContainer.layoutParams as ConstraintLayout.LayoutParams
-        btnContainer.setPadding(0, 0, 0, 0)
-        layoutParams.bottomMargin = 80
-        btnContainer.layoutParams = layoutParams
     }
 }
 

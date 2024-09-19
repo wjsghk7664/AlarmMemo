@@ -1,9 +1,14 @@
 package com.team5.alarmmemo.util
 
 import android.content.Context
+import android.graphics.Rect
 import android.util.Patterns
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import java.security.MessageDigest
+import androidx.core.graphics.Insets
 
 object AccountUtil {
     // 토스트 메시지 띄우기
@@ -43,6 +48,29 @@ object AccountUtil {
         val sha256 = MessageDigest.getInstance("SHA-256")
         val hashValue = sha256.digest(data)
         return hashValue.joinToString("") { "%02x".format(it) }
+    }
+
+    // 키보드 스크롤 액션
+    fun setKeyboardScorllAciton(root: View, btnContainer: LinearLayout, systemBars:Insets) {
+        root.viewTreeObserver.addOnGlobalLayoutListener {
+            val rect = Rect()
+            root.getWindowVisibleDisplayFrame(rect)
+
+            val height = root.height
+            val keypadHeight = height - rect.bottom
+
+            val layoutParams = btnContainer.layoutParams as ConstraintLayout.LayoutParams
+
+            if (keypadHeight > height * 0.15) {
+                btnContainer.setPadding(0, 80, 0, 0)
+                layoutParams.bottomMargin = 80 + keypadHeight - systemBars.bottom
+                btnContainer.layoutParams = layoutParams
+            } else {
+                btnContainer.setPadding(0, 0, 0, 0)
+                layoutParams.bottomMargin = 80
+                btnContainer.layoutParams = layoutParams
+            }
+        }
     }
 
 }
