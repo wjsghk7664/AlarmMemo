@@ -130,7 +130,6 @@ class MemoListFragment : Fragment() {
                     else -> addList
                 }
                 adapter.submitList(sortedList.toMutableList())
-                Toast.makeText(requireContext(), "메모 추가 완료", Toast.LENGTH_SHORT).show()
                 Log.d("리스트",sortedList.toString())
 
                 val intent = Intent(requireContext(), MemoActivity::class.java).apply {
@@ -140,6 +139,7 @@ class MemoListFragment : Fragment() {
                     putExtra("uniqueId",uniqId)
                 }
                 startActivity(intent)
+                Toast.makeText(requireContext(), "메모 추가 완료", Toast.LENGTH_SHORT).show()
             }
 
             // Spinner 클릭시 Motion Layout 적용
