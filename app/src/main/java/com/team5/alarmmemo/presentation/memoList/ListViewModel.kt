@@ -7,19 +7,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
 import com.team5.alarmmemo.data.repository.lastmodify.LocalLastModify
 import com.team5.alarmmemo.data.repository.lastmodify.ReMoteLastModify
-import com.team5.alarmmemo.data.repository.lastmodify.RemoteLastModifyRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.LocalRepository
 import com.team5.alarmmemo.data.repository.memo.MemoDataRepository
-import com.team5.alarmmemo.data.repository.memo.RemoteMemoDataRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.RemoteRepository
 import com.team5.alarmmemo.data.source.local.SpanCount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -40,6 +41,9 @@ class ListViewModel @Inject constructor(
     private val _isLocal = MutableLiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>>()
     val isLocal :LiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>> get() = _isLocal
 
+    private val _uiState = MutableStateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>>(UiState.Init)
+    val uiState: StateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>> get() = _uiState
+
     private val _spanCount = MutableLiveData(2)
     val spanCount: LiveData<Int> get() = _spanCount
 
@@ -47,8 +51,15 @@ class ListViewModel @Inject constructor(
 
     // 아이템 리스트 불러오기
     fun loadList() {
-        loadData()
-        loadSpanCount()
+        viewModelScope.launch {
+            try {
+                loadData()
+                loadSpanCount()
+                _uiState.value = UiState.Success(_sampleData.value ?: emptyList())
+            } catch (e: Exception) {
+                _uiState.value = UiState.Failure("메모 리스트를 불러오는 데 실패했습니다.")
+            }
+        }
     }
 
 
