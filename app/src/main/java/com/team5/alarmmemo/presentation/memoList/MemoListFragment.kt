@@ -19,6 +19,7 @@ import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MemoListFragment : Fragment() {
@@ -87,10 +88,8 @@ class MemoListFragment : Fragment() {
             }
         )
 
-        lifecycleScope.launch {
-            listViewModel.spanCount.collect { spanCount ->
-                binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
-            }
+        listViewModel.spanCount.observe(viewLifecycleOwner) { spanCount ->
+            binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
         }
 
         // 아이템 데이터 업데이트
