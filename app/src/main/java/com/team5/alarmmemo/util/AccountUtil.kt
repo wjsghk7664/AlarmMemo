@@ -1,14 +1,21 @@
 package com.team5.alarmmemo.util
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
 import android.util.Patterns
 import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import java.security.MessageDigest
 import androidx.core.graphics.Insets
+import com.team5.alarmmemo.Constants.PRIVACY_POLICY_URL
 
 object AccountUtil {
 
@@ -39,7 +46,7 @@ object AccountUtil {
         return hashValue.joinToString("") { "%02x".format(it) }
     }
 
-    fun setKeyboardScorllAciton(root: View, btnContainer: LinearLayout, systemBars:Insets) {
+    fun setKeyboardScorllAciton(root: View, btnContainer: LinearLayout, systemBars: Insets) {
         val density = root.context.resources.displayMetrics.density
         val bottomMargin = (40 * density).toInt()
 
@@ -64,4 +71,26 @@ object AccountUtil {
         }
     }
 
+    fun showPrivacyPolicyDialog(context: Context) {
+        val progressBar = ProgressBar(context)
+
+        val webView = WebView(context).apply {
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView, url: String) {
+                    progressBar.visibility = View.GONE
+                }
+            }
+            loadUrl(PRIVACY_POLICY_URL)
+        }
+
+        val layout = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(progressBar)
+            addView(webView)
+        }
+
+        val dialog = AlertDialog.Builder(context).setView(layout).create()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+    }
 }
