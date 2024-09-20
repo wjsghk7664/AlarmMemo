@@ -213,5 +213,37 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
         app:srcCompat="@drawable/btn_naver_login" />
 
+    <CheckBox
+        android:id="@+id/login_cb_privacy"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:background="@drawable/checkbox_selector"
+        android:button="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/login_tv_privacy_dialog"
+        app:layout_constraintEnd_toStartOf="@+id/login_tv_privacy_dialog"
+        app:layout_constraintTop_toTopOf="@+id/login_tv_privacy_dialog" />
+
+    <TextView
+        android:id="@+id/login_tv_privacy_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="개인정보 처리방침 동의"
+        android:paddingHorizontal="8dp"
+        android:textColor="@color/sky_blue"
+        app:layout_constraintEnd_toEndOf="@+id/login_iv_naver_login"
+        app:layout_constraintStart_toStartOf="@+id/login_iv_naver_login"
+        app:layout_constraintTop_toBottomOf="@+id/login_iv_naver_login" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="비회원 로그인과 소셜 로그인의 경우 \n개인정보 처리방침에 동의하셔야 이용 가능합니다."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_tv_privacy_dialog" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

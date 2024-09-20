@@ -49,7 +49,6 @@ class MemoListFragment : Fragment() {
 
         val user = requireActivity().intent.getParcelableExtra<User>("user")?:User("default")
         val id = user.email
-        listViewModel.setId(id)
 
 
         // 저장된 리스트를 불러옴
@@ -60,7 +59,8 @@ class MemoListFragment : Fragment() {
             // 아이템 (썸네일) 클릭 시 메모 Activity로 이동
             onItemClicked = { item ->
                 val intent = Intent(requireContext(), MemoActivity::class.java).apply {
-                    putExtra("isLocal",true)
+                    val isLocal = listViewModel.isLocal.value?.getOrDefault(item,false)?:false
+                    putExtra("isLocal",isLocal)
                     putExtra("isInit", false)
                     putExtra("userId",id)
                     putExtra("uniqueId",item.first)

@@ -71,8 +71,8 @@ class RemoteUserDataRepositoryImpl @Inject constructor(private val store: Fireba
                 if (password == null) {
                     callback(
                         null,
-                        "Socail Login Init"
-                    ) //이 값을 받으면 바로 addOrModifyUserData로  계정 생성하고 로그인 재시도
+                        "Social Login Init"
+                    )
                 } else {
                     callback(null, "wrong id")
                 }

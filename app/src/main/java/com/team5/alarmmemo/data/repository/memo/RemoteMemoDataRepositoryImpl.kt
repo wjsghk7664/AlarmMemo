@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
 import com.google.gson.Gson
 import com.team5.alarmmemo.data.model.AlarmSetting
+import com.team5.alarmmemo.data.source.local.LocalUserDataSource
 import com.team5.alarmmemo.presentation.memo.CheckItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,13 +19,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFirestore,private val gson:Gson):MemoDataRepository {
+class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFirestore,private val gson:Gson, private val localUserDataSource: LocalUserDataSource):MemoDataRepository {
 
     private var userId = "default"
 
-    fun setUserid(userId: String){
-        this.userId = userId
-        Log.d("아이디",userId)
+    init {
+        userId = localUserDataSource.getUserEmail()
     }
 
 
@@ -39,7 +39,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
                         val result =ArrayList<Triple<String, String, SpannableStringBuilder>>()
                         for((k,v) in idTitle){
                             val json = idMemo.getOrDefault(k,null)
-                            val span = gson.fromJson(json,SpannableStringBuilder::class.java)?:SpannableStringBuilder("")
+                            val span = gson.fromJson(json?:"",SpannableStringBuilder::class.java)?:SpannableStringBuilder("")
                             result+=Triple(k,v,span)
                         }
                         callback(result)
@@ -78,7 +78,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
         }
         db.collection("AlarmSetting").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
-                val settings = gson.fromJson(it.getString(uniqueId),AlarmSetting::class.java)
+                val settings = gson.fromJson(it.getString(uniqueId)?:"",AlarmSetting::class.java)?:AlarmSetting()
                 callback(settings)
             }else{
                 callback(AlarmSetting())
@@ -103,7 +103,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
         }
         db.collection("Memo").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
-                val memo = gson.fromJson(it.getString(uniqueId),SpannableStringBuilder::class.java)
+                val memo = gson.fromJson(it.getString(uniqueId)?:"",SpannableStringBuilder::class.java)?:SpannableStringBuilder("")
                 callback(memo)
             }else{
                 callback(SpannableStringBuilder(""))
@@ -126,7 +126,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
 
         db.collection("draw").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
-                val draw = gson.fromJson(it.getString(uniqueId), Array<CheckItem>::class.java).toList()
+                val draw = gson.fromJson(it.getString(uniqueId)?:"", Array<CheckItem>::class.java)?.toList()?: listOf()
                 callback(draw)
             }else{
                 callback(listOf())
@@ -137,6 +137,9 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
     }
 
     override fun saveTitle(title: String, uniqueId: String) {
+
+        Log.d("데이터 아이디",userId)
+
         if(userId=="default") return
 
         val data = mapOf(uniqueId to title)
@@ -172,7 +175,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
                 val result1 = mutableListOf<AlarmSetting>()
                 val result2 = mutableListOf<String>()
                 for((k,v) in data){
-                    val alarmSetting = gson.fromJson(v as String,AlarmSetting::class.java)
+                    val alarmSetting = gson.fromJson(v as String? ?:"",AlarmSetting::class.java)?: AlarmSetting()
                     result1+=alarmSetting
                     result2+=k as String
                 }

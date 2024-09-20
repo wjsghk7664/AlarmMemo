@@ -19,8 +19,8 @@ android {
         applicationId = "com.team5.alarmmemo"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -111,5 +111,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth:22.0.0")
     implementation ("com.google.android.gms:play-services-auth:20.5.0")
     implementation ("com.google.maps.android:android-maps-utils:2.2.4")
+
+    implementation ("androidx.security:security-crypto:1.1.0-alpha03")
 
 }

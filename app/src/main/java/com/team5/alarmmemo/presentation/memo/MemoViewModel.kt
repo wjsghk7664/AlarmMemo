@@ -34,11 +34,6 @@ class MemoViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<HashMap<String,Any>?>>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    fun setInitalSetting(userId: String){
-        (remoteMemoDataRepository as RemoteMemoDataRepositoryImpl).setUserid(userId)
-        (remoteLastModifyRepository as RemoteLastModifyRepositoryImpl).setUserId(userId)
-    }
-
     fun saveLastModifyTime(uniqueId: String){
         val time = System.currentTimeMillis()
         localLastModifyRepository.saveLastModifyTime(time,uniqueId)
