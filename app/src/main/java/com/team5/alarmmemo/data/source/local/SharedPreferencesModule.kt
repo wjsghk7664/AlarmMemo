@@ -2,6 +2,8 @@ package com.team5.alarmmemo.data.source.local
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +35,12 @@ annotation class ActiveAlarms
 
 @Qualifier
 annotation class SpanCount
+
+@Qualifier
+annotation class UserPref
+
+@Qualifier
+annotation class Privacy
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -84,5 +92,26 @@ object SharedPreferencesModule {
     @Provides
     fun provideSpanCountSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences("span_count_pref", 0)
+    }
+
+    @UserPref
+    @Provides
+    fun provideUserSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        val key = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        return EncryptedSharedPreferences.create(
+            context,
+            "user_pref",
+            key,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
+
+    @Privacy
+    @Provides
+    fun providePrivacySharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("privacy_pref", 0)
     }
 }

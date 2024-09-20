@@ -42,7 +42,7 @@ class ProfileFragment : Fragment() {
 
         user  = requireActivity().intent.getParcelableExtra<User>("user")?:User()
 
-        viewModel.setId(user)
+
         getState()
 
         with(binding) {
@@ -61,7 +61,9 @@ class ProfileFragment : Fragment() {
 
             // 로그 아웃 버튼 클릭 시
             profileLogoutButton.setOnClickListener {
-                val intent = Intent(requireContext(), LoginActivity::class.java)
+                val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                    putExtra("isInit",false)
+                }
                 startActivity(intent)
                 requireActivity().finish()
 
@@ -94,7 +96,9 @@ class ProfileFragment : Fragment() {
                         user = user.copy(name = name)
                     }else{
                         Toast.makeText(requireContext(), "회원 탈퇴 성공", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(requireContext(), LoginActivity::class.java)
+                        val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                            putExtra("isInit",false)
+                        }
                         startActivity(intent)
                         requireActivity().finish()
                     }
