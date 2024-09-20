@@ -35,11 +35,11 @@ class ListViewModel @Inject constructor(
     @ReMoteLastModify private val remoteLastModifyRepository: LastModifyRepository
 
 ) : ViewModel() {
-    private val _sampleData = MutableLiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>>()
-    val sampleData: LiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>> get() = _sampleData
+    private val _sampleData = MutableStateFlow<ArrayList<Triple<String,String, SpannableStringBuilder>>>(arrayListOf())
+    val sampleData: StateFlow<ArrayList<Triple<String,String, SpannableStringBuilder>>> get() = _sampleData
 
-    private val _isLocal = MutableLiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>>()
-    val isLocal :LiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>> get() = _isLocal
+    private val _isLocal = MutableStateFlow<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>>(hashMapOf())
+    val isLocal :StateFlow<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>> get() = _isLocal
 
     private val _uiState = MutableStateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>>(UiState.Init)
     val uiState: StateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>> get() = _uiState
