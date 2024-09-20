@@ -15,8 +15,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/sign_up_ll_btn_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -27,7 +26,7 @@
                 style="@style/headline_700"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
+                android:layout_marginTop="40dp"
                 android:text="@string/sign_up_title"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +90,8 @@
                     android:hint="@string/sign_up_email_hint"
                     android:inputType="text"
                     android:paddingLeft="12dp"
-                    android:textColorHint="@color/dark_gray" />
+                    android:textColor="@color/dark_gray"
+                    android:textColorHint="@color/gray" />
 
                 <Button
                     android:id="@+id/sign_up_btn_email_verification"
@@ -132,17 +132,18 @@
 
             <EditText
                 android:id="@+id/sign_up_et_name"
+                style="@style/body_400"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
-                android:ems="10"
-                android:maxLength="10"
-                android:inputType="text"
                 android:background="@drawable/edit_text"
-                style="@style/body_400"
+                android:ems="10"
                 android:hint="@string/sign_up_name_hint"
+                android:inputType="text"
+                android:maxLength="10"
                 android:paddingLeft="12dp"
-                android:textColorHint="@color/dark_gray"
+                android:textColor="@color/dark_gray"
+                android:textColorHint="@color/gray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -175,14 +176,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
-                android:maxLength="20"
                 android:background="@drawable/edit_text"
                 android:ems="10"
                 android:focusableInTouchMode="true"
                 android:hint="@string/sign_up_password_hint"
                 android:inputType="textPassword"
+                android:maxLength="20"
                 android:paddingLeft="12dp"
-                android:textColorHint="@color/dark_gray"
+                android:textColor="@color/dark_gray"
+                android:textColorHint="@color/gray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
@@ -193,13 +195,14 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edit_text"
-                android:maxLength="20"
                 android:ems="10"
                 android:focusableInTouchMode="true"
                 android:hint="@string/sign_up_password_check_hint"
                 android:inputType="textPassword"
+                android:maxLength="20"
                 android:paddingLeft="12dp"
-                android:textColorHint="@color/dark_gray"
+                android:textColor="@color/dark_gray"
+                android:textColorHint="@color/gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -234,9 +237,11 @@
                 android:id="@+id/sign_up_cb_privacy"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:background="@drawable/checkbox_selector"
-                android:button="@null"
                 android:layout_marginTop="28dp"
+                android:layout_marginBottom="28dp"
+                android:background="@drawable/check_box"
+                android:button="@null"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/sign_up_et_password_check" />
 
@@ -244,8 +249,11 @@
                 android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
-                android:paddingHorizontal="4dp"
+
+                android:layout_marginStart="8dp"
                 android:text="개인정보처리방침에 동의하십니까?"
+                android:textColor="@color/gray"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/sign_up_cb_privacy"
                 app:layout_constraintStart_toEndOf="@+id/sign_up_cb_privacy"
                 app:layout_constraintTop_toTopOf="@+id/sign_up_cb_privacy" />
@@ -254,12 +262,12 @@
                 android:id="@+id/sign_up_tv_check_doc"
                 android:layout_width="wrap_content"
                 android:layout_height="20dp"
+                android:layout_marginStart="4dp"
                 android:text="확인하기"
                 android:textColor="@color/sky_blue"
                 app:layout_constraintBottom_toBottomOf="@+id/textView6"
                 app:layout_constraintStart_toEndOf="@+id/textView6"
-                app:layout_constraintTop_toTopOf="@+id/textView6"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toTopOf="@+id/textView6" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -269,7 +277,7 @@
         android:id="@+id/sign_up_ll_btn_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -283,8 +291,8 @@
             android:background="@drawable/signup_selector"
             android:enabled="false"
             android:text="@string/sign_up_btn_submit"
-            android:textSize="16sp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/sign_up_btn_cancel"
@@ -295,8 +303,8 @@
             android:layout_weight="1"
             android:background="@drawable/btn_filled_orange"
             android:text="@string/sign_up_btn_cancel"
-            android:textSize="16sp"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
