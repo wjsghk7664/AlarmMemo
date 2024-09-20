@@ -19,7 +19,6 @@ import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MemoListFragment : Fragment() {
