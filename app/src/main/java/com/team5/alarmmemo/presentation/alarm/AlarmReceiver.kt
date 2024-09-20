@@ -57,7 +57,7 @@ class AlarmReceiver: BroadcastReceiver() {
             if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.S)
                 PendingIntent.getActivity(context,requestCode,intents, PendingIntent.FLAG_IMMUTABLE)
             else PendingIntent.getActivity(context,requestCode,intents, PendingIntent.FLAG_UPDATE_CURRENT)
-        val notification = builder.setSmallIcon(R.mipmap.ic_launcher)
+        val notification = builder.setSmallIcon(R.mipmap.ic_logo)
             .setContentTitle("메모 알림!")
             .setContentText("눌러서 메모를 확인하세요.")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

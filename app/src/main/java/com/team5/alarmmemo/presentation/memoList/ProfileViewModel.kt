@@ -20,9 +20,7 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<String?>>(UiState.Init)
     val uiState = _uiState.asStateFlow()
 
-    fun setId(user: User) {
-        (remoteMemoDataRepository as RemoteMemoDataRepositoryImpl).setUserid(user.email)
-    }
+
 
     fun modifyUserData(user: User) {
         remoteUserDataRepository.addOrModifyUserData(user) { e ->

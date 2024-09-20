@@ -8,9 +8,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -57,6 +59,12 @@ class LoginFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        val isInit = requireActivity().intent.getBooleanExtra("isInit",true)
+        if(isInit){
+            viewmodel.autoLogin()
+        }
+
+
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
 
             if(result.resultCode == Activity.RESULT_OK){
@@ -99,7 +107,30 @@ class LoginFragment : Fragment() {
 
     fun initView() = with(binding){
 
+        loginNonLogin.isEnabled = false
+        loginIvNaverLogin.isEnabled = false
+        loginCbPrivacy.setOnCheckedChangeListener { buttonView, isChecked ->
+            viewmodel.setAgreement(isChecked)
 
+            if(!isChecked){
+                loginNonLogin.isEnabled = false
+                loginIvNaverLogin.isEnabled = false
+            }else{
+                loginNonLogin.isEnabled = true
+                loginIvNaverLogin.isEnabled = true
+            }
+        }
+
+
+
+
+        loginTvPrivacyDialog.setOnClickListener {
+            AlertDialog.Builder(requireActivity())
+                .setView(WebView(requireActivity()).apply { loadUrl("https://sites.google.com/view/alarmmemo-privacypolicy?usp=sharing") })
+                .setNegativeButton("나가기"){ dialog, _ ->
+                    dialog.dismiss()
+                }.show()
+        }
 
         loginBtn.setOnClickListener {
             val id = loginUsernameEt.text.toString()

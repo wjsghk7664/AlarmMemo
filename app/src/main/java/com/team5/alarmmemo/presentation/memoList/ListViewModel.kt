@@ -3,9 +3,10 @@ package com.team5.alarmmemo.presentation.memoList
 import android.content.SharedPreferences
 import android.text.SpannableStringBuilder
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
 import com.team5.alarmmemo.data.repository.lastmodify.LocalLastModify
 import com.team5.alarmmemo.data.repository.lastmodify.ReMoteLastModify
@@ -19,8 +20,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -35,35 +34,21 @@ class ListViewModel @Inject constructor(
     @ReMoteLastModify private val remoteLastModifyRepository: LastModifyRepository
 
 ) : ViewModel() {
-    private val _sampleData = MutableStateFlow<List<Triple<String, String, SpannableStringBuilder>>>(emptyList())
-    val sampleData: StateFlow<List<Triple<String, String, SpannableStringBuilder>>> get() = _sampleData
+    private val _sampleData = MutableLiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>>()
+    val sampleData: LiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>> get() = _sampleData
 
-    private val _uiState = MutableStateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>>(UiState.Init)
-    val uiState: StateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>> get() = _uiState
+    private val _isLocal = MutableLiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>>()
+    val isLocal :LiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>> get() = _isLocal
 
-    private val _spanCount = MutableStateFlow(2)
-    val spanCount: StateFlow<Int> get() = _spanCount
+    private val _spanCount = MutableLiveData(2)
+    val spanCount: LiveData<Int> get() = _spanCount
 
     private var number = 0
 
-    fun setId(id:String){
-        remoteMemoDataRepository as RemoteMemoDataRepositoryImpl
-        remoteLastModifyRepository as RemoteLastModifyRepositoryImpl
-        remoteMemoDataRepository.setUserid(id)
-        remoteLastModifyRepository.setUserId(id)
-    }
-
     // 아이템 리스트 불러오기
     fun loadList() {
-        viewModelScope.launch {
-            try {
-                loadData()
-                loadSpanCount()
-                _uiState.value = UiState.Success(_sampleData.value)
-            } catch (e: Exception) {
-                _uiState.value = UiState.Failure("메모 리스트를 불러오는 데 실패했습니다.")
-            }
-        }
+        loadData()
+        loadSpanCount()
     }
 
 
@@ -83,40 +68,56 @@ class ListViewModel @Inject constructor(
     // 아이템 리스트 앱 재시작 시 불러오는 메소드
     fun loadData(){
         Log.d("로드 데이터 시작","")
-        var list = ArrayList<Triple<String,String, SpannableStringBuilder>>()
+        val list = HashMap<Triple<String,String, SpannableStringBuilder>,Int>()
 
-        val isLocal = ArrayList<Boolean>()
-        val lastModifyAsync = ArrayList<Deferred<Unit>>()
-        val lastModify = ArrayList<Long>()
+        val lastModifyAsync = ArrayList<Deferred<Any?>>()
+        val lastModifyLocal = HashMap<Triple<String,String, SpannableStringBuilder>,Long>()
+        val lastModifyRemote = HashMap<Triple<String,String, SpannableStringBuilder>,Long>()
 
         localMemoDataRepository.getList { localList ->
-            list+=localList
-            isLocal+=List(localList.size){true}
+            localList.forEach {
+                list.put(it,1)
+            }
             Log.d("데이터 - 로컬",list.toString())
             remoteMemoDataRepository.getList { remoteList ->
-                list+=remoteList
-                isLocal+=List(remoteList.size){false}
+                remoteList.forEach {
+                    val num =list.getOrDefault(it,0)
+                    list.put(it,num+2)
+                }
                 Log.d("데이터 - 리모트",list.toString())
                 viewModelScope.launch {
-                    for(i in isLocal.indices){
-                        lastModifyAsync+=async { lastModify+=getLastModify(list[i].first,isLocal[i]) }
+                    for((k,v) in list){
+                        if(v%2==1){
+                            lastModifyAsync+=async{ lastModifyLocal.put(k,getLastModify(k.first,true))}
+                        }
+                        if(v/2 == 1){
+                            lastModifyAsync+=async { lastModifyRemote.put(k,getLastModify(k.first,false)) }
+                        }
+
                     }
                     lastModifyAsync.awaitAll()
 
                 }.invokeOnCompletion {
-                    val ids = HashMap<String,Long>()
-                    for(i in isLocal.indices){
-                        val item = list[i]
-                        if(!ids.keys.contains(item.first)){
-                            ids.put(item.first, lastModify[i])
-                        }else if(lastModify[i] > ids[item.first]!!){
-                            ids[item.first] = lastModify[i]
+                    val keys = HashSet<Triple<String,String, SpannableStringBuilder>>()
+                    keys+=lastModifyLocal.keys
+                    keys+=lastModifyRemote.keys
+
+                    Log.d("키 데이터",keys.toString())
+
+                    val result = HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>()
+                    for(i in keys){
+                        val local = lastModifyLocal.getOrDefault(i,0)
+                        val remote = lastModifyRemote.getOrDefault(i,0)
+                        if(local>remote){
+                            result.put(i,true)
+                        }else{
+                            result.put(i,false)
                         }
                     }
-                    Log.d("데이터 중복제거전",ids.toString())
-                    val data = ArrayList(list.filter { ids.keys.contains(it.first) }.distinctBy { it.first })
-                    Log.d("직전 데이터",data.toString())
-                    _sampleData.value = data
+
+                    Log.d("직전 데이터",result.toString())
+                    _sampleData.value = ArrayList(result.keys.distinctBy { it.first })
+                    _isLocal.value = result
                 }
             }
         }

@@ -396,8 +396,6 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
         uniqueId = intent.getStringExtra("uniqueId")?:"default"
 
 
-        viewModel.setInitalSetting(userId)
-
         if(isInit?:true){
             viewModel.saveTitle("",uniqueId)
             viewModel.saveMemo(SpannableStringBuilder(""),uniqueId)
@@ -1147,7 +1145,6 @@ class MemoActivity : AppCompatActivity(), OnMapReadyCallback{
 
     private fun checkPermission(isJustCheck:Boolean = false):Boolean{
         var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) permissions+= Manifest.permission.ACTIVITY_RECOGNITION
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) permissions += Manifest.permission.POST_NOTIFICATIONS
         var checkFlag = false
 
