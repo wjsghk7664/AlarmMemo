@@ -47,8 +47,6 @@ class ListViewModel @Inject constructor(
     private val _spanCount = MutableLiveData(2)
     val spanCount: LiveData<Int> get() = _spanCount
 
-    private var number = 0
-
     // 아이템 리스트 불러오기
     fun loadList() {
         viewModelScope.launch {
