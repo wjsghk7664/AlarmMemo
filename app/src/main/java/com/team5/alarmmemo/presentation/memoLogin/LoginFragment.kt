@@ -36,6 +36,7 @@ import com.team5.alarmmemo.presentation.memoList.MemoListActivity
 import com.team5.alarmmemo.presentation.memoList.MemoListFragment
 import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
 import com.team5.alarmmemo.util.AccountUtil.hashPassword
+import com.team5.alarmmemo.util.AccountUtil.showPrivacyPolicyDialog
 import com.team5.alarmmemo.util.AccountUtil.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -109,7 +110,7 @@ class LoginFragment : Fragment() {
 
         loginNonLogin.isEnabled = false
         loginIvNaverLogin.isEnabled = false
-        loginCbPrivacy.setOnCheckedChangeListener { buttonView, isChecked ->
+        loginCbPrivacy.setOnCheckedChangeListener { _, isChecked ->
             viewmodel.setAgreement(isChecked)
 
             if(!isChecked){
@@ -121,15 +122,8 @@ class LoginFragment : Fragment() {
             }
         }
 
-
-
-
         loginTvPrivacyDialog.setOnClickListener {
-            AlertDialog.Builder(requireActivity())
-                .setView(WebView(requireActivity()).apply { loadUrl("https://sites.google.com/view/alarmmemo-privacypolicy?usp=sharing") })
-                .setNegativeButton("나가기"){ dialog, _ ->
-                    dialog.dismiss()
-                }.show()
+            showPrivacyPolicyDialog(requireContext())
         }
 
         loginBtn.setOnClickListener {
