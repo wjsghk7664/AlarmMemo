@@ -13,7 +13,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/sign_up_ll_btn_container"
+        app:layout_constraintBottom_toTopOf="@id/reset_pw_ll_btn_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
-                android:text="@string/sign_up_title"
+                android:text="@string/reset_pw_title"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/sign_up_subtitle"
+                android:text="@string/reset_pw_subtitle"
                 android:textColor="@color/dark_gray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textview" />
@@ -56,7 +56,7 @@
 
 
             <TextView
-                android:id="@+id/sign_up_tv_email_validation"
+                android:id="@+id/reset_pw_tv_email_validation"
                 style="@style/caption_400"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView3">
 
                 <EditText
-                    android:id="@+id/sign_up_et_email"
+                    android:id="@+id/reset_pw_et_email"
                     style="@style/body_400"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
@@ -94,7 +94,7 @@
                     android:textColorHint="@color/gray" />
 
                 <Button
-                    android:id="@+id/sign_up_btn_email_verification"
+                    android:id="@+id/reset_pw_btn_email_verification"
                     style="@style/body_400"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
@@ -108,47 +108,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView"
-                style="@style/body_500"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:text="@string/name"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-
-            <TextView
-                android:id="@+id/sign_up_tv_name_validation"
-                style="@style/caption_400"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:text=""
-                android:textColor="@color/red"
-                app:layout_constraintBottom_toBottomOf="@+id/textView"
-                app:layout_constraintStart_toEndOf="@+id/textView"
-                app:layout_constraintTop_toTopOf="@+id/textView" />
-
-            <EditText
-                android:id="@+id/sign_up_et_name"
-                style="@style/body_400"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/edit_text"
-                android:ems="10"
-                android:hint="@string/name_hint"
-                android:inputType="text"
-                android:maxLength="10"
-                android:paddingLeft="12dp"
-                android:textColor="@color/dark_gray"
-                android:textColorHint="@color/gray"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-            <TextView
-                android:id="@+id/sign_up_tv_password_validation"
+                android:id="@+id/reset_pw_tv_password_validation"
                 style="@style/caption_400"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -168,10 +128,10 @@
                 android:text="@string/password"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sign_up_et_name" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
             <EditText
-                android:id="@+id/sign_up_et_password"
+                android:id="@+id/reset_pw_et_password"
                 style="@style/body_400"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -189,7 +149,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
             <EditText
-                android:id="@+id/sign_up_et_password_check"
+                android:id="@+id/reset_pw_et_password_check"
                 style="@style/body_400"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -218,10 +178,10 @@
                 android:text="@string/password_check"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sign_up_et_password" />
+                app:layout_constraintTop_toBottomOf="@+id/reset_pw_et_password" />
 
             <TextView
-                android:id="@+id/sign_up_tv_password_check_validation"
+                android:id="@+id/reset_pw_tv_password_check_validation"
                 style="@style/caption_400"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -232,49 +192,12 @@
                 app:layout_constraintStart_toEndOf="@+id/textView5"
                 app:layout_constraintTop_toTopOf="@+id/textView5" />
 
-
-            <CheckBox
-                android:id="@+id/sign_up_cb_privacy"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="28dp"
-                android:layout_marginBottom="28dp"
-                android:background="@drawable/check_box"
-                android:button="@null"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/sign_up_et_password_check" />
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-
-                android:layout_marginStart="8dp"
-                android:text="개인정보처리방침에 동의하십니까?"
-                android:textColor="@color/gray"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/sign_up_cb_privacy"
-                app:layout_constraintStart_toEndOf="@+id/sign_up_cb_privacy"
-                app:layout_constraintTop_toTopOf="@+id/sign_up_cb_privacy" />
-
-            <TextView
-                android:id="@+id/sign_up_tv_check_doc"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:layout_marginStart="4dp"
-                android:text="확인하기"
-                android:textColor="@color/sky_blue"
-                app:layout_constraintBottom_toBottomOf="@+id/textView6"
-                app:layout_constraintStart_toEndOf="@+id/textView6"
-                app:layout_constraintTop_toTopOf="@+id/textView6" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
-        android:id="@+id/sign_up_ll_btn_container"
+        android:id="@+id/reset_pw_ll_btn_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
@@ -283,26 +206,25 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/sign_up_btn_submit"
+            android:id="@+id/reset_pw_btn_submit"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/signup_selector"
-            android:enabled="false"
-            android:text="@string/sign_up_btn_submit"
+            android:text="@string/reset_pw_btn_submit"
             android:textColor="@color/white"
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/sign_up_btn_cancel"
+            android:id="@+id/reset_pw_btn_cancel"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:background="@drawable/btn_filled_orange"
-            android:text="@string/sign_up_btn_cancel"
+            android:text="@string/reset_pw_btn_cancel"
             android:textColor="@color/white"
             android:textSize="16sp" />
 

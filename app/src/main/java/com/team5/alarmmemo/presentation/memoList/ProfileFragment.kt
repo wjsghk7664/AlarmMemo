@@ -14,7 +14,7 @@ import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.ChangeNameDialogBinding
 import com.team5.alarmmemo.databinding.FragmentProfileBinding
-import com.team5.alarmmemo.presentation.memoLogin.LoginActivity
+import com.team5.alarmmemo.presentation.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
