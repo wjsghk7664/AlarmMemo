@@ -10,29 +10,31 @@ class RemoteUserDataRepositoryImpl @Inject constructor(private val store: Fireba
     RemoteUserDataRepository {
 
     // 이메일 중복확인
-    override fun checkEmailDuplicate(email: String, callback: (Boolean, String?) -> Unit) {
+    override fun findUser(email: String, callback: (Boolean, String?, String?) -> Unit) {
         val query = store.collection(USER)
             .whereEqualTo("email", email).limit(1).get()
 
         query.addOnSuccessListener {
             if (!it.isEmpty) {
-                callback(true, null)
+                val password = it.documents[0].getString("password")
+                callback(true, password, null)
             } else {
-                callback(false, null)
+                callback(false, null, null)
             }
         }.addOnFailureListener {
-            callback(false, it.message)
+            callback(false, null, it.message)
         }
     }
 
-//    // 파이어스토어에 유저 정보 추가
-//    override fun addUserToStore(email: String, user: User, callback: (String?) -> Unit) {
-//        store.collection(USER).document(email).set(user).addOnSuccessListener {
-//            callback(null)
-//        }.addOnFailureListener {
-//            callback(it.message)
-//        }
-//    }
+    // 파이어스토어에 유저 정보 추가
+    override fun resetPassword(email: String, newPassword: String, callback: (String?) -> Unit) {
+        store.collection(USER).document(email).update("password", newPassword)
+            .addOnSuccessListener {
+                callback(null)
+            }.addOnFailureListener {
+                callback(it.message)
+            }
+    }
 
     // 유저 데이터 추가 및 수정
     override fun addOrModifyUserData(user: User, callback: (String?) -> Unit) {
@@ -54,7 +56,7 @@ class RemoteUserDataRepositoryImpl @Inject constructor(private val store: Fireba
     }
 
     //소셜 로그인인 경우 회원가입이 필요없으므로 처음 소셜로그인이면 자동으로 아이디 생성해서 로그인하도록 함 - 소셜 로그인시 사용자 정보로 이름 가져오기
-    override fun Login(
+    override fun login(
         emailOrToken: String,
         password: String?,
         callback: (User?, String?) -> Unit

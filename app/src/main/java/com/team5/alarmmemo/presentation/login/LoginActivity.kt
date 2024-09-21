@@ -1,6 +1,5 @@
-package com.team5.alarmmemo.presentation.memoLogin
+package com.team5.alarmmemo.presentation.login
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -12,20 +11,19 @@ import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.Constants.TAG
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityLoginBinding
-import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
-    private val mCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-        if (error != null) {
-            Log.e(TAG, "로그인 실패 $error")
-        } else if (token != null) {
-            Log.e(TAG, "로그인 성공 ${token.accessToken}")
-        }
-    }
+//    private val mCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+//        if (error != null) {
+//            Log.e(TAG, "로그인 실패 $error")
+//        } else if (token != null) {
+//            Log.e(TAG, "로그인 성공 ${token.accessToken}")
+//        }
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +35,6 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
         Log.d("아이디", "keyhash : ${Utility.getKeyHash(this)}")
-
         supportFragmentManager.beginTransaction().replace(binding.main.id,LoginFragment.newInstance()).commit()
-
-
-//        binding.tvSignUp.setOnClickListener{
-//            startActivity(Intent(this, SignUpActivity::class.java))
-//        }
     }
 }
