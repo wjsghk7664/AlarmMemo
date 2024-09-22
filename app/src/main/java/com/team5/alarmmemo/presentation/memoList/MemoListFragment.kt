@@ -93,7 +93,7 @@ class MemoListFragment : Fragment() {
 
         // 아이템 데이터 업데이트
         lifecycleScope.launch {
-            listViewModel.uiState.collect { state ->
+            listViewModel.sampleData.collect { state ->
                 when (state) {
                     is UiState.Loading -> {
                         Toast.makeText(requireContext(), "메모 목록 로딩 중...", Toast.LENGTH_SHORT).show()
@@ -125,7 +125,10 @@ class MemoListFragment : Fragment() {
             // 아이템 추가 버튼 클릭 시 아이템 추가
             memoListBtnAddButton.setOnClickListener {
                 val uniqId =System.currentTimeMillis().toString()
-                val addList = listViewModel.sampleData.value ?: listOf()
+                val addList = when (val currentState = listViewModel.sampleData.value) {
+                    is UiState.Success -> currentState.data
+                    else -> listOf()
+                }
                 val sortedList = when (sort) {
                     SORT_BY_TIME -> addList.sortedByDescending { item ->
                     item.first
@@ -161,7 +164,10 @@ class MemoListFragment : Fragment() {
             memoListTvSortTime.setOnClickListener {
                 sort = SORT_BY_TIME
                 "시간순".also { binding.memoListTvSpinner.text = it }
-                val currentList = listViewModel.sampleData.value ?: listOf()
+                val currentList = when (val currentState = listViewModel.sampleData.value) {
+                    is UiState.Success -> currentState.data
+                    else -> listOf()
+                }
                 val sortedList = currentList.sortedByDescending { item ->
                     item.first
                 }
@@ -173,7 +179,10 @@ class MemoListFragment : Fragment() {
             memoListTvSortTitle.setOnClickListener {
                 sort = SORT_BY_TITLE
                 "제목순".also { binding.memoListTvSpinner.text = it }
-                val currentList = listViewModel.sampleData.value ?: listOf()
+                val currentList = when (val currentState = listViewModel.sampleData.value) {
+                    is UiState.Success -> currentState.data
+                    else -> listOf()
+                }
                 val sortedList = currentList.sortedBy { it.second }
                 adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
