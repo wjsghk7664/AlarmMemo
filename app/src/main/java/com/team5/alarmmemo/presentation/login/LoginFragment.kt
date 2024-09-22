@@ -1,4 +1,4 @@
-package com.team5.alarmmemo.presentation.memoLogin
+package com.team5.alarmmemo.presentation.login
 
 import android.app.Activity
 import android.content.Intent
@@ -8,33 +8,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.Constants.TAG
 import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.UiState
-import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentLoginBinding
 import com.team5.alarmmemo.presentation.memoList.MemoListActivity
-import com.team5.alarmmemo.presentation.memoList.MemoListFragment
-import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
+import com.team5.alarmmemo.presentation.resetPw.ResetPwAcitivity
+import com.team5.alarmmemo.presentation.signUp.SignUpActivity
 import com.team5.alarmmemo.util.AccountUtil.hashPassword
 import com.team5.alarmmemo.util.AccountUtil.showPrivacyPolicyDialog
 import com.team5.alarmmemo.util.AccountUtil.showToast
@@ -61,33 +55,31 @@ class LoginFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val isInit = requireActivity().intent.getBooleanExtra("isInit",true)
-        if(isInit){
-            viewmodel.autoLogin()
-        }
+        if(isInit){ viewmodel.autoLogin() }
 
 
-        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-
-            if(result.resultCode == Activity.RESULT_OK){
-                // 로그인 유저정보 불러오기
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                val account = task.getResult(ApiException::class.java)
-
-                val email = account?.email.toString()
-                val familyName = account?.familyName.toString()
-                val givenName = account?.givenName.toString()
-                val displayName = account?.displayName.toString()
-                val photoUrl = account?.photoUrl.toString()
-                val id = account?.id.toString()
-                val idToken = account?.idToken.toString()
-
-                Log.d(TAG,"이메일 $email\n 이름정보 $familyName $givenName $displayName\n 포토url $photoUrl\n id $id\n idToken $idToken\n")
-
-                viewmodel.login(email,displayName)
-            }else{
-                Log.d("구글 결과코드",result.resultCode.toString())
-            }
-        }
+//        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
+//
+//            if(result.resultCode == Activity.RESULT_OK){
+//                // 로그인 유저정보 불러오기
+//                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+//                val account = task.getResult(ApiException::class.java)
+//
+//                val email = account?.email.toString()
+//                val familyName = account?.familyName.toString()
+//                val givenName = account?.givenName.toString()
+//                val displayName = account?.displayName.toString()
+//                val photoUrl = account?.photoUrl.toString()
+//                val id = account?.id.toString()
+//                val idToken = account?.idToken.toString()
+//
+//                Log.d(TAG,"이메일 $email\n 이름정보 $familyName $givenName $displayName\n 포토url $photoUrl\n id $id\n idToken $idToken\n")
+//
+//                viewmodel.login(email,displayName)
+//            }else{
+//                Log.d("구글 결과코드",result.resultCode.toString())
+//            }
+//        }
         super.onCreate(savedInstanceState)
     }
 
@@ -101,23 +93,23 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        viewmodel.loginAndDeleteTempAccount()
         initView()
         observeViewModel()
     }
 
     fun initView() = with(binding){
 
-        loginNonLogin.isEnabled = false
+        loginTvGuestLogin.isEnabled = false
         loginIvNaverLogin.isEnabled = false
         loginCbPrivacy.setOnCheckedChangeListener { _, isChecked ->
             viewmodel.setAgreement(isChecked)
 
             if(!isChecked){
-                loginNonLogin.isEnabled = false
+                loginTvGuestLogin.isEnabled = false
                 loginIvNaverLogin.isEnabled = false
             }else{
-                loginNonLogin.isEnabled = true
+                loginTvGuestLogin.isEnabled = true
                 loginIvNaverLogin.isEnabled = true
             }
         }
@@ -131,7 +123,7 @@ class LoginFragment : Fragment() {
             val password = loginPasswordEt.text.toString()
 
             if(id.isNotBlank() && password.isNotBlank()){
-                viewmodel.login(id,name="", hashPassword(password))
+                viewmodel.login(id,"", hashPassword(password))
             }else{
                 showToast(requireContext(), "회원정보를 입력해주세요.")
             }
@@ -149,15 +141,17 @@ class LoginFragment : Fragment() {
 //            googleLogin()
 //        }
 
-        loginNonLogin.setOnClickListener {
+        loginTvGuestLogin.setOnClickListener {
             startActivity(Intent(requireActivity(), MemoListActivity::class.java))
         }
 
-        loginSignUpBtn.setOnClickListener {
-            startActivity(Intent(requireActivity(),SignUpActivity::class.java))
+        loginTvSignUp.setOnClickListener {
+            startActivity(Intent(requireActivity(), SignUpActivity::class.java))
         }
 
-
+        loginTvResetPassword.setOnClickListener {
+            startActivity(Intent(requireActivity(), ResetPwAcitivity::class.java))
+        }
     }
 
     private fun observeViewModel() {
