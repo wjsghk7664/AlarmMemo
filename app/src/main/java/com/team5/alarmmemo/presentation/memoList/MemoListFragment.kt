@@ -96,7 +96,7 @@ class MemoListFragment : Fragment() {
             listViewModel.sampleData.collect { state ->
                 when (state) {
                     is UiState.Loading -> {
-                        Toast.makeText(requireContext(), "메모 목록 로딩 중...", Toast.LENGTH_SHORT).show()
+//                        Toast.makeText(requireContext(), "메모 목록 로딩 중...", Toast.LENGTH_SHORT).show()
                     }
 
                     is UiState.Init -> {}
@@ -186,13 +186,6 @@ class MemoListFragment : Fragment() {
                 val sortedList = currentList.sortedBy { it.second }
                 adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
-            }
-
-            memoListIvFilterButton.setOnClickListener {
-                val bottomSheet = BottomSheetFragment { newSpanCount ->
-                    listViewModel.setSpanCount(newSpanCount)
-                }
-                bottomSheet.show(childFragmentManager, bottomSheet.tag)
             }
         }
     }
