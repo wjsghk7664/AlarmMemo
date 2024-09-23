@@ -19,13 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.model.ClientError
-import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.common.util.Utility
-import com.kakao.sdk.user.Constants.TAG
-import com.kakao.sdk.user.UserApiClient
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.team5.alarmmemo.R
@@ -80,7 +73,6 @@ class LoginFragment : Fragment() {
                 val id = account?.id.toString()
                 val idToken = account?.idToken.toString()
 
-                Log.d(TAG,"이메일 $email\n 이름정보 $familyName $givenName $displayName\n 포토url $photoUrl\n id $id\n idToken $idToken\n")
 
                 viewmodel.login(email,displayName)
             }else{
@@ -205,61 +197,6 @@ class LoginFragment : Fragment() {
         resultLauncher.launch(signInIntent)
     }
 
-
-    private fun kakaoLogin(){
-        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-            if (error != null) {
-                Log.e(TAG, "카카오계정으로 로그인 실패", error)
-            } else if (token != null) {
-                Log.i(TAG, "카카오계정으로 로그인 성공 ${token.accessToken}")
-                requestUserInfo(token.accessToken)
-            }
-        }
-        // 카카오톡 설치 확인
-        if (UserApiClient.instance.isKakaoTalkLoginAvailable(requireActivity())) {
-            // 카카오톡 로그인
-            UserApiClient.instance.loginWithKakaoTalk(requireActivity()) { token, error ->
-                // 로그인 실패 부분
-                if (error != null) {
-                    Log.e(TAG, "로그인 실패 $error")
-                    // 사용자가 취소
-                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                        return@loginWithKakaoTalk
-                    }
-                    // 다른 오류
-                    else {
-                        UserApiClient.instance.loginWithKakaoAccount(
-                            requireActivity(),
-                            callback = callback
-                        ) // 카카오 이메일 로그인
-                    }
-                }
-                // 로그인 성공 부분
-                else if (token != null) {
-                    requestUserInfo(token.accessToken)
-                }
-            }
-        } else {
-            UserApiClient.instance.loginWithKakaoAccount(requireActivity(), callback = callback) // 카카오 이메일 로그인
-        }
-    }
-
-    fun requestUserInfo(accessToken:String){
-        UserApiClient.instance.me { user, error ->
-            if(error!=null){
-                Log.d("카카오","정보요청 실패")
-            }else if(user!= null){
-                val email = user.kakaoAccount?.email
-                val name = user.kakaoAccount?.legalName
-                if(email!=null){
-                    viewmodel.login(email,name?:"")
-                }else{
-                    Log.d("카카오","이메일 존재x")
-                }
-
-            }
-        }
-    }
 
     private fun naverLogin(){
         val oauthLoginCallback = object : OAuthLoginCallback {

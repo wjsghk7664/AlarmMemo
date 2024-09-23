@@ -155,7 +155,7 @@ class RemoteMemoDataRepositoryImpl @Inject constructor(private val db:FirebaseFi
 
         db.collection("title").document(userId).get().addOnSuccessListener {
             if(it!=null&&it.exists()){
-                callback(it.getString(uniqueId) as String)
+                callback(it.getString(uniqueId)?:"")
             }else{
                 callback("")
             }
