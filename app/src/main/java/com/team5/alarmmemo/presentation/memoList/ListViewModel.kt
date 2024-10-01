@@ -7,19 +7,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.repository.lastmodify.LastModifyRepository
 import com.team5.alarmmemo.data.repository.lastmodify.LocalLastModify
 import com.team5.alarmmemo.data.repository.lastmodify.ReMoteLastModify
-import com.team5.alarmmemo.data.repository.lastmodify.RemoteLastModifyRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.LocalRepository
 import com.team5.alarmmemo.data.repository.memo.MemoDataRepository
-import com.team5.alarmmemo.data.repository.memo.RemoteMemoDataRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.RemoteRepository
 import com.team5.alarmmemo.data.source.local.SpanCount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -34,21 +35,26 @@ class ListViewModel @Inject constructor(
     @ReMoteLastModify private val remoteLastModifyRepository: LastModifyRepository
 
 ) : ViewModel() {
-    private val _sampleData = MutableLiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>>()
-    val sampleData: LiveData<ArrayList<Triple<String,String, SpannableStringBuilder>>> get() = _sampleData
+    private val _sampleData = MutableStateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>>(UiState.Init)
+    val sampleData: StateFlow<UiState<List<Triple<String, String, SpannableStringBuilder>>>> get() = _sampleData
 
-    private val _isLocal = MutableLiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>>()
-    val isLocal :LiveData<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>> get() = _isLocal
+    private val _isLocal = MutableStateFlow<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>>(hashMapOf())
+    val isLocal :StateFlow<HashMap<Triple<String,String, SpannableStringBuilder>,Boolean>> get() = _isLocal
 
     private val _spanCount = MutableLiveData(2)
     val spanCount: LiveData<Int> get() = _spanCount
 
-    private var number = 0
-
     // 아이템 리스트 불러오기
     fun loadList() {
-        loadData()
-        loadSpanCount()
+        viewModelScope.launch {
+            _sampleData.value = UiState.Loading
+            try {
+                loadSpanCount()
+                loadData()
+            } catch (e: Exception) {
+                _sampleData.value = UiState.Failure("메모 리스트를 불러오는 데 실패했습니다.")
+            }
+        }
     }
 
 
@@ -66,7 +72,7 @@ class ListViewModel @Inject constructor(
     }
 
     // 아이템 리스트 앱 재시작 시 불러오는 메소드
-    fun loadData(){
+    fun loadData() {
         Log.d("로드 데이터 시작","")
         val list = HashMap<Triple<String,String, SpannableStringBuilder>,Int>()
 
@@ -116,7 +122,7 @@ class ListViewModel @Inject constructor(
                     }
 
                     Log.d("직전 데이터",result.toString())
-                    _sampleData.value = ArrayList(result.keys.distinctBy { it.first })
+                    _sampleData.value = UiState.Success(ArrayList(result.keys.distinctBy { it.first }))
                     _isLocal.value = result
                 }
             }
@@ -170,7 +176,7 @@ class ListViewModel @Inject constructor(
 
     // 아이템 (썸네일) 길게 눌렀을 때 삭제하는 메소드
     fun deleteItem(item: Triple<String,String, SpannableStringBuilder>) {
-        val itemList = _sampleData.value?.toMutableList()
+        val itemList = (_sampleData.value as? UiState.Success<List<Triple<String, String, SpannableStringBuilder>>>)?.data?.toMutableList()
         val uniqueId = item.first
         itemList?.remove(item)
         viewModelScope.launch {
@@ -183,7 +189,7 @@ class ListViewModel @Inject constructor(
             val isSuccessAll = list.awaitAll().all { it }
 
             if(isSuccessAll){
-                _sampleData.value = (itemList ?: ArrayList()) as ArrayList<Triple<String, String, SpannableStringBuilder>>
+                _sampleData.value = UiState.Success(itemList as? List<Triple<String, String, SpannableStringBuilder>> ?: emptyList())
             }
 
         }

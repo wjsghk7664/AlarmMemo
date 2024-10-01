@@ -10,6 +10,7 @@ import com.team5.alarmmemo.databinding.ListSampleBinding
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class MemoListAdapter(
     private val onItemClicked: (Triple<String,String, SpannableStringBuilder>) -> Unit,
@@ -43,7 +44,12 @@ class ListItemViewHolder(
     fun bind(item: Triple<String,String, SpannableStringBuilder>) {
         with(binding) {
             sampleTvMemoTitle.text = item.second
-            sampleTvMemoDate.text = LocalDateTime.ofInstant(Instant.ofEpochMilli((if(item.first=="default") "0" else item.first).toLong()), ZoneId.systemDefault()).toString()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+            val dateTime = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli((if(item.first == "default") "0" else item.first).toLong()),
+                ZoneId.systemDefault()
+            )
+            sampleTvMemoDate.text = dateTime.format(formatter)
             sampleIvMemoThumbnail.text = item.third
 
             sampleIvMemoThumbnail.setOnClickListener {

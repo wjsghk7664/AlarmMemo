@@ -1,6 +1,5 @@
 package com.team5.alarmmemo.presentation.memoList
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,12 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.team5.alarmmemo.R
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentMemoListBinding
 import com.team5.alarmmemo.presentation.memo.MemoActivity
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.Locale
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MemoListFragment : Fragment() {
@@ -50,7 +50,6 @@ class MemoListFragment : Fragment() {
         val user = requireActivity().intent.getParcelableExtra<User>("user")?:User("default")
         val id = user.email
 
-
         // 저장된 리스트를 불러옴
         listViewModel.loadList()
 
@@ -76,6 +75,7 @@ class MemoListFragment : Fragment() {
 
                     setPositiveButton("삭제") { _, _ ->
                         listViewModel.deleteItem(item)
+                        Toast.makeText(requireContext(), "메모 삭제 완료", Toast.LENGTH_SHORT).show()
                     }
 
                     setNegativeButton("취소") { dialog, _ ->
@@ -87,22 +87,36 @@ class MemoListFragment : Fragment() {
             }
         )
 
-        // SpanCount 관련 LiveData로 업데이트
         listViewModel.spanCount.observe(viewLifecycleOwner) { spanCount ->
             binding.memoListRvMemoList.layoutManager = GridLayoutManager(requireContext(), spanCount)
         }
 
         // 아이템 데이터 업데이트
-        listViewModel.sampleData.observe(viewLifecycleOwner) { sampleData ->
-            val sortList = when (sort) {
-                SORT_BY_TIME -> sampleData.sortedByDescending { item ->
-                    item.first
-                }
-                SORT_BY_TITLE -> sampleData.sortedBy { it.second }
-                else -> sampleData
-            }
+        lifecycleScope.launch {
+            listViewModel.sampleData.collect { state ->
+                when (state) {
+                    is UiState.Loading -> {
+//                        Toast.makeText(requireContext(), "메모 목록 로딩 중...", Toast.LENGTH_SHORT).show()
+                    }
 
-            adapter.submitList(sortList)
+                    is UiState.Init -> {}
+
+                    is UiState.Success -> {
+                        val sortedList = when (sort) {
+                            SORT_BY_TIME -> state.data.sortedByDescending { item ->
+                                item.first
+                            }
+                            SORT_BY_TITLE -> state.data.sortedBy { it.second }
+                            else -> state.data
+                        }
+                        adapter.submitList(sortedList)
+                    }
+
+                    is UiState.Failure -> {
+                        Toast.makeText(requireContext(), state.e, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
 
         with(binding) {
@@ -111,7 +125,10 @@ class MemoListFragment : Fragment() {
             // 아이템 추가 버튼 클릭 시 아이템 추가
             memoListBtnAddButton.setOnClickListener {
                 val uniqId =System.currentTimeMillis().toString()
-                val addList = listViewModel.sampleData.value ?: listOf()
+                val addList = when (val currentState = listViewModel.sampleData.value) {
+                    is UiState.Success -> currentState.data
+                    else -> listOf()
+                }
                 val sortedList = when (sort) {
                     SORT_BY_TIME -> addList.sortedByDescending { item ->
                     item.first
@@ -130,6 +147,7 @@ class MemoListFragment : Fragment() {
                     putExtra("uniqueId",uniqId)
                 }
                 startActivity(intent)
+                Toast.makeText(requireContext(), "메모 추가 완료", Toast.LENGTH_SHORT).show()
             }
 
             // Spinner 클릭시 Motion Layout 적용
@@ -146,7 +164,10 @@ class MemoListFragment : Fragment() {
             memoListTvSortTime.setOnClickListener {
                 sort = SORT_BY_TIME
                 "시간순".also { binding.memoListTvSpinner.text = it }
-                val currentList = listViewModel.sampleData.value ?: listOf()
+                val currentList = when (val currentState = listViewModel.sampleData.value) {
+                    is UiState.Success -> currentState.data
+                    else -> listOf()
+                }
                 val sortedList = currentList.sortedByDescending { item ->
                     item.first
                 }
@@ -158,17 +179,13 @@ class MemoListFragment : Fragment() {
             memoListTvSortTitle.setOnClickListener {
                 sort = SORT_BY_TITLE
                 "제목순".also { binding.memoListTvSpinner.text = it }
-                val currentList = listViewModel.sampleData.value ?: listOf()
+                val currentList = when (val currentState = listViewModel.sampleData.value) {
+                    is UiState.Success -> currentState.data
+                    else -> listOf()
+                }
                 val sortedList = currentList.sortedBy { it.second }
                 adapter.submitList(sortedList)
                 memoListTvSpinner.callOnClick()
-            }
-
-            memoListIvFilterButton.setOnClickListener {
-                val bottomSheet = BottomSheetFragment { newSpanCount ->
-                    listViewModel.setSpanCount(newSpanCount)
-                }
-                bottomSheet.show(childFragmentManager, bottomSheet.tag)
             }
         }
     }

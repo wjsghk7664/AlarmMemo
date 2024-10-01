@@ -5,7 +5,6 @@ import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.data.repository.RemoteUserDataRepository
 import com.team5.alarmmemo.data.repository.memo.MemoDataRepository
-import com.team5.alarmmemo.data.repository.memo.RemoteMemoDataRepositoryImpl
 import com.team5.alarmmemo.data.repository.memo.RemoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

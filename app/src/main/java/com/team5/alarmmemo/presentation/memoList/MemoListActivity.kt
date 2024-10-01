@@ -6,12 +6,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityMemoListBinding
@@ -21,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MemoListActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMemoListBinding.inflate(layoutInflater) }
+    private val listViewModel: ListViewModel by viewModels()
 
     // 프로필 화면에서 내비게이션 바의 뒤로 가기 했을 때 리스트 화면으로 돌아가도록 설정
     private var onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -28,6 +31,7 @@ class MemoListActivity : AppCompatActivity() {
             "목록".also { binding.memoListTvTitle.text = it }
             supportFragmentManager.popBackStack("setting", FragmentManager.POP_BACK_STACK_INCLUSIVE)
             binding.memoListBtnBackButton.visibility = View.GONE
+            binding.memoListIvFilterButton.visibility = View.VISIBLE
             showFragment(MemoListFragment())
 
             if (System.currentTimeMillis() - backPressedTime <= 2000) {
@@ -88,6 +92,7 @@ class MemoListActivity : AppCompatActivity() {
                 R.id.navigation_profile -> {
                     "프로필".also { binding.memoListTvTitle.text = it }
                     showFragment(ProfileFragment())
+                    binding.memoListIvFilterButton.visibility = View.GONE
                     memoListBtnBackButton.visibility = View.VISIBLE
                     binding.drawerLayout.closeDrawer(GravityCompat.END)
                     true
@@ -95,6 +100,14 @@ class MemoListActivity : AppCompatActivity() {
 
                 else -> false
             }
+        }
+
+        memoListIvFilterButton.setOnClickListener {
+            val bottomSheet = BottomSheetFragment { newSpanCount ->
+                listViewModel.setSpanCount(newSpanCount)
+            }
+
+            bottomSheet.show(supportFragmentManager, bottomSheet.tag)
         }
     }
 
