@@ -1,4 +1,4 @@
-package com.team5.alarmmemo.presentation.memoLogin
+package com.team5.alarmmemo.presentation.login
 
 import android.app.Activity
 import android.content.Intent
@@ -25,9 +25,10 @@ import com.team5.alarmmemo.R
 import com.team5.alarmmemo.UiState
 import com.team5.alarmmemo.data.model.User
 import com.team5.alarmmemo.databinding.FragmentLoginBinding
+import com.team5.alarmmemo.presentation.login.LoginViewModel
 import com.team5.alarmmemo.presentation.memoList.MemoListActivity
 import com.team5.alarmmemo.presentation.memoList.MemoListFragment
-import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
+import com.team5.alarmmemo.presentation.signUp.SignUpActivity
 import com.team5.alarmmemo.util.AccountUtil.hashPassword
 import com.team5.alarmmemo.util.AccountUtil.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +47,7 @@ class LoginFragment : Fragment() {
     private var _binding : FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private val viewmodel:LoginViewModel by activityViewModels()
+    private val viewmodel: LoginViewModel by activityViewModels()
 
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
@@ -99,16 +100,16 @@ class LoginFragment : Fragment() {
 
     fun initView() = with(binding){
 
-        loginNonLogin.isEnabled = false
+        loginTvGuestLogin.isEnabled = false
         loginIvNaverLogin.isEnabled = false
         loginCbPrivacy.setOnCheckedChangeListener { buttonView, isChecked ->
             viewmodel.setAgreement(isChecked)
 
             if(!isChecked){
-                loginNonLogin.isEnabled = false
+                loginTvGuestLogin.isEnabled = false
                 loginIvNaverLogin.isEnabled = false
             }else{
-                loginNonLogin.isEnabled = true
+                loginTvGuestLogin.isEnabled = true
                 loginIvNaverLogin.isEnabled = true
             }
         }
@@ -147,12 +148,12 @@ class LoginFragment : Fragment() {
 //            googleLogin()
 //        }
 
-        loginNonLogin.setOnClickListener {
+        loginTvGuestLogin.setOnClickListener {
             startActivity(Intent(requireActivity(), MemoListActivity::class.java))
         }
 
-        loginSignUpBtn.setOnClickListener {
-            startActivity(Intent(requireActivity(),SignUpActivity::class.java))
+        loginTvSignUp.setOnClickListener {
+            startActivity(Intent(requireActivity(), SignUpActivity::class.java))
         }
 
 

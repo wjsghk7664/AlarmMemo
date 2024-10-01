@@ -24,11 +24,16 @@
         android:theme="@style/Theme.AlarmMemo"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.resetPw.ResetPwAcitivity"
+            android:exported="false" />
+
         <service
             android:name=".presentation.alarm.LocationService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="location"></service>
+            android:foregroundServiceType="location" />
+
         <receiver
             android:name=".presentation.alarm.AlarmReceiver"
             android:enabled="true"
@@ -47,7 +52,7 @@
             android:value="eijuta9wl4" />
 
         <activity
-            android:name=".presentation.memoSignUp.SignUpActivity"
+            android:name=".presentation.signUp.SignUpActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -58,7 +63,7 @@
             android:name=".presentation.memoList.MemoListActivity"
             android:exported="true" />
         <activity
-            android:name=".presentation.memoLogin.LoginActivity"
+            android:name=".presentation.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

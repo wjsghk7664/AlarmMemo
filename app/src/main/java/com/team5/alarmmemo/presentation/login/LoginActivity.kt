@@ -1,4 +1,4 @@
-package com.team5.alarmmemo.presentation.memoLogin
+package com.team5.alarmmemo.presentation.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.team5.alarmmemo.R
 import com.team5.alarmmemo.databinding.ActivityLoginBinding
-import com.team5.alarmmemo.presentation.memoSignUp.SignUpActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,7 +26,7 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        supportFragmentManager.beginTransaction().replace(binding.main.id,LoginFragment.newInstance()).commit()
+        supportFragmentManager.beginTransaction().replace(binding.main.id, LoginFragment.newInstance()).commit()
 
 
 //        binding.tvSignUp.setOnClickListener{

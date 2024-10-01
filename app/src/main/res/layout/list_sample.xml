@@ -19,25 +19,16 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
-    <ImageView
-        android:id="@+id/sample_iv_date_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/calendar"
-        app:layout_constraintStart_toStartOf="@id/sample_iv_memo_thumbnail"
-        app:layout_constraintTop_toBottomOf="@id/sample_iv_memo_thumbnail"
-        tools:ignore="ContentDescription" />
+
 
     <TextView
         android:id="@+id/sample_tv_memo_title"
         style="@style/subtitle_700"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="@string/memoList_tv_sample_title"
-        app:layout_constraintStart_toEndOf="@id/sample_iv_date_icon"
+        app:layout_constraintStart_toStartOf="@+id/sample_iv_memo_thumbnail"
         app:layout_constraintTop_toBottomOf="@id/sample_iv_memo_thumbnail" />
 
     <TextView
@@ -48,7 +39,7 @@
         android:text="@string/memoList_tv_sample_date"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@id/sample_iv_date_icon"
+        app:layout_constraintStart_toStartOf="@+id/sample_tv_memo_title"
         app:layout_constraintTop_toBottomOf="@id/sample_tv_memo_title" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
